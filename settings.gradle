@@ -1,2 +1,12 @@
-include ':FtcRobotController'
+include ':FtcRobotController', ':openCVLibrary3', ':endercv'
 include ':TeamCode'
+include ':Team417_2018'
+include ':Team417_2019'
+include ':Team6220_2018'
+include ':Team6220_2019'
+include ':Team8923_2018'
+include ':Team8923_2019'
+include ':TeamSwerve'
+include ':TeamMentor'
+project(':openCVLibrary3').projectDir = new File('endercv-master/openCVLibrary3')
+project(':endercv').projectDir = new File('endercv-master/endercv')

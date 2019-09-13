@@ -1,0 +1,12 @@
+
+Directions for connecting the laptop to the new REV hub without cable
+
+1. Plug in a battery to the REV hub so that it is powered and on
+2. Wait for the REV hubs light to turn green - this may take a minute or so
+3. Once it turns green go to your laptop and connect to the hotspot set up by the drive-a-bot
+4. If it asks for a password type password
+5. You might have to push the button on the REV hub for it to actually connect
+6. Go to the FTC driver station app and set the connection type to control hub
+7. Open command prompt and type adb connect 192.168.43.1:5555 then press enter
+8. To check if the connection has been established press the green play button and the device should show up as REV hub
+

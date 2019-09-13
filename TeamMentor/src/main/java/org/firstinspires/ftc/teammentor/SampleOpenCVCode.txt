@@ -1,0 +1,177 @@
+import org.opencv.core.Core;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
+import org.opencv.core.Scalar;
+import org.opencv.core.Mat;
+import org.opencv.highgui.HighGui;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
+/*
+    Sample java code that shows how to use openCV to detect circles in an image
+
+*/
+
+/*
+     //here is some sample code that will get an image from vuforia and
+     //turn it into an opencv Mat so you can do further processing
+
+     VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
+     long numImages = frame.getNumImages();
+
+     for (int i = 0; i < numImages; i++) {
+         if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+             rgb = frame.getImage(i);
+             break;
+         }
+     }
+
+     //rgb is now the Image object that weve used in the video
+     Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
+     bm.copyPixelsFromBuffer(rgb.getPixels());
+
+     //put the image into a MAT for OpenCV
+     Mat tmp = new Mat(rgb.getWidth(), rgb.getHeight(), CvType.CV_8UC4);
+     Utils.bitmapToMat(bm, tmp);
+
+     //close the frame, prevents memory leaks and crashing
+     frame.close();
+
+
+*/
+
+
+
+
+public class OpenCVHelloWorld {
+	
+	//Note: this code was written as a standalone java program in Eclipse (not Android Studio),
+	//and as such, it needs a main() to get started. 
+	//main() creates an object of this class and starts it running. 
+	public static void main(String[] args) {
+		OpenCVHelloWorld obj = new OpenCVHelloWorld();
+		obj.DoStuff();
+	}
+	
+	
+	public void DoStuff() {
+		System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
+	    
+		// 'Mat' is short for Matrix. 
+		// It's the primary object you'll work with in openCV.
+		// ...because images have rows and columns of pixels, and a matrix is a suitable way to store those.
+		
+		//create a Mat (matrix) for our source image
+	    Mat sourceImage = new Mat();
+	    
+	    //load our source image using an openCV command. 
+	    //You'll need to update this path on your system.
+	    //In practice, you would get this image from vuforia and use an openCV command to convert it to openCV format. Details are online somewhere.  
+	    sourceImage = Imgcodecs.imread("D:/GeffnerDocuments/EclipseWorkspace/OpenCVTest/src/TEST.JPG", Imgcodecs.IMREAD_COLOR);
+        if( sourceImage.empty() ) {
+            System.out.println("Error opening image");
+            System.exit(-1);
+        }
+        
+        //show the source image
+        display(sourceImage);
+        
+        //This code is intended for the 2018-2019 game, Rover Ruckus.
+        //The game defines the locations of 3 object: two wiffle balls and one cube. 
+        //Therefore, we know the approximate regions in which we expect to find those 3 objects in our source image.
+        //In our test image, these regions are:
+        //region1 is a rectangle bounded by these points: 20,280   220,450
+        //region2 is a rectangle bounded by these points: 420,280  600,450
+        //region3 is a rectangle bounded by these points: 800,260  1000,450
+        
+        //call a helper function to detect circles in each region
+        //call with "false" if you don't want to show circles on the images
+        int numCirclesRegion1 = findCircles(sourceImage, 20, 280, 220, 450, true);
+        int numCirclesRegion2 = findCircles(sourceImage, 420, 280, 600, 450, true);
+        int numCirclesRegion3 = findCircles(sourceImage, 800, 260, 1000, 450, true);
+        
+        System.out.println("I found the following circles:\n" +
+        		           "region 1: " + numCirclesRegion1 + 
+        		           ", region 2: " + numCirclesRegion2 + 
+        		           ", region 3: " + numCirclesRegion3);
+        //exit the program
+        System.exit(0);
+
+	}
+	
+	//This function will try to detect the presence of circles in an image
+	int findCircles(Mat source, int x1, int y1, int x2, int y2, boolean displayResult)
+	{
+		//Create a temporary Mat to hold a copy of a sub-region of the source image
+		//You'll generally want to work with copies so you're not modifying the source image
+		Mat region = new Mat();
+		
+		//use a method to get a sub-region of the source
+		//note that openCV functions use the order "row, col", which is backwards from the typical "x, y" order
+        region = source.submat(y1, y2, x1, x2);
+        
+        //you can display the region if you want to check it
+        //display(region);
+        
+        //Edge detection works better if you:
+        // 1) use a grayscale image and 
+        // 2) reduce the noise in the image by blurring it
+        //So, we'll create another copy of the image for those steps
+        Mat grayblur = new Mat(); 
+        //make a grayscale copy
+        Imgproc.cvtColor(region, grayblur, Imgproc.COLOR_BGR2GRAY);
+        	//display(grayblur);
+        
+        //Blur the image in-place (overwriting the gray image)
+        //You can tweak the Size parameter to make the image more or less blurry
+        Imgproc.GaussianBlur(grayblur, grayblur, new Size(5,5), 0);
+        
+        //There are other techniques that can be applied to the image to improve detection,
+        //such as creating a threshold. These steps are left for a future exercise 
+        //because I haven't figured out how to make them work yet ;) and the detection
+        //is working well enough without them so far
+        //Imgproc.threshold(grayblur, grayblur, 150, 255, Imgproc.THRESH_BINARY);
+        
+        //display(grayblur);
+        
+        //Create yet another Mat into which we will store the locations of any circles that we find.
+        //Remember, Mats are really matrices, so they can hold other things besides just image data.
+        Mat circles = new Mat();
+        
+        //Use an openCV algorithm for trying to detect circles.
+        //The key params to adjust are the last two numbers. 
+        Imgproc.HoughCircles(grayblur, circles, Imgproc.CV_HOUGH_GRADIENT, 1.8, 10);
+        
+        //iterate through the circles that we found (if any) and draw them on the region image
+        for (int i = 0; i < circles.cols(); i++) {
+            double[] vCircle = circles.get(0, i);
+
+            Point pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
+            int radius = (int)Math.round(vCircle[2]);
+            
+            //draw a circle on an image. The Scalar is the color.
+            //Note that the color order in openCV is always B,G,R, so (0,0,255) is Red.
+            Imgproc.circle(region, pt, radius, new Scalar(0, 0, 255), 2);
+        }
+        
+        if (displayResult) display(region);
+        
+        //return the number of circles that we found
+        return (circles.cols());
+		
+	}
+	
+	//use an openCV function to display an image on the screen
+    int display(Mat img) {
+    	return display(2000, img);
+    }
+
+    //use an openCV function to display an image on the screen for a given amount of time
+    int display(int delayInMS, Mat img) {
+        HighGui.imshow( "demo", img );
+        int c = HighGui.waitKey( delayInMS );
+        if (c >= 0) { return -1; }
+        return 0;
+    }
+    
+}
