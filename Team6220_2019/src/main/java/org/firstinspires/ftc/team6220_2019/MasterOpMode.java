@@ -10,6 +10,10 @@ import java.util.List;
 
 abstract public class MasterOpMode extends LinearOpMode
 {
+    // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
+    // opMode to be able to use some functionalities in that class.
+    VuforiaResources vRes = new VuforiaResources(this);
+
     // Declare hardware devices---------------------------------------
     BNO055IMU imu;
 
