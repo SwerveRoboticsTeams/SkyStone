@@ -58,6 +58,9 @@ public class VuforiaResources
     // them to be accessible to classes using this resource class.
     private VuforiaTrackables targetsSkyStone;
 
+    VectorF translation;                                                                          //**Use this to navigate
+    Orientation rotation;                                                                         //**Use this to navigate
+
     // For convenience, gather together all the trackable objects in one easily-iterable collection */
     List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
     VuforiaTrackable stoneTarget;
@@ -357,13 +360,13 @@ public class VuforiaResources
         // Provide feedback as to where the robot is located (if we know).
         if (targetVisible)
         {
-            // Express position (translation) of robot in inches.
-            VectorF translation = lastLocation.getTranslation();
+            // Express position (translation) of robot in inches.                                   ***Use this to navigate
+            translation = lastLocation.getTranslation();
             master.telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                     translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
-            // Express the rotation of the robot in degrees.
-            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            // Express the rotation of the robot in degrees.                                        ***Use this to navigate
+            rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
             master.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
         } else
         {

@@ -83,7 +83,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 
 @TeleOp(name = "SKYSTONE Vuforia Nav", group = "Concept")
-public class ConceptVuforiaSkyStoneNavigation extends MasterOpMode
+public class ConceptVuforiaSkyStoneNavigation extends MasterAutonomous
 {
 
     @Override
@@ -92,17 +92,7 @@ public class ConceptVuforiaSkyStoneNavigation extends MasterOpMode
         // Initialize image targets and tracking capabilities.
         vRes.initVuforia();
 
-        // WARNING:
-        // In this sample, we do not wait for PLAY to be pressed.  Target Tracking is started immediately when INIT is pressed.
-        // This sequence is used to enable the new remote DS Camera Preview feature to be used with this sample.
-        // CONSEQUENTLY do not put any driving commands in this loop.
-        // To restore the normal opmode structure, just un-comment the following line:
-
-        // waitForStart();
-
-        // Note: To use the remote camera preview:
-        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
-        // Tap the preview window to receive a fresh image.
+        //waitForStart();
 
         vRes.activateTargets();
 

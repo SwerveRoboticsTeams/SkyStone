@@ -26,6 +26,11 @@ public class Constants
     public static final double T_FACTOR = 1.0;
     public static final double R_FACTOR = 1.0;
 
+    // Autonomous Drive constants
+    public static final float AUTONOMOUS_SCALE_DISTANCE = 24;
+    public static final float AUTONOMOUS_SCALE_ANGLE = 90;
+
+
 
     // Tolerances
     public static final double ANGLE_TOLERANCE_DEG = 2.5;

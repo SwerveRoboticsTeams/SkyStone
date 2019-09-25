@@ -10,6 +10,9 @@ import java.util.List;
 
 abstract public class MasterOpMode extends LinearOpMode
 {
+    // Boolean for team color.
+    boolean isRed;
+
     // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
     // opMode to be able to use some functionalities in that class.
     VuforiaResources vRes = new VuforiaResources(this);
@@ -139,24 +142,14 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         double diff = finalAngle - initialAngle;
 
-        while (Math.abs(diff) > 180)
-        {
-            diff -= Math.signum(diff) * 360;
-        }
-
-        return diff;
+        return normalizeAngle(diff);
     }
 
 
     // Prevents a single angle from being outside the range -180 to 180 degrees
     public double normalizeAngle(double rawAngle)
     {
-        while (Math.abs(rawAngle) > 180)
-        {
-            rawAngle -= Math.signum(rawAngle) * 360;
-        }
-
-        return rawAngle;
+        return rawAngle % 360 - 180;
     }
 
 
