@@ -49,8 +49,11 @@ public class VuforiaResources
     // Pass in masterOpMode to the class constructor to allow us to use telemetry without
     // making the class abstract.
     MasterOpMode master;
-    public VuforiaResources(MasterOpMode master) { this.master = master; }
 
+    public VuforiaResources(MasterOpMode master)
+    {
+        this.master = master;
+    }
 
 
     // Todo Finalize which members should be public and which should be private.
@@ -154,7 +157,6 @@ public class VuforiaResources
 
         // Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
 
 
         // Initialize image targets----------------------------------------------------------------------------------------------
@@ -270,7 +272,6 @@ public class VuforiaResources
         //-----------------------------------------------------------------------------------------------------------------------
 
 
-
         //
         // Create a transformation matrix describing where the phone is on the robot.
         //
@@ -327,14 +328,14 @@ public class VuforiaResources
     }
 
 
-   /*
-    * This is the primary method we will be using for autonomous navigation.  Vuforia looks for image
-    * targets, and if any are found, it updates our absolute location on the field and tells
-    * us our x, y, z, roll, pitch, and heading.
-    *
-    * Note:  allTrackables(0) is the image target on the skystones, which only provide relative location.
-    *        This should ONLY be used for target-centric approach.
-    */
+    /*
+     * This is the primary method we will be using for autonomous navigation.  Vuforia looks for image
+     * targets, and if any are found, it updates our absolute location on the field and tells
+     * us our x, y, z, roll, pitch, and heading.
+     *
+     * Note:  allTrackables(0) is the image target on the skystones, which only provide relative location.
+     *        This should ONLY be used for target-centric approach.
+     */
     public void getLocation()
     {
         // Check all the trackable targets to see which one (if any) is visible.
@@ -373,5 +374,10 @@ public class VuforiaResources
             master.telemetry.addData("Visible Target", "none");
         }
         master.telemetry.update();
+    }
+
+    public boolean getTargetVisibility()
+    {
+        return targetVisible;
     }
 }

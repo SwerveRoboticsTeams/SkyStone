@@ -9,13 +9,16 @@ public class AutoCompetition extends MasterAutonomous
     public void runOpMode() throws InterruptedException
     {
         initialize();
+        vRes.activateTargets();
 
-        while(opModeIsActive())
+        while (opModeIsActive())
         {
             vuforiaFollowObject();
 
             telemetry.update();
             idle();
         }
+
+        vRes.deactivateTargets();
     }
 }

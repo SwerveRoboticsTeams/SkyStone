@@ -43,8 +43,7 @@ abstract public class MasterOpMode extends LinearOpMode
     generally needs more control in the low speed range than the high range.
    */
     //                                             y = 0 + 0.25x + 0 + 0.75x^3
-    Polynomial stickCurve = new Polynomial(new double[]{ 0, 0.25, 0, 0.75});
-
+    Polynomial stickCurve = new Polynomial(new double[]{0, 0.25, 0, 0.75});
 
 
     public void initialize()
@@ -104,6 +103,9 @@ abstract public class MasterOpMode extends LinearOpMode
 
     public void driveMecanum(double driveAngle, double drivePower, double w)
     {
+        // Adjustment to account for the different axis reference frames.
+        driveAngle += 90;
+
         // Convert drive angle and power to x and y components
         double y = drivePower * Math.sin(Math.toRadians(driveAngle));
         double x = drivePower * Math.cos(Math.toRadians(driveAngle));
@@ -197,7 +199,7 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         lTime = timer.seconds();
 
-        while(opModeIsActive() && (time > 0))
+        while (opModeIsActive() && (time > 0))
         {
             double eTime = timer.seconds() - lTime;
             lTime = timer.seconds();

@@ -5,10 +5,18 @@ package org.firstinspires.ftc.team6220_2019;
  */
 abstract public class MasterAutonomous extends MasterOpMode
 {
+    @Override
+    public void initialize()
+    {
+        super.initialize();
+        vRes.initVuforia();
+    }
+
     // This method can be used with the skystone navigation target.  It allows a robot to navigate
     // to the front of the target and follow it if it moves.
 
-    /** UNTESTED - - - UNTESTED - - - UNTESTED
+    /**
+     * UNTESTED - - - UNTESTED - - - UNTESTED
      * NOTE: DO NOT USE THIS METHOD IN COMPETITION. THIS IS A TEST METHOD ONLY.
      * With a skystone defined as (0, 0, 0) absolutely, this method is designed to make the robot drive towards
      * the skystone at all times. It should follow a skystone if moved.
@@ -16,35 +24,51 @@ abstract public class MasterAutonomous extends MasterOpMode
     public void vuforiaFollowObject()
     {
         vRes.getLocation();
-        // x, y, z defines the location of the center of the robot relative to the skystone.
-        float x = vRes.translation.get(0);
-        float y = vRes.translation.get(1);
-        float z = vRes.translation.get(2);
-        // w is the rotation of the robot relative to the skystone in degrees.
-        float w = vRes.rotation.thirdAngle;
 
-        float distance = distancePower((float) Math.sqrt(x * x + y * y));
-        float angle = (float) (Math.atan(y / x) * 180 / Math.PI);
-        if (x > 0)
+        if (!vRes.getTargetVisibility())
         {
-            angle += 180;
+            driveMecanum(0, 0, 0.10);
         }
-        angle = (float) normalizeAngle(angle);
+        else
+        {
+            // x, y, z defines the location of the center of the robot relative to the skystone.
+            float x = vRes.translation.get(0) / Constants.MM_PER_INCH;
+            if(x < 12){
+                x = 0;
+            }
+            float y = vRes.translation.get(1) / Constants.MM_PER_INCH;
+            float z = vRes.translation.get(2) / Constants.MM_PER_INCH;
+            telemetry.addData("x value: ", x);
+            telemetry.addData("y value: ", y);
+            telemetry.addData("z value: ", z);
+            // w is the rotation of the robot relative to the skystone in degrees.
+            float w = vRes.rotation.thirdAngle;
 
-        driveMecanum(angle, distance, rotationPower(-w));
+            float distance = distancePower((float) Math.sqrt(x * x + y * y));
+
+            float angle = (float) (Math.atan(y / x) * 180 / Math.PI);
+            if (x > 0)
+            {
+                angle += 180;
+            }
+            angle = (float) normalizeAngle(angle);
+
+            driveMecanum(angle, distance, rotationPower(w));
+        }
     }
 
-    /** UNTESTED - - - UNTESTED - - - UNTESTED
+    /**
+     * UNTESTED - - - UNTESTED - - - UNTESTED
      * DO NOT CALL THIS METHOD TO DRIVE TO THE BRIDGE IN THE MIDDLE OF AUTONOMOUS. DESPITE THE
      * SIMILARITY WITH driveToBridge, THIS METHOD DOES NOT MAKE THE ROBOT SLOW DOWN WHEN
      * APPROACHING THE BRIDGE.
      * This method is designed to be called at the end of autonomous to drive the robot to the
      * center line. It consists of three stages.
      * 1. If the robot is far enough in the +x direction (near the foundations or buildzone), the
-     *    robot will translate in the -x direction to avoid any chance of collision with the
-     *    foundation.
+     * robot will translate in the -x direction to avoid any chance of collision with the
+     * foundation.
      * 2. If the robot is to the left or right of the middle bridge, translate up or down to the
-     *    team bridge.
+     * team bridge.
      * 3. Finally, drive to a predetermined point under the team bridge.
      */
     public void driveCenterLineEndAutonomous()
@@ -64,11 +88,10 @@ abstract public class MasterAutonomous extends MasterOpMode
         else if (Math.abs(y) < 36)
         {
             // Drive up if we are the blue team, and drive down if we are the red team.
-            if(isRed)
+            if (isRed)
             {
                 driveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-            }
-            else
+            } else
             {
                 driveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
@@ -79,7 +102,8 @@ abstract public class MasterAutonomous extends MasterOpMode
             // This variable controls the y-coordinate of where we want our robot to park.
             float yCoordinate = 48; //MUST BE POSITIVE!!! THE ROBOT WILL PARK ON THE WRONG SIDE IF NEGATIVE!!!
             // Flip if we are the red team.
-            if(isRed){
+            if (isRed)
+            {
                 yCoordinate *= -1;
             }
             float distance = distancePower((float) Math.sqrt(x * x + (y - yCoordinate) * (y - yCoordinate)));
@@ -95,22 +119,25 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
     }
 
-    /** UNTESTED - - - UNTESTED - - - UNTESTED
+    /**
+     * UNTESTED - - - UNTESTED - - - UNTESTED
      * DO NOT USE THIS METHOD AT THE END OF AUTONOMOUS. DESPITE THE SIMILARITY TO
      * driveCenterLineEndAutonomous, IT IS NOT DESIGNED TO MAKE THE ROBOT PARK NICELY.
      * This method is designed to be called during autonomous to drive the robot through the
      * center bridges in either direction. It consists of three stages.
      * 1. If the robot is far enough in the +x direction (near the foundations or buildzone), the
-     *    robot will translate in the -x direction to avoid any chance of collision with the
-     *    foundation. This step will be skipped if the robot is on the depot side.
+     * robot will translate in the -x direction to avoid any chance of collision with the
+     * foundation. This step will be skipped if the robot is on the depot side.
      * 2. Translate up or down as necessary to align with the desired bridge.
      * 3. Finally, drive through the bridge.
      * Note: This method is only intended to drive to the bridge. This method will not drive the
      * robot away from the bridge; use a different method for that purpose.
+     *
      * @param bridge is positive if we want to drive through our team bridge. Otherwise (zero or
      *               negative, we want to drive through the center bridge.
      */
-    public void driveToBridge (int bridge){
+    public void driveToBridge(int bridge)
+    {
         vRes.getLocation();
         // (x, y, z) is the location of the robot on the field.
         float x = vRes.translation.get(0);
@@ -127,18 +154,17 @@ abstract public class MasterAutonomous extends MasterOpMode
             driveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
         }
         // Conditional to check for step two. teamBridgeTolerance and centerTolerance are partially arbitrary
-           // numbers that may need adjusting.
+        // numbers that may need adjusting.
         else if ((Math.abs(y) < teamBridgeTolerance && bridge > 0) || (Math.abs(y) > centerTolerance && bridge <= 0))
         {
             // Check if we want to go to our team bridge.
-            if(bridge > 0)
+            if (bridge > 0)
             {
                 // Drive up if we are the blue team, and drive down if we are the red team.
                 if (isRed)
                 {
                     driveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-                }
-                else
+                } else
                 {
                     driveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 }
@@ -146,10 +172,11 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Otherwise, go to center bridge.
             else
             {
-                if(y > centerTolerance){
+                if (y > centerTolerance)
+                {
                     driveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-                }
-                else if(y < -centerTolerance){
+                } else if (y < -centerTolerance)
+                {
                     driveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 }
             }
@@ -158,11 +185,13 @@ abstract public class MasterAutonomous extends MasterOpMode
         else
         {
             // If we are left of the bridge, drive right.
-            if(x < 0) {
+            if (x < 0)
+            {
                 driveMecanum(-vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
             // Else, drive left.
-            else{
+            else
+            {
                 driveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
         }
@@ -192,7 +221,7 @@ abstract public class MasterAutonomous extends MasterOpMode
      */
     private float rotationPower(float angle)
     {
-        if (angle > Constants.AUTONOMOUS_SCALE_ANGLE)
+        if (Math.abs(angle) > Constants.AUTONOMOUS_SCALE_ANGLE)
         {
             angle = Constants.AUTONOMOUS_SCALE_ANGLE;
         } else
