@@ -55,4 +55,21 @@ abstract public class MasterTeleOp extends MasterOpMode
         else
             driveMecanum(angle + 180, drivePower, rotationPower);
     }
+
+    public void activateCollector(){
+        double power = 0.75;
+
+        if(driver1.isButtonPressed(Button.DPAD_UP)){
+            collectorLeft.setPower(-power);
+            collectorRight.setPower(power);
+        }
+        else if(driver1.isButtonPressed(Button.DPAD_DOWN)){
+            collectorLeft.setPower(power);
+            collectorRight.setPower(-power);
+        }
+        else{
+            collectorLeft.setPower(0);
+            collectorRight.setPower(0);
+        }
+    }
 }

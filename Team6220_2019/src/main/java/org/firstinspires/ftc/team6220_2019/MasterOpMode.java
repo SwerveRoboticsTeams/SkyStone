@@ -21,6 +21,7 @@ abstract public class MasterOpMode extends LinearOpMode
     BNO055IMU imu;
 
     DcMotor motorFL, motorFR, motorBL, motorBR;
+    DcMotor collectorLeft, collectorRight;
     //----------------------------------------------------------------
 
     // Create drivers
@@ -56,21 +57,29 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR = hardwareMap.dcMotor.get("motorFR");
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
+        collectorLeft = hardwareMap.dcMotor.get("collectorLeft");
+        collectorRight = hardwareMap.dcMotor.get("collectorRight");
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        collectorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        collectorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         stopDriveMotors();
         //-----------------------------------------------------------------

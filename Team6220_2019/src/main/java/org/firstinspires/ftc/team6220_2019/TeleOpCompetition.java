@@ -21,6 +21,7 @@ public class TeleOpCompetition extends MasterTeleOp
             lTime = timer.seconds();
 
             driveMecanumWithJoysticks();
+            activateCollector();
 
             /*
              Updates that need to happen each loop
