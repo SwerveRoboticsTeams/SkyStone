@@ -58,8 +58,8 @@ public class VuforiaResources
     // them to be accessible to classes using this resource class.
     private VuforiaTrackables targetsSkyStone;
 
-    VectorF translation;                                                                          //**Use this to navigate
-    Orientation rotation;                                                                         //**Use this to navigate
+    VectorF translation = new VectorF(0, 0, 0);                                                                          //**Use this to navigate
+    Orientation rotation = new Orientation();                                                                                     //**Use this to navigate
 
     // For convenience, gather together all the trackable objects in one easily-iterable collection */
     List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();

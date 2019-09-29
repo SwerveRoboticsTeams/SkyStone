@@ -10,7 +10,8 @@ public class AutoCompetition extends MasterAutonomous
     {
         initialize();
 
-        while(opModeIsActive()) {
+        while(opModeIsActive())
+        {
             vuforiaFollowObject();
 
             telemetry.update();
