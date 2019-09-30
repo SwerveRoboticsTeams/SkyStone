@@ -32,10 +32,8 @@ abstract public class MasterAutonomous extends MasterOpMode
         else
         {
             // x, y, z defines the location of the center of the robot relative to the skystone.
-            float x = vRes.translation.get(0) / Constants.MM_PER_INCH;
-            if(x < 12){
-                x = 0;
-            }
+            // todo Need to test whether distance - 8 works correctly.
+            float x = vRes.translation.get(0) / Constants.MM_PER_INCH - 8;
             float y = vRes.translation.get(1) / Constants.MM_PER_INCH;
             float z = vRes.translation.get(2) / Constants.MM_PER_INCH;
             telemetry.addData("x value: ", x);
@@ -54,6 +52,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             angle = (float) normalizeAngle(angle);
 
             driveMecanum(angle, distance, rotationPower(w));
+            //driveMecanum(0, 0, 0);
         }
     }
 
