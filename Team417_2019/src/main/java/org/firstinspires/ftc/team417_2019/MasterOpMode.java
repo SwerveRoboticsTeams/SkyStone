@@ -145,6 +145,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
         telemetry.log().setCapacity(8);
 
+
     } //-----------------------END OF INITIALIZATION SOFTWARE------------------------
 
 

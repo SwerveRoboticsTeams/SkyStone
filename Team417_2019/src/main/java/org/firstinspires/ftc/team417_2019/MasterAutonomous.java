@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team417_2019;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -40,6 +41,8 @@ abstract public class MasterAutonomous extends MasterOpMode
     WebcamName webcamName;
 
     // VARIABLES FOR VUFORIA
+    public VuforiaTrackable targetInView = null;
+
     public static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
     public static final boolean PHONE_IS_PORTRAIT = false  ;
     public static final String VUFORIA_KEY =
@@ -131,8 +134,6 @@ abstract public class MasterAutonomous extends MasterOpMode
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
        targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
-        telemetry.addData("Done: ", "initializing");
-        telemetry.update();
     }
 
     public void placeTargets(){
@@ -465,7 +466,23 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBR.setPower(0);
     }
 
-    enum GoldLocation{}
+    public void goToPosition2(double x, double y, double targetX, double targetY, double curAngle, double speed){
+
+         double distanceToTarget = Math.hypot(targetX - x, targetY-y);
+
+         double angletoTarget = Math.atan2(targetY - y ,targetX - x);
+
+         double angleDifference = adjustAngles(angletoTarget - curAngle);
+
+         // cos = adjacent/hypotenuse
+         double relativeX = Math.cos(angleDifference * Math.PI/180)  * distanceToTarget;
+         double relativeY = Math.sin(angleDifference * Math.PI/180) * distanceToTarget;
+
+         // normalize vectors?
+        // make sure the power is between 0-1 but maintaining x and y power ratios with the total magnitude
+         double movementXPower = relativeX / Math.abs(relativeX) + Math.abs(relativeY);
+         double movementYPower = relativeY / Math.abs(relativeY) + Math.abs(relativeX);
+    }
 
     public void reset() {}
 

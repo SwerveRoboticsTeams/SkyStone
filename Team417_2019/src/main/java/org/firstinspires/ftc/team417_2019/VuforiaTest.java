@@ -59,6 +59,7 @@ public class VuforiaTest extends MasterAutonomous {
     @Override public void runOpMode() throws InterruptedException {
 
        InitializeDetection();
+       initializeHardware();
 
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
         stoneTarget.setName("Stone Target");
@@ -216,6 +217,7 @@ public class VuforiaTest extends MasterAutonomous {
         waitForStart();
 
         runtime.startTime();
+
         double refAngle = imu.getAngularOrientation().firstAngle;
 
 
@@ -225,12 +227,13 @@ public class VuforiaTest extends MasterAutonomous {
 
         targetsSkyStone.activate();
 
-        while(runtime.seconds() < 15 || targetVisible == false ){
+        while(targetVisible == false ){
             targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
                     targetVisible = true;
+                    targetInView = trackable;
                     OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
                     if (robotLocationTransform != null) {
                         lastLocation = robotLocationTransform;
@@ -239,10 +242,12 @@ public class VuforiaTest extends MasterAutonomous {
                 }
             }
         }
+        // what's the best way to recheck your position with another camera?
         if (targetVisible)
         {
                 // express position (translation) of robot in inches.
                 VectorF translation = lastLocation.getTranslation();
+
                 telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0) , translation.get(1), translation.get(2));
 
@@ -253,6 +258,8 @@ public class VuforiaTest extends MasterAutonomous {
                 pivotWithReference(rotation.thirdAngle,refAngle,0.5,0.7);
 
                 move(translation.get(1),translation.get(0),0.3,0.5,7.0);
+                //moveMaintainHeading();
+
 
         }
         else {
