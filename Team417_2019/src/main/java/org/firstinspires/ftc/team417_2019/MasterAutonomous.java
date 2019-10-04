@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team417_2019;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -12,64 +11,52 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+
 
 abstract public class MasterAutonomous extends MasterOpMode
 {
+    // timers
     public ElapsedTime runtime = new ElapsedTime();
     public ElapsedTime autoRuntime = new ElapsedTime();
-
-    int threshold = 90;
-    int delay = 0;
 
     // speed is proportional to error
     double Kmove = 1.0f/1200.0f;
     double Kpivot = 1.0f/150.0f;
-
-    double TOL = 100.0; // this is in encoder counts, and for our robot with 4 inch wheels, it's 0.285 mm in one encoder count
+    // this is in encoder counts, and for our robot with 4 inch wheels, it's 0.285 mm in one encoder count
+    double TOL = 100.0;
     double TOL_ANGLE = 5;
 
     boolean isLogging = true;
 
+    // unused
     double MINSPEED = 0.25;
     double PIVOT_MINSPEED = 0.2;
 
-
+    //
     WebcamName webcamName;
 
     // VARIABLES FOR VUFORIA
     public VuforiaTrackable targetInView = null;
 
-    public static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    public static final boolean PHONE_IS_PORTRAIT = false  ;
     public static final String VUFORIA_KEY =
             "AQdgAgj/////AAABmZGzg951/0AVjcK/+QiLWG1Z1PfbTwUouhED8hlwM6qrpAncj4xoMYYOUDxF+kreiazigY0q7OMa9XeMyxNlEQvyMFdefVUGSReIxJIXYhFaru/0IzldUlb90OUO3+J4mGvnzrqYMWG1guy00D8EbCTzzl5LAAml+XJQVLbMGrym2ievOij74wabsouyLb2HOab5nxk0FycYqTWGhKmS7/h4Ddd0UtckgnHDjNrMN4jqk0Q9HeTa8rvN3aQpSUToubAmfXe6Jgzdh2zNcxbaNIfVUe/6LXEe23BC5mYkLAFz0WcGZUPs+7oVRQb7ej7jTAJGA6Nvb9QKEa9MOdn0e8edlQfSBRASxfzBU2FIGH8a";
-    // constants
-    public static final float mmPerInch        = 25.4f;
-    public static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
-    // Constant for Stone Target
-    public static final float stoneZ = 2.00f * mmPerInch;
-    // Constants for the center support targets
-    public static final float bridgeZ = 6.42f * mmPerInch;
-    public static final float bridgeY = 23 * mmPerInch;
-    public static final float bridgeX = 5.18f * mmPerInch;
-    public static final float bridgeRotY = 59;                                 // Units are degrees
-    public static final float bridgeRotZ = 180;
-    // Constants for perimeter targets
-    public static final float halfField = 72 * mmPerInch;
-    public static final float quadField  = 36 * mmPerInch;
-    // Class Members
+
+    // Vuforia Class Members
     public OpenGLMatrix lastLocation = null;
     public VuforiaLocalizer vuforia = null;
     public boolean targetVisible = false;
-    public float phoneXRotate    = 0;
-    public float phoneYRotate    = 0;
-    public float phoneZRotate    = 0;
+    public float cameraXRotate    = 0;
+    public float cameraYRotate    = 0;
+    public float cameraZRotate    = 0;
     public Orientation rotation = null;
-    public  VuforiaTrackables targetsSkyStone = null;
+    public VuforiaTrackables targetsSkyStone = null;
+    public List<VuforiaTrackables> allTrackables = null;
     public VuforiaLocalizer.Parameters parameters = null;
 
     // VARIABLES FOR MOVE/ALIGN METHODS
@@ -122,21 +109,22 @@ abstract public class MasterAutonomous extends MasterOpMode
 
     public void InitializeDetection()
     {
+        // instantiate webcam
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        // show display on screen
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-
+        // specify Vuforia parameters used to instantiate engine
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection   = CAMERA_CHOICE;
-
+        parameters.cameraName = webcamName;
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Load the data sets for the trackable objects. These particular data
-        // sets are stored in the 'assets' part of our application.
+        // Load the data sets for the trackable objects (stored in 'assets')
        targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
     }
 
-    public void placeTargets(){
+    public List<VuforiaTrackable> positionTargets() {
+        // declare targets
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
         stoneTarget.setName("Stone Target");
         VuforiaTrackable blueRearBridge = targetsSkyStone.get(1);
@@ -163,68 +151,64 @@ abstract public class MasterAutonomous extends MasterOpMode
         rear1.setName("Rear Perimeter 1");
         VuforiaTrackable rear2 = targetsSkyStone.get(12);
         rear2.setName("Rear Perimeter 2");
+        // position targets on field
         stoneTarget.setLocation(OpenGLMatrix
-                .translation(0, 0, stoneZ)
+                .translation(0, 0, Constants.stoneZ)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
         //Set the position of the bridge support targets with relation to origin (center of field)
         blueFrontBridge.setLocation(OpenGLMatrix
-                .translation(-bridgeX, bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, bridgeRotY, bridgeRotZ)));
+                .translation(-Constants.bridgeX, Constants.bridgeY, Constants.bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, Constants.bridgeRotY, Constants.bridgeRotZ)));
 
         blueRearBridge.setLocation(OpenGLMatrix
-                .translation(-bridgeX, bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -bridgeRotY, bridgeRotZ)));
+                .translation(-Constants.bridgeX, Constants.bridgeY, Constants.bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -Constants.bridgeRotY, Constants.bridgeRotZ)));
 
         redFrontBridge.setLocation(OpenGLMatrix
-                .translation(-bridgeX, -bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -bridgeRotY, 0)));
+                .translation(-Constants.bridgeX, -Constants.bridgeY, Constants.bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -Constants.bridgeRotY, 0)));
 
         redRearBridge.setLocation(OpenGLMatrix
-                .translation(bridgeX, -bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, bridgeRotY, 0)));
+                .translation(Constants.bridgeX, -Constants.bridgeY, Constants.bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
+                        0, Constants.bridgeRotY, 0)));
 
         //Set the position of the perimeter targets with relation to origin (center of field)
         red1.setLocation(OpenGLMatrix
-                .translation(quadField, -halfField, mmTargetHeight)
+                .translation(Constants.quadField, -Constants.halfField, Constants.mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
         red2.setLocation(OpenGLMatrix
-                .translation(-quadField, -halfField, mmTargetHeight)
+                .translation(-Constants.quadField, -Constants.halfField, Constants.mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
 
         front1.setLocation(OpenGLMatrix
-                .translation(-halfField, -quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
+                .translation(-Constants.halfField, -Constants.quadField, Constants.mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
 
         front2.setLocation(OpenGLMatrix
-                .translation(-halfField, quadField, mmTargetHeight)
+                .translation(-Constants.halfField, Constants.quadField, Constants.mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
 
         blue1.setLocation(OpenGLMatrix
-                .translation(-quadField, halfField, mmTargetHeight)
+                .translation(-Constants.quadField, Constants.halfField, Constants.mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
         blue2.setLocation(OpenGLMatrix
-                .translation(quadField, halfField, mmTargetHeight)
+                .translation(Constants.quadField, Constants.halfField, Constants.mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
         rear1.setLocation(OpenGLMatrix
-                .translation(halfField, quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
-
-        rear2.setLocation(OpenGLMatrix
-                .translation(halfField, -quadField, mmTargetHeight)
+                .translation(Constants.halfField, Constants.quadField, Constants.mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
+        rear2.setLocation(OpenGLMatrix
+                .translation(Constants.halfField, -Constants.quadField, Constants.mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
+        return targetsSkyStone;
     }
-
-
-
-    public void locateGold() {}
-
-
     // drive forwards/backwards/horizontal left and right function
     public void move(double x, double y, double minSpeed, double maxSpeed, double timeout) throws InterruptedException
     {
