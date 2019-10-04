@@ -51,7 +51,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             }
             angle = (float) normalizeAngle(angle);
 
-            driveMecanum(angle, distance, rotationPower(w));
+            autonomousDriveMecanum(angle, distance, rotationPower(w));
             //driveMecanum(0, 0, 0);
         }
     }
@@ -81,7 +81,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         // Conditional to check for step one. 24 is an arbitrary number that may need adjusting.
         if (x > 24)
         {
-            driveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+            autonomousDriveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
         }
         // Conditional to check for step two. 36 is a partially arbitrary number that may need adjusting.
         else if (Math.abs(y) < 36)
@@ -89,10 +89,10 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Drive up if we are the blue team, and drive down if we are the red team.
             if (isRed)
             {
-                driveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             } else
             {
-                driveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
         }
         // If neither of the first two steps are true, then the third step is executed.
@@ -114,7 +114,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             }
             angle = (float) normalizeAngle(angle);
 
-            driveMecanum(angle - vRes.rotation.thirdAngle, distancePower(distance), 0);
+            autonomousDriveMecanum(angle - vRes.rotation.thirdAngle, distancePower(distance), 0);
         }
     }
 
@@ -150,7 +150,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         // Conditional to check for step one. foundationTolerance is an arbitrary number that may need adjusting.
         if (x > foundationTolerance)
         {
-            driveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+            autonomousDriveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
         }
         // Conditional to check for step two. teamBridgeTolerance and centerTolerance are partially arbitrary
         // numbers that may need adjusting.
@@ -162,10 +162,10 @@ abstract public class MasterAutonomous extends MasterOpMode
                 // Drive up if we are the blue team, and drive down if we are the red team.
                 if (isRed)
                 {
-                    driveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 } else
                 {
-                    driveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 }
             }
             // Otherwise, go to center bridge.
@@ -173,10 +173,10 @@ abstract public class MasterAutonomous extends MasterOpMode
             {
                 if (y > centerTolerance)
                 {
-                    driveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(-90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 } else if (y < -centerTolerance)
                 {
-                    driveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(90 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 }
             }
         }
@@ -186,12 +186,12 @@ abstract public class MasterAutonomous extends MasterOpMode
             // If we are left of the bridge, drive right.
             if (x < 0)
             {
-                driveMecanum(-vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(-vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
             // Else, drive left.
             else
             {
-                driveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(180 - vRes.rotation.thirdAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
         }
     }

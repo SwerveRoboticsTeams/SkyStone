@@ -71,7 +71,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -79,6 +79,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -112,7 +113,46 @@ abstract public class MasterOpMode extends LinearOpMode
 
     public void driveMecanum(double driveAngle, double drivePower, double w)
     {
-        // Adjustment to account for the different axis reference frames.
+        // Convert drive angle and power to x and y components
+        double y = drivePower * Math.sin(Math.toRadians(driveAngle));
+        double x = drivePower * Math.cos(Math.toRadians(driveAngle));
+
+        // Signs for x, y, and w are based on the motor configuration and inherent properties of mecanum drive
+        double powerFL = -x - y + w;
+        double powerFR = -x + y + w;
+        double powerBL = x - y + w;
+        double powerBR = x + y + w;
+
+        // Scale powers-------------------------
+        /*
+         Motor powers might be set above 1 (e.g., x + y = 1 and w = -0.8), so we must scale all of
+         the powers to ensure they are proportional and within the range {-1.0, 1.0}
+        */
+        double powScalar = SequenceUtilities.getLargestMagnitude(new double[]
+                {powerFL, powerFR, powerBL, powerBR});
+        /*
+         However, powScalar should only be applied if it is greater than 1. Otherwise, we could
+         unintentionally increase powers or even divide by 0
+        */
+//        if (powScalar > 1)
+//        {
+//            powerFL /= powScalar;
+//            powerFR /= powScalar;
+//            powerBL /= powScalar;
+//            powerBR /= powScalar;
+//        }
+
+        motorFL.setPower(powerFL);
+        motorFR.setPower(powerFR);
+        motorBL.setPower(powerBL);
+        motorBR.setPower(powerBR);
+    }
+
+    // The only difference between autonomousDriveMecanum and driveMecanum is that autonomousDriveMecanum
+    // contains an adjustment for angle.
+    public void autonomousDriveMecanum(double driveAngle, double drivePower, double w)
+    {
+        // Adjustment to account for different axis reference frames.
         driveAngle += 90;
 
         // Convert drive angle and power to x and y components
