@@ -67,7 +67,8 @@ public class Constants
 
 
     // Servo positions--------------------------------
-
+    public static final double GRABBER_OPEN = 0.0;
+    public static final double GRABBER_CLOSED = 1.0;
     //-------------------------------------------------
 
 

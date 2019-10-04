@@ -6,7 +6,9 @@ abstract public class MasterTeleOp extends MasterOpMode
     boolean slowMode = false;
     // Allows us to switch front of robot.
     boolean driveReversed = true;
-    
+    // Remembers whether the grabber is open or closed.
+    boolean isGrabberOpen = true;
+
     // Factor that adjusts magnitudes of vertical and horizontal movement.
     double tFactor = Constants.T_FACTOR;
     // Factor that adjusts magnitude of rotational movement.
@@ -56,7 +58,9 @@ abstract public class MasterTeleOp extends MasterOpMode
             driveMecanum(angle + 180, drivePower, rotationPower);
     }
 
-    public void activateCollector(){
+    public void activateCollector()
+    {
+        // Double to control power of collector motors
         double power = 0.75;
 
         if(driver1.isButtonPressed(Button.DPAD_UP)){
@@ -67,9 +71,43 @@ abstract public class MasterTeleOp extends MasterOpMode
             collectorLeft.setPower(power);
             collectorRight.setPower(-power);
         }
+        // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed that the motors don't continue running
         else{
             collectorLeft.setPower(0);
             collectorRight.setPower(0);
+        }
+    }
+
+    public void raiseScoringSystem()
+    {
+        double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
+
+        // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
+        if(leftTrigger >= Constants.MINIMUM_TRIGGER_VALUE && rightTrigger <= Constants.MINIMUM_TRIGGER_VALUE)
+        {
+            liftMotor.setPower(leftTrigger);
+        }
+        else if(rightTrigger >= Constants.MINIMUM_TRIGGER_VALUE && leftTrigger <= Constants.MINIMUM_TRIGGER_VALUE)
+        {
+            liftMotor.setPower(-rightTrigger);
+        }
+    }
+
+    public void toggleGrabber()
+    {
+        // Only activate if Button.A is just pressed.
+        if(driver1.isButtonJustPressed(Button.A))
+        {
+            // Toggle position
+            if (isGrabberOpen)
+            {
+                grabberServo.setPosition(Constants.GRABBER_CLOSED);
+            }
+            else
+            {
+                grabberServo.setPosition(Constants.GRABBER_OPEN);
+            }
+            isGrabberOpen = !isGrabberOpen;
         }
     }
 }

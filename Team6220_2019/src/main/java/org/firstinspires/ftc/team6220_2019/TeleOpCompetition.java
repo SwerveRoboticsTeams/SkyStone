@@ -22,6 +22,8 @@ public class TeleOpCompetition extends MasterTeleOp
 
             driveMecanumWithJoysticks();
             activateCollector();
+            raiseScoringSystem();
+            toggleGrabber();
 
             /*
              Updates that need to happen each loop

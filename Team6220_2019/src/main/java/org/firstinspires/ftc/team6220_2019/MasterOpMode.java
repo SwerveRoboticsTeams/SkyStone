@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team6220_2019;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ abstract public class MasterOpMode extends LinearOpMode
 
     DcMotor motorFL, motorFR, motorBL, motorBR;
     DcMotor collectorLeft, collectorRight;
+    DcMotor liftMotor;
+
+    Servo grabberServo;
     //----------------------------------------------------------------
 
     // Create drivers
@@ -58,6 +62,8 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR = hardwareMap.dcMotor.get("motorBR");
         collectorLeft = hardwareMap.dcMotor.get("collectorLeft");
         collectorRight = hardwareMap.dcMotor.get("collectorRight");
+        liftMotor = hardwareMap.dcMotor.get("liftMotor");
+        grabberServo = hardwareMap.servo.get("grabberServo");
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -65,6 +71,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -79,6 +86,8 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        grabberServo.setPosition(0);
 
         stopDriveMotors();
         //-----------------------------------------------------------------
