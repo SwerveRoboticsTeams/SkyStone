@@ -4,12 +4,12 @@ import android.graphics.Color;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
 
@@ -35,6 +35,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Declare sensors
     BNO055IMU imu; // inertial measurement unit (located within the REV Hub)
+    Orientation angles = null;
 
     // Declare constants
     static final double COUNTS_PER_MOTOR_REV = 1120;
@@ -43,6 +44,7 @@ abstract public class MasterOpMode extends LinearOpMode
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double COUNTS_PER_MM = COUNTS_PER_INCH / 25.4;
     static final double SCALE_OMNI = 1.41;
+
     final double ROBOT_DIAMETER_MM = 20.5 * 25.4;   // diagonal 20.5 inch FL to BR and FR to BL
     static final double INIT_REV_POS = 0.7; // the initial position is inside the robot, should happen in init
     static final double REV_INCREMENT = 0.0085; // this is how much the REV servo wrist moves per flick of the joystick

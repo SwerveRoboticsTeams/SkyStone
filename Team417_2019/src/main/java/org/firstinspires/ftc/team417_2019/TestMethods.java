@@ -4,31 +4,22 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
 @Autonomous(name="Test Maintain Heading")
 public class TestMethods extends MasterAutonomous {
 
 
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() throws InterruptedException{
 
-        // initializes robot components
-        motorFL = hardwareMap.dcMotor.get("motorFL");
-        motorFR = hardwareMap.dcMotor.get("motorFR");
-        motorBL = hardwareMap.dcMotor.get("motorBL");
-        motorBR = hardwareMap.dcMotor.get("motorBR");
+        motorFL = hardwareMap.get(DcMotor.class, "motorFL");
+        motorFR  = hardwareMap.get(DcMotor.class, "motorFR");
+        motorBL = hardwareMap.get(DcMotor.class, "motorBL");
+        motorBR = hardwareMap.get(DcMotor.class, "motorBR");
 
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -41,12 +32,6 @@ public class TestMethods extends MasterAutonomous {
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // reverse front and back right motors just for TeleOp
         motorFL.setDirection(DcMotor.Direction.REVERSE);
         motorBL.setDirection(DcMotor.Direction.REVERSE);
         motorFR.setDirection(DcMotor.Direction.FORWARD);
@@ -71,15 +56,27 @@ public class TestMethods extends MasterAutonomous {
 
         telemetry.log().setCapacity(8);
 
+        // initializes robot component
 
-        double refAngle = imu.getAngularOrientation().thirdAngle;
+        // double refAngle = imu.getAngularOrientation().thirdAngle;
+        telemetry.addData("Initialized",0.0);
+        telemetry.update();
 
-        telemetry.addData("Initialized + Angle", refAngle);
+
 
         waitForStart();
 
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+        //double refAngle = angles.thirdAngle;
+        //telemetry.addData("refAngle",refAngle);
 
-        moveMaintainHeading(100, 0, 180,0.3, 0.8, 5.0);
+        moveMaintainHeading(500, 0,angles.thirdAngle,0.3, 0.8, 5.0);
+        moveMaintainHeading(-500, 0,angles.thirdAngle,0.3, 0.8, 5.0);
+        //goToPosition2(0,0,200,200,0,0.7);
+       // move(300, 0, 0.2, 0.75, 3.0);
+        //move(300,0,0.5,0.8,5.0);
+
+        telemetry.update();
         // move(0,translation.get(1),0.3,0.8,7.0);
         //moveMaintainHeading();
     }
