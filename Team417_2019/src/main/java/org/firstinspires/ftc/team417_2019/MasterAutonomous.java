@@ -25,18 +25,14 @@ abstract public class MasterAutonomous extends MasterOpMode
     public ElapsedTime runtime = new ElapsedTime();
     public ElapsedTime autoRuntime = new ElapsedTime();
 
-    // speed is proportional to error
-    double Kmove = 1.0f/1200.0f;
-    double Kpivot = 1.0f/150.0f;
+    // speed constants to make sure speed is proportional to error (slow down for precision)
+    double Kmove = 1.0f/1100.0f;
+    double Kpivot = 1.0f/140.0f;
     // this is in encoder counts, and for our robot with 4 inch wheels, it's 0.285 mm in one encoder count
-    double TOL = 100.0;
-    double TOL_ANGLE = 5;
+    double tolerance = 100.0;
+    double angleTolerance = 5;
 
     boolean isLogging = true;
-
-    // unused
-    double MINSPEED = 0.25;
-    double PIVOT_MINSPEED = 0.2;
 
     //
     WebcamName webcamName;
@@ -60,8 +56,6 @@ abstract public class MasterAutonomous extends MasterOpMode
     public VuforiaLocalizer.Parameters parameters = null;
 
     // VARIABLES FOR MOVE/ALIGN METHODS
-    int pivotDst;
-
     int newTargetFL;
     int newTargetBL;
     int newTargetFR;
@@ -82,8 +76,10 @@ abstract public class MasterAutonomous extends MasterOpMode
     double speedAbsBL;
     double speedAbsBR;
 
-    double curTurnAngle;
+    double angleDifference;
     double pivotSpeed;
+    double pivotScaled;
+    int pivotDistance;
     double errorAngle;
 
     double avgDistError;
@@ -91,8 +87,8 @@ abstract public class MasterAutonomous extends MasterOpMode
     public void autoInitializeRobot()
     {
         super.initializeHardware();
-        rev1.setPosition(INIT_REV_POS);
-        marker.setPosition(MARKER_LOW);
+        //rev1.setPosition(INIT_REV_POS);
+       // marker.setPosition(MARKER_LOW);
 
         // zero the motor controllers before running; we don't know if motors start out at zero
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -252,7 +248,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
         while (opModeIsActive() &&
                 (runtime.seconds() < timeout) &&
-                (Math.abs(errorFL) > TOL && Math.abs(errorFR) > TOL && Math.abs(errorBL) > TOL && Math.abs(errorBR) > TOL));
+                (Math.abs(errorFL) > tolerance && Math.abs(errorFR) > tolerance && Math.abs(errorBL) > tolerance && Math.abs(errorBR) > tolerance));
         // all of the motors must reach their tolerance before the robot exits the loop
 
         // stop the motors
@@ -265,7 +261,8 @@ abstract public class MasterAutonomous extends MasterOpMode
 
     // a combination of both the align and pivot function
     // angle has to be small otherwise won't work, this function translates and while maintaining a certain angle
-    public void moveMaintainHeading(double x, double y, double pivotAngle, double refAngle, double minSpeed, double maxSpeed, double timeout)
+    // x and y are in mm
+    public void moveMaintainHeading(double x, double y, double pivotAngle, double minSpeed, double maxSpeed, double timeout)
     {
         // run with encoder mode
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -273,40 +270,55 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        curTurnAngle = imu.getAngularOrientation().firstAngle - refAngle;
-        curTurnAngle = adjustAngles(curTurnAngle);
-        errorAngle = pivotAngle - curTurnAngle;
+        // get amount that we need to turn
+        angleDifference = pivotAngle - imu.getAngularOrientation().thirdAngle;
+        // adjust angle so it is not greater/less than +/- 180
+        angleDifference = adjustAngles(angleDifference);
+        // find amount of error between the angle we need to turn to and our current angle
+        errorAngle = pivotAngle - angleDifference;
 
-        pivotDst = (int) ((errorAngle / 360.0) * ROBOT_DIAMETER_MM * 3.1415 * COUNTS_PER_MM);
+        // scale the amount you need to pivot based on the error
+        pivotScaled = errorAngle / 360.0;
+        // find that amount of distance you need to pivot based on the error
+        pivotDistance = (int) (pivotScaled * ROBOT_DIAMETER_MM * Math.PI * COUNTS_PER_MM);
 
-        int xTarget = (int) Math.round(COUNTS_PER_MM * (x * SCALE_OMNI));
-        int yTarget = (int) Math.round(COUNTS_PER_MM * (y * SCALE_OMNI));
-        newTargetFL = motorFL.getCurrentPosition() + xTarget + yTarget + pivotDst;
-        newTargetFR = motorFR.getCurrentPosition() - xTarget + yTarget - pivotDst;
-        newTargetBL = motorBL.getCurrentPosition() - xTarget + yTarget + pivotDst;
-        newTargetBR = motorBR.getCurrentPosition() + xTarget + yTarget - pivotDst;
+        // find distance that we need to travel in mm
+        int targetX = (int) Math.round(COUNTS_PER_MM * x * SCALE_OMNI);
+        int targetY = (int) Math.round(COUNTS_PER_MM * y * SCALE_OMNI);
 
-        runtime.reset(); // reset timer, which is used for loop timeout below
+        //check pivot distance signs
+        newTargetFL = motorFL.getCurrentPosition() + targetX + targetY + pivotDistance;
+        newTargetFR = motorFR.getCurrentPosition() - targetX + targetY - pivotDistance;
+        newTargetBL = motorBL.getCurrentPosition() - targetX + targetY + pivotDistance;
+        newTargetBR = motorBR.getCurrentPosition() + targetX + targetY - pivotDistance;
+
+        // reset timer, which is used for loop timeout below
+        runtime.reset();
 
         // wait until the motors reach the position
         // adjust robot angle during movement by adjusting speed of motors
         do
         {
             // read the real current angle and compute error compared to ref angle
-            curTurnAngle = imu.getAngularOrientation().firstAngle - refAngle;
-            curTurnAngle = adjustAngles(curTurnAngle);
-            errorAngle =  pivotAngle - curTurnAngle;
-            pivotSpeed = errorAngle * Kpivot;
-            pivotSpeed = Range.clip(pivotSpeed, -0.4, 0.4); // limit max pivot speed
-            // pivotSpeed is added to each motor's movement speed
+            angleDifference = pivotAngle - imu.getAngularOrientation().thirdAngle;
+            angleDifference = adjustAngles(angleDifference);
+            errorAngle =  pivotAngle - angleDifference;
 
+            // scale the pivot speed so it slows as it approaches the angle you want it to turn to
+            pivotSpeed = errorAngle * Kpivot;
+            // make sure the pivot speed is not to large
+            pivotSpeed = Range.clip(pivotSpeed, -0.6, 0.6); // limit max pivot speed
+
+            // pivotSpeed is added to each motor's movement speed
             errorFL = newTargetFL - motorFL.getCurrentPosition();
-            speedFL = Kmove * errorFL;  // movement speed proportional to error
+            // movement speed proportional to error
+            speedFL = Kmove * errorFL;
             speedAbsFL = Math.abs(speedFL);
             // clip abs(speed) MAX speed minus 0.3 to leave room for pivot factor
             speedAbsFL = Range.clip(speedAbsFL, minSpeed, maxSpeed);
             speedFL = speedAbsFL * Math.signum(speedFL);  // set sign of speed
             speedFL += pivotSpeed;  // combine movement and pivot speeds
+
 
             errorFR = newTargetFR - motorFR.getCurrentPosition();
             speedFR = Kmove * errorFR;
@@ -334,6 +346,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             motorBL.setPower(Range.clip(speedBL,-0.6,0.6));
             motorBR.setPower(speedBR);
 
+            /*
             avgDistError = (Math.abs(errorFL) + Math.abs(errorFR) + Math.abs(errorBL) + Math.abs(errorBR)) / 4.0;
 
             if (Math.abs(avgDistError) < 120.0)
@@ -347,6 +360,13 @@ abstract public class MasterAutonomous extends MasterOpMode
                 sleep(50);
             }
 
+             */
+            telemetry.addData("Rot (deg)", rotation.thirdAngle);
+            telemetry.addData("FL power:",motorFL.getPower());
+            telemetry.addData("FR power:",motorFR.getPower());
+            telemetry.addData("BL power:",motorBL.getPower());
+            telemetry.addData("BR power:",motorBR.getPower());
+            telemetry.update();
             idle();
         }
         while ( (opModeIsActive()) &&
@@ -354,8 +374,8 @@ abstract public class MasterAutonomous extends MasterOpMode
                 (
                         // exit the loop when one of the motors achieve their tolerance
                         //( (Math.abs(errorFL) > TOL) && (Math.abs(errorFR) > TOL) && (Math.abs(errorBL) > TOL) && (Math.abs(errorBR) > TOL) )
-                        avgDistError > TOL
-                                || (Math.abs(errorAngle) > TOL_ANGLE)
+                        avgDistError > tolerance
+                                || (Math.abs(errorAngle) > angleTolerance)
                 )
                 );
 
@@ -441,7 +461,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             if (isLogging) telemetry.log().add(String.format("StartAngle: %f, CurAngle: %f, error: %f", refAngle, currentAngle, errorAngle));
             idle();
 
-        } while (opModeIsActive() && (Math.abs(errorAngle) > TOL_ANGLE));
+        } while (opModeIsActive() && (Math.abs(errorAngle) > angleTolerance));
 
         // stop motors
         motorFL.setPower(0);
@@ -450,19 +470,31 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBR.setPower(0);
     }
 
+    /*
+       x and y are robot's current location
+       targetx and target y is the location you want to go to
+       current angle is usually the reference angle/ angle you are currently facing
+       add a speed such that the robot does not overpower and stays in -1.0 and 1.0 range
+    */
     public void goToPosition2(double x, double y, double targetX, double targetY, double curAngle, double speed){
 
+         // find distance to target with shortcut distance formula
          double distanceToTarget = Math.hypot(targetX - x, targetY-y);
-
+         // find angle using arc tangent 2 to preserve the sign and find angle to the target
          double angletoTarget = Math.atan2(targetY - y ,targetX - x);
-
+         // adjust angle that you need to turn so it is not greater than 180
          double angleDifference = adjustAngles(angletoTarget - curAngle);
 
          // cos = adjacent/hypotenuse
-         double relativeX = Math.cos(angleDifference * Math.PI/180)  * distanceToTarget;
-         double relativeY = Math.sin(angleDifference * Math.PI/180) * distanceToTarget;
+         // math .cos returns in radians so convert it back to degrees
+         // double relativeX = Math.cos(angleDifference * Math.PI/180)  * distanceToTarget;
+         double relativeX = targetX - x;
 
-         // normalize vectors?
+         // sin = opposite/ hypotenuse
+         //double relativeY = Math.sin(angleDifference * Math.PI/180) * distanceToTarget;
+         double relativeY = targetY- y;
+
+         // scale vector
         // make sure the power is between 0-1 but maintaining x and y power ratios with the total magnitude
          double movementXPower = relativeX / Math.abs(relativeX) + Math.abs(relativeY);
          double movementYPower = relativeY / Math.abs(relativeY) + Math.abs(relativeX);

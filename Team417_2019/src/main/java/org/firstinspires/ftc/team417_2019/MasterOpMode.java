@@ -21,7 +21,7 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor motorBL = null; // hub 2 port 1
     DcMotor motorBR = null; // hub 1 port 1
 
-    Servo marker = null;    // hub 2 port 4
+  //  Servo marker = null;    // hub 2 port 4
 
     DcMotor hanger = null;  // hub 1 port 2
 
@@ -31,7 +31,7 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor arm2 = null;   // hub 2 port 3
 
     Servo rev1 = null;     // hub 2 port 2
-    CRServo vex1 = null;   // hub 2 port 0
+    //CRServo vex1 = null;   // hub 2 port 0
 
     // Declare sensors
     BNO055IMU imu; // inertial measurement unit (located within the REV Hub)
@@ -76,16 +76,16 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
 
-        marker = hardwareMap.servo.get("marker");
+        //marker = hardwareMap.servo.get("marker");
 
         core2 = hardwareMap.dcMotor.get("core2");
 
         arm1 = hardwareMap.dcMotor.get("arm1");
         arm2 = hardwareMap.dcMotor.get("arm2");
 
-        rev1 = hardwareMap.servo.get("rev1");
+        //rev1 = hardwareMap.servo.get("rev1");
 
-        vex1 = hardwareMap.crservo.get("vex1");
+        // vex1 = hardwareMap.crservo.get("vex1");
 
         hanger = hardwareMap.dcMotor.get("hanger");
 
@@ -131,7 +131,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL.setPower(0);
         motorBR.setPower(0);
 
-        vex1.setPower(0.0);
+        //vex1.setPower(0.0);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;

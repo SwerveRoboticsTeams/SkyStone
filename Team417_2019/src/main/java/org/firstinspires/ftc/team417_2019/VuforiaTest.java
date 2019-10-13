@@ -79,9 +79,9 @@ public class VuforiaTest extends MasterAutonomous {
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * Constants.mmPerInch;   // eg: Camera is 4 Inches in front of robot center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * Constants.mmPerInch;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_HORIZONTAL_DISPLACEMENT  = 0;     // eg: Camera is ON the robot's center line
+        final float CAMERA_FORWARD_DISPLACEMENT  = 0;   // eg: Camera is 0 Inches in front of robot center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 4.5f * Constants.mmPerInch;   // eg: Camera is 4.5 Inches above ground
+        final float CAMERA_HORIZONTAL_DISPLACEMENT  = 9f * Constants.mmPerInch;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_HORIZONTAL_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -98,24 +98,14 @@ public class VuforiaTest extends MasterAutonomous {
         // CONSEQUENTLY do not put any driving commands in this loop.
         // To restore the normal opmode structure, just un-comment the following line:
 
-        waitForStart();
-
-        runtime.startTime();
-
+        targetsSkyStone.activate();
         double refAngle = imu.getAngularOrientation().firstAngle;
 
-
-        // Note: To use the remote camera preview:
-        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
-        // Tap the preview window to receive a fresh image.
-
-        targetsSkyStone.activate();
-
         while(targetVisible == false ){
-            targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
+                    telemetry.update();
                     targetVisible = true;
                     targetInView = trackable;
                     OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
@@ -126,30 +116,43 @@ public class VuforiaTest extends MasterAutonomous {
                 }
             }
         }
-        // what's the best way to recheck your position with another camera?
+
+        waitForStart();
+
+        runtime.startTime();
+
         if (targetVisible)
         {
-                // express position (translation) of robot in inches.
-                VectorF translation = lastLocation.getTranslation();
+            // express position (translation) of robot in inches.
+            VectorF translation = lastLocation.getTranslation();
 
-                telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0) , translation.get(1), translation.get(2));
+            telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    translation.get(0) , translation.get(1), translation.get(2));
 
-                // express the rotation of the robot in degrees.
-                rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                telemetry.addData("Rot (deg)", rotation.thirdAngle);
+            // express the rotation of the robot in degrees.
+            rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
 
-                pivotWithReference(rotation.thirdAngle,refAngle,0.5,0.7);
+            // double angletoTarget = Math.atan2(translation.get(1) ,translation.get(0));
 
-                move(translation.get(1),translation.get(0),0.3,0.5,7.0);
-                //moveMaintainHeading();
+            //pivotWithReference(rotation.thirdAngle,refAngle,0.5,0.7);
 
+           // moveMaintainHeading(translation.get(0),translation.get(1),rotation.thirdAngle,refAngle,0.5,0.8,5.0);
 
+            //move(translation.get(0),translation.get(1),0.3,0.8,7.0);
+            //goToPosition2(translation.get(0), translation.get(1),);
+            // moveMaintainHeading(100, 0, 0, refAngle, 0.5, 0.8, 5.0);
+            // move(0,translation.get(1),0.3,0.8,7.0);
+            //moveMaintainHeading();
         }
         else {
             telemetry.addData("Visible Target", "none");
         }
-        telemetry.update();
+        // Note: To use the remote camera preview:
+        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
+        // Tap the preview window to receive a fresh image.
+
+        // what's the best way to recheck your position with another camera?
+
         targetsSkyStone.deactivate();
     }
 }
