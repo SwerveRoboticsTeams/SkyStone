@@ -88,7 +88,7 @@ abstract public class MasterOpMode extends LinearOpMode
         collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        grabberServo.setPosition(0);
+        grabberServo.setPosition(Constants.GRABBER_OPEN);
 
         stopDriveMotors();
         //-----------------------------------------------------------------

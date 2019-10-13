@@ -85,11 +85,11 @@ abstract public class MasterTeleOp extends MasterOpMode
         // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
         if(leftTrigger >= Constants.MINIMUM_TRIGGER_VALUE && rightTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //lowers
         {
-            liftMotor.setPower(leftTrigger * 0.25);
+            liftMotor.setPower(leftTrigger * Constants.LIFT_POWER_FACTOR_UP);
         }
         else if(rightTrigger >= Constants.MINIMUM_TRIGGER_VALUE && leftTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //raises
         {
-            liftMotor.setPower(-rightTrigger * 0.75);
+            liftMotor.setPower(-rightTrigger * Constants.LIFT_POWER_FACTOR_DOWN);
         }
         else
         {
