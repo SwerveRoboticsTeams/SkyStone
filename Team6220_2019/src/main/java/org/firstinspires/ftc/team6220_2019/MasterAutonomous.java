@@ -197,6 +197,32 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
     /**
+     * UNTESTED - - - UNTESTED - - - UNTESTED
+     * This method will drive the robot from its current position on the field to the coordinates (x, y) on the field, and orient the robot
+     * to face the direction w. It does not take into account placement of obstacles (e.g.: the Skybridge supports); thus,
+     * <b><u>DO NOT CALL THIS METHOD INDISCRIMINATELY!</u></b>
+     *
+     * @param x is the x-coordinate of the point the robot should move towards.
+     * @param y is the y-coordinate of the point the robot should move towards.
+     * @param w is the desired orientation of the robot, in degrees.
+     */
+    public void driveToCoordinates(double x, double y, double w)
+    {
+        vRes.getLocation();
+
+        float xPos = vRes.translation.get(0);
+        float yPos = vRes.translation.get(1);
+        float wRot = vRes.rotation.thirdAngle;
+
+        double driveAngle = Math.atan((y - yPos) / (x - xPos));
+        if((x - xPos) > 0){
+            driveAngle += 180;
+        }
+
+        autonomousDriveMecanum(driveAngle, distancePower((float)Math.sqrt((y - yPos) * (y - yPos) + (x -xPos) * (x - xPos))), rotationPower((float)w - wRot));
+    }
+
+    /**
      * Note: This method is private; it should never need to be called outside of this class.
      * distancePower limits the maximum value of power to Constants.AUTONOMOUS_SCALE_DISTANCE,
      * and scales in proportion with Constants.AUTONOMOUS_SCALE_POWER when power is smaller.
