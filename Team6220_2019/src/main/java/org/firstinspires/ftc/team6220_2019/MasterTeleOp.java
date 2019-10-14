@@ -58,6 +58,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             driveMecanum(angle + 180, drivePower, rotationPower);
     }
 
+
     public void activateCollector()
     {
         // Double to control power of collector motors
@@ -78,6 +79,8 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
     }
 
+
+    // Uses liftMotor to move scoring arm, with parallelServo keeping grabber parallel to the ground.
     public void raiseScoringSystem()
     {
         double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
@@ -96,6 +99,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             liftMotor.setPower(0);
         }
     }
+
 
     public void toggleGrabber()
     {

@@ -25,8 +25,8 @@ public class Constants
     public static final double SLOW_MODE_R_FACTOR = 0.3;
     public static final double T_FACTOR = 1.0;
     public static final double R_FACTOR = 1.0;
-    public static final double LIFT_POWER_FACTOR_UP = 0.45;
-    public static final double LIFT_POWER_FACTOR_DOWN = 0.15;
+    public static final double LIFT_POWER_FACTOR_UP = 0.8;
+    public static final double LIFT_POWER_FACTOR_DOWN = 0.5;
 
     // Autonomous Drive constants
     public static final float AUTONOMOUS_SCALE_DISTANCE = 24;
@@ -69,8 +69,10 @@ public class Constants
 
 
     // Servo positions--------------------------------
-    public static final double GRABBER_OPEN = 0.8;
-    public static final double GRABBER_CLOSED = 0.6;
+    public static final double GRABBER_OPEN = 0.7;
+    public static final double GRABBER_CLOSED = 0.5;
+    public static final double PARALLEL_SERVO_INIT = 0.0;
+    public static final double PARALLEL_SERVO_INCREMENT = 0.01;
     //-------------------------------------------------
 
 

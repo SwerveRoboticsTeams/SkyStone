@@ -26,6 +26,7 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor liftMotor;
 
     Servo grabberServo;
+    Servo parallelServo;
     //----------------------------------------------------------------
 
     // Create drivers
@@ -60,10 +61,13 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR = hardwareMap.dcMotor.get("motorFR");
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
+
         collectorLeft = hardwareMap.dcMotor.get("collectorLeft");
         collectorRight = hardwareMap.dcMotor.get("collectorRight");
+
         liftMotor = hardwareMap.dcMotor.get("liftMotor");
         grabberServo = hardwareMap.servo.get("grabberServo");
+        parallelServo = hardwareMap.servo.get("parallelServo");
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -85,10 +89,14 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         grabberServo.setPosition(Constants.GRABBER_OPEN);
+        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT);
+
 
         stopDriveMotors();
         //-----------------------------------------------------------------
