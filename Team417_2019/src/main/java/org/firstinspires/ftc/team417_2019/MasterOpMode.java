@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import java.util.Locale;
 
 abstract public class MasterOpMode extends LinearOpMode
@@ -35,7 +35,9 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Declare sensors
     BNO055IMU imu; // inertial measurement unit (located within the REV Hub)
-    Orientation angles = null;
+    Orientation angles;
+    OpenGLMatrix vuMark;
+    VectorF translation;
 
     // Declare constants
     static final double COUNTS_PER_MOTOR_REV = 1120;

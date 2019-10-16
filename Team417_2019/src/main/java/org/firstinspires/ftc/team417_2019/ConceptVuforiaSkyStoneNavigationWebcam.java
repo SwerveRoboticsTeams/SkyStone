@@ -156,6 +156,7 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends LinearOpMode {
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.useExtendedTracking = false;
 
         /**
          * We also indicate which camera on the RC we wish to use.

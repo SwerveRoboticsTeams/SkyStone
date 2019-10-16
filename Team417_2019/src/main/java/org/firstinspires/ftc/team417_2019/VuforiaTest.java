@@ -36,7 +36,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -102,59 +101,70 @@ public class VuforiaTest extends MasterAutonomous {
         // To restore the normal opmode structure, just un-comment the following line:
 
         targetsSkyStone.activate();
-        double refAngle = imu.getAngularOrientation().firstAngle;
+        //double refAngle = imu.getAngularOrientation().firstAngle;
 
-        while(targetVisible == false ){
+        //sleep(1000);
+
+        while(targetVisible == false){
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
                     telemetry.update();
                     targetVisible = true;
                     targetInView = trackable;
+                    vuMark = trackable.getFtcFieldFromTarget();
                     OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
                     if (robotLocationTransform != null) {
                         lastLocation = robotLocationTransform;
                     }
-                    break;
+                    else {
+                        telemetry.addData("Null",0);
+                    }
+                    telemetry.update();
+                    //break;
                 }
             }
         }
 
-        waitForStart();
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-        runtime.startTime();
         if (targetVisible)
         {
             // express position (translation) of robot in inches.
-            VectorF translation = lastLocation.getTranslation();
 
-            telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    translation.get(0) , translation.get(1), translation.get(2));
-
+            //telemetry.addData("VuMark",vumark.get)
             // express the rotation of the robot in degrees.
-            rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            angles = Orientation.getOrientation(lastLocation,EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+            translation = lastLocation.getTranslation();
+
+            telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    translation.get(0) / 25.4 , translation.get(1) / 25.4, translation.get(2)/25.4);
+            //rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
             // double angletoTarget = Math.atan2(translation.get(1) ,translation.get(0));
 
-            pivotWithReference(rotation.thirdAngle,refAngle,0.5,0.7);
+            //pivotWithReference(rotation.thirdAngle,refAngle,0.5,0.7);
 
-            moveMaintainHeading(translation.get(0),translation.get(1),rotation.thirdAngle, 0.1,0.5,5.0);
-            //moveMaintainHeading(400, 0,rotation.thirdAngle, 0.1,0.5,5.0);
 
-            //move(translation.get(0),translation.get(1),0.3,0.8,7.0);
-            //goToPosition2(translation.get(0), translation.get(1),);
-            // moveMaintainHeading(100, 0, 0, refAngle, 0.5, 0.8, 5.0);
-            // move(0,translation.get(1),0.3,0.8,7.0);
-            //moveMaintainHeading();
+
         }
         else {
             telemetry.addData("Visible Target", "none");
         }
-        // Note: To use the remote camera preview:
-        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
-        // Tap the preview window to receive a fresh image.
 
-        // what's the best way to recheck your position with another camera?
+        telemetry.update();
 
+        waitForStart();
+
+        runtime.startTime();
+
+        double x = translation.get(0)/25.4;
+        double y = translation.get(1)/25.4;
+        double z = translation.get(2)/25.4;
+
+
+        // x is inverted
+        telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                x, y, z);
+        telemetry.update();
+       // moveMaintainHeading(translation.get(0),translation.get(1),angles.thirdAngle, 0.2,0.8,5.0);
         targetsSkyStone.deactivate();
     }
 }

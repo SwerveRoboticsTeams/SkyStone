@@ -50,7 +50,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     public float cameraXRotate    = 0;
     public float cameraYRotate    = 0;
     public float cameraZRotate    = 0;
-    public Orientation rotation = null;
+    public Orientation rotation;
     public VuforiaTrackables targetsSkyStone = null;
     public List<VuforiaTrackables> allTrackables = null;
     public VuforiaLocalizer.Parameters parameters = null;
@@ -113,6 +113,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         // specify Vuforia parameters used to instantiate engine
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraName = webcamName;
+        parameters.useExtendedTracking = false;
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
         // Load the data sets for the trackable objects (stored in 'assets')
@@ -277,7 +278,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         angleDifference = angles.thirdAngle - refAngle;
         // adjust angle so it is not greater/less than +/- 180
         angleDifference = adjustAngles(angleDifference);
-        // find amount of error between angle we are at and what the differrence
+        // find amount of error (work on this?)
         errorAngle = refAngle;
 
         // scale the amount you need to pivot based on the error
