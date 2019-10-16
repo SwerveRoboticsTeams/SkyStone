@@ -71,7 +71,10 @@ public class TestMethods extends MasterAutonomous {
         //telemetry.addData("refAngle",refAngle);
 
         moveMaintainHeading(500, 0,angles.thirdAngle,0.3, 0.8, 5.0);
+        // moveMaintainHeading(0, 0,angles.thirdAngle + 90,0.3, 0.8, 5.0);
+        pause(3000);
         moveMaintainHeading(-500, 0,angles.thirdAngle,0.3, 0.8, 5.0);
+        // moveMaintainHeading(0, 0,angles.thirdAngle - 90,0.3, 0.8, 5.0);
         //goToPosition2(0,0,200,200,0,0.7);
        // move(300, 0, 0.2, 0.75, 3.0);
         //move(300,0,0.5,0.8,5.0);

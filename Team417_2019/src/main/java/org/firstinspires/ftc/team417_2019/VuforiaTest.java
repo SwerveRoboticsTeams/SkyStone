@@ -37,6 +37,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -118,9 +121,8 @@ public class VuforiaTest extends MasterAutonomous {
         }
 
         waitForStart();
-
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         runtime.startTime();
-
         if (targetVisible)
         {
             // express position (translation) of robot in inches.
@@ -131,12 +133,12 @@ public class VuforiaTest extends MasterAutonomous {
 
             // express the rotation of the robot in degrees.
             rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-
             // double angletoTarget = Math.atan2(translation.get(1) ,translation.get(0));
 
-            //pivotWithReference(rotation.thirdAngle,refAngle,0.5,0.7);
+            pivotWithReference(rotation.thirdAngle,refAngle,0.5,0.7);
 
-           // moveMaintainHeading(translation.get(0),translation.get(1),rotation.thirdAngle,refAngle,0.5,0.8,5.0);
+            moveMaintainHeading(translation.get(0),translation.get(1),rotation.thirdAngle, 0.1,0.5,5.0);
+            //moveMaintainHeading(400, 0,rotation.thirdAngle, 0.1,0.5,5.0);
 
             //move(translation.get(0),translation.get(1),0.3,0.8,7.0);
             //goToPosition2(translation.get(0), translation.get(1),);
