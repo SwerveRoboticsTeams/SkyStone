@@ -61,16 +61,13 @@ abstract public class MasterTeleOp extends MasterOpMode
 
     public void activateCollector()
     {
-        // Double to control power of collector motors
-        double power = 0.75;
-
         if(driver1.isButtonPressed(Button.DPAD_UP)){
-            collectorLeft.setPower(-power);
-            collectorRight.setPower(power);
+            collectorLeft.setPower(-Constants.COLLECTOR_POWER);
+            collectorRight.setPower(Constants.COLLECTOR_POWER);
         }
         else if(driver1.isButtonPressed(Button.DPAD_DOWN)){
-            collectorLeft.setPower(power);
-            collectorRight.setPower(-power);
+            collectorLeft.setPower(Constants.COLLECTOR_POWER);
+            collectorRight.setPower(-Constants.COLLECTOR_POWER);
         }
         // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed that the motors don't continue running
         else{
@@ -88,26 +85,28 @@ abstract public class MasterTeleOp extends MasterOpMode
         // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
         if(leftTrigger >= Constants.MINIMUM_TRIGGER_VALUE && rightTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //lowers
         {
-            liftMotor.setPower(1.0 * Constants.LIFT_POWER_FACTOR_UP);
+            liftMotor.setPower( leftTrigger * Constants.LIFT_POWER_FACTOR_UP);
         }
         else if(rightTrigger >= Constants.MINIMUM_TRIGGER_VALUE && leftTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //raises
         {
-            liftMotor.setPower(-1.0 * Constants.LIFT_POWER_FACTOR_DOWN);
+            liftMotor.setPower(-rightTrigger * Constants.LIFT_POWER_FACTOR_DOWN);
         }
         else
         {
             liftMotor.setPower(0);
         }
 
-        //double deltaMotorPos = 360 * liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
-        //double deltaServoPos = (deltaMotorPos) / 360;
-
-        //parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaServoPos);
+        // This yields the fraction of 1 rotation that the motor has progressed through (in other
+        // words, the range 0 - 1 corresponds to 0 - 360 degrees).
+        double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
+        // Power the servo such that it remains parallel to the ground.
+        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 2);
 
         telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
         telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
-        //telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
-        //telemetry.addData("Lift motor power: ", liftMotor.getPower());
+        telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
+        telemetry.addData("Lift motor power: ", liftMotor.getPower());
+        telemetry.addData("DeltaServoPosition: ", deltaMotorPos * 360);
     }
 
 

@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "TeleOp Competition")
-public class Test extends LinearOpMode
+@TeleOp(name = "Motor Test")
+public class MotorTest extends LinearOpMode
 {
     @Override
     public void runOpMode() throws InterruptedException
@@ -14,6 +14,12 @@ public class Test extends LinearOpMode
         waitForStart();
         DcMotor motor = hardwareMap.dcMotor.get("motor");
 
-        motor.setPower(0.2);
+        motor.setPower(-0.04);
+        Thread.sleep(2000);
+        motor.setPower(-0.3);
+        Thread.sleep(2000);
+        motor.setPower(-1.0);
+        Thread.sleep(2000);
+        motor.setPower(0.0);
     }
 }
