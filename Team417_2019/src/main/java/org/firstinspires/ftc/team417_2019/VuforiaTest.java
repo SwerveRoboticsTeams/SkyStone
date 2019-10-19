@@ -30,21 +30,15 @@
 package org.firstinspires.ftc.team417_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +46,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGR
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 @Autonomous(name="Vuforia Movement", group ="Concept")
 public class VuforiaTest extends MasterAutonomous {
@@ -135,8 +128,8 @@ public class VuforiaTest extends MasterAutonomous {
             angles = Orientation.getOrientation(lastLocation,EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
             translation = lastLocation.getTranslation();
 
-            telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    translation.get(0) / 25.4 , translation.get(1) / 25.4, translation.get(2)/25.4);
+            telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    translation.get(0) , translation.get(1) , translation.get(2));
             //rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
             // double angletoTarget = Math.atan2(translation.get(1) ,translation.get(0));
 
@@ -155,16 +148,16 @@ public class VuforiaTest extends MasterAutonomous {
 
         runtime.startTime();
 
-        double x = translation.get(0)/25.4;
-        double y = translation.get(1)/25.4;
-        double z = translation.get(2)/25.4;
+        double x = translation.get(0);
+        double y = translation.get(1);
+        double z = translation.get(2);
 
 
         // x is inverted
         telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                 x, y, z);
         telemetry.update();
-       // moveMaintainHeading(translation.get(0),translation.get(1),angles.thirdAngle, 0.2,0.8,5.0);
+        moveMaintainHeading(x,y,angles.thirdAngle, 0.2,0.8,5.0);
         targetsSkyStone.deactivate();
     }
 }

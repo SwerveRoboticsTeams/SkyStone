@@ -84,7 +84,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 @TeleOp(name="SKYSTONE Vuforia Nav Webcam", group ="Concept")
 
-public class ConceptVuforiaSkyStoneNavigationWebcam extends LinearOpMode {
+public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -134,12 +134,16 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends LinearOpMode {
      */
     WebcamName webcamName;
 
+    private VectorF translation = null;
+    //private Orientation rotation;
     private boolean targetVisible = false;
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
     private float phoneZRotate    = 0;
 
-    @Override public void runOpMode() {
+
+    @Override public void runOpMode() throws InterruptedException{
+         initializeHardware();
         /*
          * Retrieve the camera we are to use.
          */
@@ -304,9 +308,9 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends LinearOpMode {
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
+        final float CAMERA_FORWARD_DISPLACEMENT  = 0f;   // eg: Camera is 4 Inches in front of robot-center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 4.5f ;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT     = 9.0f;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                     .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -330,10 +334,9 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends LinearOpMode {
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
-        while (!isStopRequested()) {
+        while (targetVisible == false) {
 
             // check all the trackable targets to see which one (if any) is visible.
-            targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
@@ -352,13 +355,14 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends LinearOpMode {
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
                 // express position (translation) of robot in inches.
-                VectorF translation = lastLocation.getTranslation();
+                translation = lastLocation.getTranslation();
                 telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+                        translation.get(0)  , translation.get(1) , translation.get(2));
 
                 // express the rotation of the robot in degrees.
-                Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+
             }
             else {
                 telemetry.addData("Visible Target", "none");
@@ -366,6 +370,14 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends LinearOpMode {
             telemetry.update();
         }
 
+        waitForStart();
+
+        move(translation.get(0), 0, 0.2,0.8,5.0);
+        float angle = rotation.thirdAngle;
+        //move(0,translation.get(1),0.2,0.8,5.0);
+        moveMaintainHeading(translation.get(0), translation.get(1), angle,0.2,0.9,7.0);
+        telemetry.addData("movement finished",0);
+        telemetry.update();
         // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
     }
