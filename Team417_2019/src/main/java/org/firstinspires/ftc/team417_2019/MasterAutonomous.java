@@ -275,7 +275,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // get amount that we have deviated from the angle we started with
-        angleDifference = angles.thirdAngle - refAngle;
+        angleDifference = rotation.thirdAngle - refAngle;
         // adjust angle so it is not greater/less than +/- 180
         angleDifference = adjustAngles(angleDifference);
         // find amount of error (work on this?)
@@ -304,7 +304,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         {
             // ---------------------- Angle Calculation ---------------------------------
             // read the real current angle and compute error compared to the final angle
-            angleDifference = angles.thirdAngle - refAngle;
+            angleDifference = rotation.thirdAngle - refAngle;
             angleDifference = adjustAngles(angleDifference);
             // calculate error in terms of speed
             errorAngle = refAngle;

@@ -66,14 +66,14 @@ public class TestMethods extends MasterAutonomous {
 
         waitForStart();
 
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+        rotation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         //double refAngle = angles.thirdAngle;
         //telemetry.addData("refAngle",refAngle);
 
-        moveMaintainHeading(500, 0,angles.thirdAngle,0.3, 0.8, 5.0);
+        moveMaintainHeading(-500, 100,rotation.thirdAngle,0.3, 0.8, 5.0);
         // moveMaintainHeading(0, 0,angles.thirdAngle + 90,0.3, 0.8, 5.0);
-        pause(3000);
-        moveMaintainHeading(-500, 0,angles.thirdAngle,0.3, 0.8, 5.0);
+        pause(2000);
+        moveMaintainHeading(500, 100,rotation.thirdAngle,0.3, 0.8, 5.0);
         // moveMaintainHeading(0, 0,angles.thirdAngle - 90,0.3, 0.8, 5.0);
         //goToPosition2(0,0,200,200,0,0.7);
        // move(300, 0, 0.2, 0.75, 3.0);
