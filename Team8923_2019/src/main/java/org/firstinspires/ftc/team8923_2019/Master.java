@@ -14,6 +14,7 @@ abstract class Master extends LinearOpMode
     DcMotor motorFR;
     DcMotor motorBL;
     DcMotor motorBR;
+    DcMotor motorDankUnderglow;
 
     BNO055IMU imu;
 
