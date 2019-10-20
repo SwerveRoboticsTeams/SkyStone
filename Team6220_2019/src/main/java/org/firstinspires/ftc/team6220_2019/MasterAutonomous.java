@@ -206,7 +206,7 @@ abstract public class MasterAutonomous extends MasterOpMode
      * @param y is the y-coordinate of the point the robot should move towards.
      * @param w is the desired orientation of the robot, in degrees.
      */
-    public void driveToCoordinates(double x, double y, double w)
+    public boolean driveToCoordinates(double x, double y, double w)
     {
         vRes.getLocation();
 
@@ -219,7 +219,16 @@ abstract public class MasterAutonomous extends MasterOpMode
             driveAngle += 180;
         }
 
-        autonomousDriveMecanum(driveAngle, distancePower((float)Math.sqrt((y - yPos) * (y - yPos) + (x -xPos) * (x - xPos))), rotationPower((float)w - wRot));
+        float distance = (float)Math.sqrt((y - yPos) * (y - yPos) + (x -xPos) * (x - xPos));
+
+        autonomousDriveMecanum(driveAngle, distancePower(distance), rotationPower((float)w - wRot));
+
+        if(distance < 3){ // '3' functions as a tolerance variable.
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     /**
