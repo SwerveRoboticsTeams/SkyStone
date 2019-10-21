@@ -20,10 +20,17 @@ public class TeleOpCompetition extends MasterTeleOp
             double eTime = timer.seconds() - lTime;
             lTime = timer.seconds();
 
+
+            // Operate robot mechanisms using methods from MasterTeleOp
+             // Driver1 methods
             driveMecanumWithJoysticks();
-            activateCollector();
-            raiseScoringSystem();
-            toggleGrabber();
+             // Driver2 methods
+            driveCollector();
+            driveScoringSystem();
+            // Only toggle grabber if Button.A is just pressed.
+            if(driver2.isButtonJustPressed(Button.RIGHT_BUMPER))
+                toggleGrabber();
+
 
             /*
              Updates that need to happen each loop
@@ -35,7 +42,6 @@ public class TeleOpCompetition extends MasterTeleOp
             //collectorEncoderState = collectorChannel.channelState;
             //telemetry.addData("Collector Channel: ", collectorEncoderState);
             telemetry.update();
-
             idle();
         }
     }

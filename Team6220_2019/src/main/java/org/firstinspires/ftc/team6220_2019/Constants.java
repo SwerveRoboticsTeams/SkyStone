@@ -25,8 +25,8 @@ public class Constants
     public static final double SLOW_MODE_R_FACTOR = 0.3;
     public static final double T_FACTOR = 1.0;
     public static final double R_FACTOR = 1.0;
-    public static final double LIFT_POWER_FACTOR_UP = 0.6;
-    public static final double LIFT_POWER_FACTOR_DOWN = 0.4;
+
+    public static final double LIFT_POWER_FACTOR = 0.6;
      // Double to control power of collector motors
     public static final double COLLECTOR_POWER = 1.0;
 
@@ -72,7 +72,7 @@ public class Constants
 
     // Servo positions--------------------------------
     // 1 is closed, 0 is open
-    public static final double GRABBER_OPEN = 0.5;
+    public static final double GRABBER_OPEN = 0.6;
     public static final double GRABBER_CLOSED = 0.8;
     public static final double PARALLEL_SERVO_INIT = 0.0;
     //-------------------------------------------------
@@ -80,6 +80,7 @@ public class Constants
 
     // Encoder positions-------------------------------
     public static final double LIFT_MOTOR_TICKS = 2.0 * 1680.0;
+    public static final int LIFT_GRAB_POS = 300;
     //-------------------------------------------------
 
 

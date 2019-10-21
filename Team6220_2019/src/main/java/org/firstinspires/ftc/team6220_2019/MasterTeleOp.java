@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.team6220_2019;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 abstract public class MasterTeleOp extends MasterOpMode
 {
     // Start robot in slow mode (per Slater)
     boolean slowMode = false;
     // Allows us to switch front of robot.
     boolean driveReversed = true;
+    // Tells us what drive mode the lift motor is in; by default, we use RUN_USING_ENCODER
+    boolean isRunToPosMode = false;
     // Remembers whether the grabber is open or closed.
     boolean isGrabberOpen = true;
 
@@ -59,18 +63,21 @@ abstract public class MasterTeleOp extends MasterOpMode
     }
 
 
-    public void activateCollector()
+    public void driveCollector()
     {
-        if(driver1.isButtonPressed(Button.DPAD_UP)){
+        if (driver2.isButtonPressed(Button.DPAD_UP))
+        {
             collectorLeft.setPower(-Constants.COLLECTOR_POWER);
             collectorRight.setPower(Constants.COLLECTOR_POWER);
         }
-        else if(driver1.isButtonPressed(Button.DPAD_DOWN)){
+        else if (driver2.isButtonPressed(Button.DPAD_DOWN))
+        {
             collectorLeft.setPower(Constants.COLLECTOR_POWER);
             collectorRight.setPower(-Constants.COLLECTOR_POWER);
         }
-        // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed that the motors don't continue running
-        else{
+        // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed, the motors don't continue running
+        else
+        {
             collectorLeft.setPower(0);
             collectorRight.setPower(0);
         }
@@ -78,23 +85,38 @@ abstract public class MasterTeleOp extends MasterOpMode
 
 
     // Uses liftMotor to move scoring arm, with parallelServo keeping grabber parallel to the ground.
-    public void raiseScoringSystem()
+    public void driveScoringSystem()
     {
-        double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
+        //double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
+        double rightStickY = driver2.getRightStickY();
 
+        // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
+        // Change drive mode if stick is pressed a significant amount and we were in RUN_TO_POSITION
+        if (Math.abs(rightStickY) >= Constants.MINIMUM_JOYSTICK_POWER && isRunToPosMode)
+        {
+            isRunToPosMode = false;
+            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        liftMotor.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
+
+        /*
         // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
         if(leftTrigger >= Constants.MINIMUM_TRIGGER_VALUE && rightTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //lowers
         {
+            isRunToPosMode = false;
             liftMotor.setPower( leftTrigger * Constants.LIFT_POWER_FACTOR_UP);
         }
         else if(rightTrigger >= Constants.MINIMUM_TRIGGER_VALUE && leftTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //raises
         {
+            isRunToPosMode = false;
             liftMotor.setPower(-rightTrigger * Constants.LIFT_POWER_FACTOR_DOWN);
         }
         else
         {
             liftMotor.setPower(0);
         }
+        */
 
         // This yields the fraction of 1 rotation that the motor has progressed through (in other
         // words, the range 0 - 1 corresponds to 0 - 360 degrees).
@@ -102,29 +124,40 @@ abstract public class MasterTeleOp extends MasterOpMode
         // Power the servo such that it remains parallel to the ground.
         parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 2);
 
+
+        // todo Implement once encoder is working
+        /*
+        // Code for automatic movement of arm-------------------------------------------------------------------
+         // If driver 2 presses A, return lift to position just high enough to grab stone
+        if (driver2.isButtonJustPressed(Button.A))
+        {
+            isRunToPosMode = true;
+            liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
+            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+        }
+        */
+
+
+        // Display telemetry data to drivers
+        telemetry.addData("Right stick y: ", rightStickY);
         telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
         telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
         telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
-        telemetry.addData("Lift motor power: ", liftMotor.getPower());
-        telemetry.addData("DeltaServoPosition: ", deltaMotorPos * 360);
     }
 
 
     public void toggleGrabber()
     {
-        // Only activate if Button.A is just pressed.
-        if(driver1.isButtonJustPressed(Button.A))
+        // Toggle position
+        if (isGrabberOpen)
         {
-            // Toggle position
-            if (isGrabberOpen)
-            {
-                grabberServo.setPosition(Constants.GRABBER_CLOSED);
-            }
-            else
-            {
-                grabberServo.setPosition(Constants.GRABBER_OPEN);
-            }
-            isGrabberOpen = !isGrabberOpen;
+            grabberServo.setPosition(Constants.GRABBER_CLOSED);
         }
+        else
+        {
+            grabberServo.setPosition(Constants.GRABBER_OPEN);
+        }
+        isGrabberOpen = !isGrabberOpen;
     }
 }
