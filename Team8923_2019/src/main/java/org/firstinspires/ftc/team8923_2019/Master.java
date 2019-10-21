@@ -16,6 +16,9 @@ abstract class Master extends LinearOpMode
     DcMotor motorBR;
     DcMotor motorDankUnderglow;
 
+    CRServo intakeLeft;
+    CRServo intakeRight;
+
     BNO055IMU imu;
 
     double slowModeDivisor = 1.0;
@@ -37,6 +40,9 @@ abstract class Master extends LinearOpMode
         motorFR = hardwareMap.get(DcMotor.class, "motorFR");
         motorBL = hardwareMap.get(DcMotor.class, "motorBL");
         motorBR = hardwareMap.get(DcMotor.class, "motorBR");
+        intakeLeft = hardwareMap.get(CRServo.class, "motorSucc1");
+        intakeRight = hardwareMap.get(CRServo.class, "motorSucc2");
+
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -52,6 +58,8 @@ abstract class Master extends LinearOpMode
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
     }
 
 

@@ -20,11 +20,12 @@ public class AutonomousCompetition extends MasterAutonomous
 
         waitForStart();
         telemetry.clear();
+        moveAuto(0, -1000,  1.0,  0.3, 3.0);
 
         while (opModeIsActive())
         {
 
-           // moveAuto();
+           //moveAuto(0, -1000,  1.0,  0.3, 3.0);
 //            // play delay
 //
 //            // Figure out which start location

@@ -70,14 +70,10 @@ abstract class MasterAutonomous extends Master
         BUILD_SIDE
 
     }
-
-
+    
     enum Objectives {
 
     }
-
-
-
 
     public void initAuto()
     {

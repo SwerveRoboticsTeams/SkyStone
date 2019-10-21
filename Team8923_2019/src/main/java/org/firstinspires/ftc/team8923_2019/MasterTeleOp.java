@@ -31,6 +31,23 @@ abstract class MasterTeleOp extends Master
         return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     }
 
+    public void runIntake()
+    {
+        while (gamepad1.dpad_up)
+        {
+            intakeLeft.setPower(1.0);
+            intakeRight.setPower(1.0);
+
+        }
+        while (gamepad1.dpad_down)
+        {
+            intakeLeft.setPower(-1.0);
+            intakeRight.setPower(-1.0);
+
+
+        }
+    }
+
     void sendTelemetry()
     {
 
