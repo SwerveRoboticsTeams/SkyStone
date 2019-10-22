@@ -41,6 +41,7 @@ public class TeleOpCompetition extends MasterTeleOp
             updateCallback(eTime);
             //collectorEncoderState = collectorChannel.channelState;
             //telemetry.addData("Collector Channel: ", collectorEncoderState);
+            telemetry.addData("Current Tower Height: ", towerHeight);
             telemetry.update();
             idle();
         }

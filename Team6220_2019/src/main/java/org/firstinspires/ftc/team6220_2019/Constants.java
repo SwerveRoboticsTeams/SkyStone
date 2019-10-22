@@ -16,6 +16,7 @@ public class Constants
     // Robot specifications
     public static final float WHEEL_DIAMETER_MM = 4 * MM_PER_INCH;    // 4 inch diameter wheel
     public static final double GEAR_RATIO = 24.0 / 32.0;            // Driven to driving gear
+    public static final double GRAB_ARM_LENGTH = 13.5;                // Grabber arm is 13.5 inches long
     // Actually 25.4 ticks / inch
     public static final double MM_PER_ANDYMARK_TICK = (Math.PI * WHEEL_DIAMETER_MM) / (ANDYMARK_TICKS_PER_ROTATION * GEAR_RATIO);
     public static final float WHEEL_SEPARATION_MM = 15.5f * MM_PER_INCH;    // 4 inch diameter wheel
@@ -80,7 +81,9 @@ public class Constants
 
     // Encoder positions-------------------------------
     public static final double LIFT_MOTOR_TICKS = 2.0 * 1680.0;
-    public static final int LIFT_GRAB_POS = 300;
+    public static final int LIFT_GRAB_POS = 300; //todo Adjust
+    public static final int LIFT_PLACE_POS = 2520; //todo Adjust
+    public static final int NUM_TICKS_PER_STONE = 250; //THIS IS AN APPROXIMATION. todo Adjust
     //-------------------------------------------------
 
 

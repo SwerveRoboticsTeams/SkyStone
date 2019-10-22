@@ -13,6 +13,12 @@ abstract public class MasterTeleOp extends MasterOpMode
     // Remembers whether the grabber is open or closed.
     boolean isGrabberOpen = true;
 
+    // The following booleans help the program keep track of which step of placing a stone the grabber is in.
+    boolean hasLoweredArm = false;
+    boolean hasGrabbedStone = false;
+    boolean hasRotatedArm = false;
+    boolean hasPlacedStone = false;
+
     // Factor that adjusts magnitudes of vertical and horizontal movement.
     double tFactor = Constants.T_FACTOR;
     // Factor that adjusts magnitude of rotational movement.
@@ -96,6 +102,11 @@ abstract public class MasterTeleOp extends MasterOpMode
         {
             isRunToPosMode = false;
             liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            hasLoweredArm = false;
+            hasGrabbedStone = false;
+            hasRotatedArm = false;
+            hasPlacedStone = false;
         }
 
         liftMotor.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
@@ -128,15 +139,69 @@ abstract public class MasterTeleOp extends MasterOpMode
         // todo Implement once encoder is working
         /*
         // Code for automatic movement of arm-------------------------------------------------------------------
-         // If driver 2 presses A, return lift to position just high enough to grab stone
+        // If driver 2 presses A, return lift to position just high enough to grab stone
         if (driver2.isButtonJustPressed(Button.A))
         {
             isRunToPosMode = true;
-            liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+
+            grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
-        */
+
+
+        if(isRunToPosMode)
+        {
+            if(!hasLoweredArm)
+            {
+                if(liftMotor.getTargetPosition() == Constants.LIFT_GRAB_POS)
+                {
+                    hasLoweredArm = true;
+                }
+                else
+                {
+                    liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
+                }
+            }
+            else if(!hasGrabbedStone)
+            {
+                if(grabberServo.getPosition() == Constants.GRABBER_CLOSED)
+                {
+                    hasGrabbedStone = true;
+                }
+                else
+                {
+                    grabberServo.setPosition(Constants.GRABBER_CLOSED);
+                }
+            }
+            else if(!hasRotatedArm)
+            {
+                if(liftMotor.getTargetPosition() == Constants.LIFT_PLACE_POS)
+                {
+                    hasRotatedArm = true;
+                }
+                else
+                {
+                    liftMotor.setTargetPosition(Constants.LIFT_PLACE_POS - Constants.NUM_TICKS_PER_STONE * towerHeight);
+                }
+            }
+            else if(!hasPlacedStone)
+            {
+                if(grabberServo.getPosition() == Constants.GRABBER_OPEN)
+                {
+                    hasPlacedStone = true;
+                }
+                else
+                {
+                    grabberServo.setPosition(Constants.GRABBER_OPEN);
+                }
+            }
+            else{
+                towerHeight++;
+                isRunToPosMode = false;
+            }
+        }
+         */
 
 
         // Display telemetry data to drivers

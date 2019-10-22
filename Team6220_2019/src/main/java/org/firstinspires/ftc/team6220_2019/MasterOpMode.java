@@ -50,6 +50,9 @@ abstract public class MasterOpMode extends LinearOpMode
     //                                             y = 0 + 0.25x + 0 + 0.75x^3
     Polynomial stickCurve = new Polynomial(new double[]{0, 0.25, 0, 0.75});
 
+    // Variable that keeps track of the height of our tower. It tells autonomous and semi-autonomous drive how high the current tower is.
+    int towerHeight = 0;
+
 
     public void initialize()
     {
