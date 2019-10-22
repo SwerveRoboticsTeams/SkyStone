@@ -11,15 +11,22 @@ public class MotorTest extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        waitForStart();
         DcMotor motor = hardwareMap.dcMotor.get("motor");
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setPower(0);
 
-        motor.setPower(-0.04);
-        Thread.sleep(2000);
-        motor.setPower(-0.3);
-        Thread.sleep(2000);
-        motor.setPower(-1.0);
-        Thread.sleep(2000);
-        motor.setPower(0.0);
+        waitForStart();
+
+        while (opModeIsActive())
+        {
+            motor.setPower(gamepad1.right_stick_y);
+
+            telemetry.addData("Motor Power: ", motor.getPower());
+            telemetry.addData("Motor Position: ", motor.getCurrentPosition());
+            telemetry.update();
+            idle();
+        }
     }
 }
