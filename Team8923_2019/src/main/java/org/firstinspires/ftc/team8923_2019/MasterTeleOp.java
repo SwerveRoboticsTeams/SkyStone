@@ -33,19 +33,44 @@ abstract class MasterTeleOp extends Master
 
     public void runIntake()
     {
-        while (gamepad1.dpad_up)
+        if (gamepad1.dpad_up)
         {
             intakeLeft.setPower(1.0);
             intakeRight.setPower(1.0);
 
         }
-        while (gamepad1.dpad_down)
+        else if (gamepad1.dpad_down)
         {
             intakeLeft.setPower(-1.0);
             intakeRight.setPower(-1.0);
+        }
+        else
+        {
+            intakeLeft.setPower(0.0);
+            intakeRight.setPower(0.0);
+        }
+        telemetry.addData("intake", gamepad1.dpad_up);
+        telemetry.update();
 
+    }
+    public void runClaw()
+    {
+        if (gamepad2.left_trigger != 0)
+        {
+            motorArm.setPower(gamepad2.left_trigger * 0.25);
+
+        }else{
+            motorArm.setPower(0);
 
         }
+        if (gamepad2.right_trigger != 0)
+        {
+            motorArm.setPower(-gamepad2.right_trigger * 0.25);
+        }else{
+            motorArm.setPower(0);
+        }
+
+
     }
 
     void sendTelemetry()

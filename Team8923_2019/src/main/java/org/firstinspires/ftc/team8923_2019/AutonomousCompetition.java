@@ -14,16 +14,22 @@ public class AutonomousCompetition extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        configureAutonomous();
+       // configureAutonomous();
+        telemetry.addLine("in opmode");
         telemetry.update();
         initAuto();
 
         waitForStart();
-        telemetry.clear();
-        moveAuto(0, -1000,  1.0,  0.3, 3.0);
+        //telemetry.clear();
+
 
         while (opModeIsActive())
         {
+            telemetry.addLine("opMode is active");
+            telemetry.update();
+
+            //moveAuto(0, -1000,  1.0,  0.3, 3.0);
+
 
            //moveAuto(0, -1000,  1.0,  0.3, 3.0);
 //            // play delay

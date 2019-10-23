@@ -18,7 +18,7 @@ abstract class MasterAutonomous extends Master
     double robotAngle;
     double headingOffset = 0.0;
 
-    double Kmove = 1.0f/1200.0f;
+    double Kmove = 1.0f / 1200.0f;
 
     int newTargetFL;
     int newTargetFR;
@@ -53,8 +53,8 @@ abstract class MasterAutonomous extends Master
     // these values equal to one over the value (in mm for drive power and degrees for turn power)
     // that you want the PID loop to start limiting the speed at
     //Have to put double so it divides correctly
-    double DRIVE_POWER_CONSTANT = 1.0/1000; // start slowing down at 1 meter from the target location
-    double TURN_POWER_CONSTANT = 1.0/65; // start slowing down at 35 degrees away from the target angle;
+    double DRIVE_POWER_CONSTANT = 1.0 / 1000; // start slowing down at 1 meter from the target location
+    double TURN_POWER_CONSTANT = 1.0 / 65; // start slowing down at 35 degrees away from the target angle;
 
     double MIN_DRIVE_POWER = 0.2; // don't let the robot go slower than this speed
     int TOL = 100;
@@ -64,63 +64,32 @@ abstract class MasterAutonomous extends Master
         BLUE,
         RED
     }
+
     enum StartLocations
     {
         DEPOT_SIDE,
         BUILD_SIDE
 
     }
-    
-    enum Objectives {
 
-    }
-
-    public void initAuto()
+    enum Objectives
     {
-        telemetry.addData("Init State", "Init Started");
-        telemetry.update();
-        initHardware();
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.addData("Init State", "Init Finished");
-        telemetry.addData("Alliance", alliance.name());
-        telemetry.addData("Side", startLocation.name());
-        telemetry.addData("Delay Time", delayTime);
-        telemetry.update();
 
-        // Set last known encoder values
-        lastEncoderFL = motorFL.getCurrentPosition();
-        lastEncoderFR = motorFR.getCurrentPosition();
-        lastEncoderBL = motorBL.getCurrentPosition();
-        lastEncoderBR = motorBR.getCurrentPosition();
-
-        // Set IMU heading offset
-        headingOffset = imu.getAngularOrientation().firstAngle - robotAngle;
-
-
-
-        //initialize our openCV image processing pipeline
-        //openCVInit();
-
-        telemetry.clear();
-        telemetry.update();
-        telemetry.addLine("Initialized. Ready to start!");
     }
 
     public void configureAutonomous()
     {
+        telemetry.addLine("helllooo");
         // waste the zero index because we can't have zero delays
         delays.add(0);
-        while(!doneSettingUp)
+        while (!doneSettingUp)
         {
-            if(gamepad1.x)
-                alliance = Alliance.BLUE;
-                //means we are blue alliance
-            else if (gamepad1.b)
-                alliance = Alliance.RED;
-                // means we are red alliance
+//            if (gamepad1.x)
+//                alliance = Alliance.BLUE;
+//                //means we are blue alliance
+//            else if (gamepad1.b)
+//                alliance = Alliance.RED;
+            // means we are red alliance
 
 //            //means we are crater side
 //            if(gamepad1.dpad_left)
@@ -143,84 +112,84 @@ abstract class MasterAutonomous extends Master
 //                assist = Assist.NOT_ASSISTING;
 //            }
 
-            if(gamepad1.dpad_up)
-            {
-                numDelays++;
-                delays.add(1);
-                boolean customizingTime = true;
+//            if (gamepad1.dpad_up)
+//            {
+//                numDelays++;
+//                delays.add(1);
+//                boolean customizingTime = true;
+//
+//                while (!buttonsAreReleased(gamepad1))
+//                {
+//                    telemetry.update();
+//                    idle();
+//                }
+//
+//                while (customizingTime)
+//                {
+//                    if (gamepad1.dpad_up)
+//                        delays.set(numDelays, delays.get(numDelays) + 1);
+//                    else if (gamepad1.dpad_down && delays.get(numDelays) >= 0)
+//                        delays.set(numDelays, delays.get(numDelays) - 1);
+//                    if (delays.get(numDelays) <= 0)
+//                    {
+//                        delays.remove(numDelays);
+//                        numDelays--;
+//                        customizingTime = false;
+//                    }
+//                    if (gamepad1.a)
+//                        customizingTime = false;
+//                    else if (gamepad1.start)
+//                    {
+//                        customizingTime = false;
+//                        doneSettingUp = true;
+//                    }
+//
+//                    while (!buttonsAreReleased(gamepad1))
+//                    {
+//                        telemetry.update();
+//                        idle();
+//                    }
+//
+//                    telemetry.addData("Delay Number", numDelays);
+//                    telemetry.addLine("Delay Increase/Decrease: Dpad Up / Down ");
+//                    telemetry.addLine("Press 'A' to confirm");
+//                    telemetry.addData("delay time", delays.get(numDelays));
+//                    telemetry.update();
+//                }
+//            }
 
-                while (!buttonsAreReleased(gamepad1))
-                {
-                    telemetry.update();
-                    idle();
-                }
+//            if (gamepad1.start)
+//                doneSettingUp = true;
+//
+//            while (!buttonsAreReleased(gamepad1))
+//            {
+//                telemetry.update();
+//                idle();
+//            }
 
-                while(customizingTime)
-                {
-                    if(gamepad1.dpad_up)
-                        delays.set(numDelays, delays.get(numDelays) + 1);
-                    else if(gamepad1.dpad_down && delays.get(numDelays) >= 0)
-                        delays.set(numDelays, delays.get(numDelays) - 1);
-                    if(delays.get(numDelays) <= 0)
-                    {
-                        delays.remove(numDelays);
-                        numDelays--;
-                        customizingTime = false;
-                    }
-                    if(gamepad1.a)
-                        customizingTime = false;
-                    else if (gamepad1.start)
-                    {
-                        customizingTime = false;
-                        doneSettingUp = true;
-                    }
+//            // input information
+//            telemetry.addLine("Alliance Blue/Red: X/B");
+//            telemetry.addLine("Starting Position Crater/Depot: D-Pad Left/Right");
+//            telemetry.addLine("Add a delay: D-Pad Up");
+//            telemetry.addLine("After routine is complete and robot is on field, press Start");
+//            telemetry.addLine();
+//
+//            // setup data
+//            telemetry.addData("Alliance", alliance.name());
+//            telemetry.addData("Side", startLocation.name());
+//            for (int i = 1; i <= delays.size() - 1 && delays.size() != 1; i++)
+//            {
+//                telemetry.addData("delay " + i, delays.get(i));
+//            }
+//            telemetry.update();
 
-                    while (!buttonsAreReleased(gamepad1))
-                    {
-                        telemetry.update();
-                        idle();
-                    }
-
-                    telemetry.addData("Delay Number", numDelays);
-                    telemetry.addLine("Delay Increase/Decrease: Dpad Up / Down ");
-                    telemetry.addLine("Press 'A' to confirm");
-                    telemetry.addData("delay time", delays.get(numDelays));
-                    telemetry.update();
-                }
-            }
-
-            if(gamepad1.start)
-                doneSettingUp = true;
-
-            while (!buttonsAreReleased(gamepad1))
-            {
-                telemetry.update();
-                idle();
-            }
-
-            // input information
-            telemetry.addLine("Alliance Blue/Red: X/B");
-            telemetry.addLine("Starting Position Crater/Depot: D-Pad Left/Right");
-            telemetry.addLine("Add a delay: D-Pad Up");
-            telemetry.addLine("After routine is complete and robot is on field, press Start");
-            telemetry.addLine();
-
-            // setup data
-            telemetry.addData("Alliance", alliance.name());
-            telemetry.addData("Side", startLocation.name());
-            for (int i = 1; i <= delays.size() - 1 && delays.size() != 1; i++)
-            {
-                telemetry.addData("delay " + i, delays.get(i));
-            }
-            telemetry.update();
-
-            idle();
-        }
+            //idle();
+        //}
 
         // We could clear the telemetry at this point, but the drivers may want to see it
-        telemetry.clear();
-
-        telemetry.addLine("Setup complete. Initializing...");
+//        telemetry.clear();
+//
+//        telemetry.addLine("Setup complete. Initializing...");
 
         // Set coordinates based on alliance and starting location
 //        if(startLocation == StartLocations.DEPOT)
@@ -251,7 +220,38 @@ abstract class MasterAutonomous extends Master
 //                robotY = StartLocations.BLUE_CRATER_START_Y.val;
 //                headingOffset = StartLocations.BLUE_CRATER_START_ANGLE.val;
 //            }
-//        }
+            doneSettingUp = true;
+        }
+    }
+
+    public void initAuto()
+    {
+        telemetry.addData("Init State", "Init Started");
+        telemetry.update();
+        initHardware();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        telemetry.addData("Init State", "Init Finished");
+        telemetry.addData("Alliance", alliance.name());
+        telemetry.addData("Side", startLocation.name());
+        telemetry.addData("Delay Time", delayTime);
+        telemetry.update();
+
+        // Set last known encoder values
+        lastEncoderFL = motorFL.getCurrentPosition();
+        lastEncoderFR = motorFR.getCurrentPosition();
+        lastEncoderBL = motorBL.getCurrentPosition();
+        lastEncoderBR = motorBR.getCurrentPosition();
+
+        // Set IMU heading offset
+        headingOffset = imu.getAngularOrientation().firstAngle - robotAngle;
+
+        telemetry.clear();
+        telemetry.update();
+        telemetry.addLine("Initialized. Ready to start!");
+
     }
 
     void dankUnderglow(double power)
@@ -317,174 +317,17 @@ abstract class MasterAutonomous extends Master
 
         stopDriving();
     }
+
     // normalizing the angle to be between -180 to 180
     public double adjustAngles(double angle)
     {
-        while(angle > 180)
+        while (angle > 180)
             angle -= 360;
-        while(angle < -180)
+        while (angle < -180)
             angle += 360;
         return angle;
     }
-    void imuPivot(double referenceAngle, double targetAngle, double MaxSpeed, double kAngle, double timeout)
-    {
-        runtime.reset();
-        //counter-clockwise is positive
-        double pivot;
-        double currentRobotAngle;
-        double angleError;
 
-        targetAngle =  referenceAngle + targetAngle;//Adds the current angle to the target
-        targetAngle = adjustAngles(targetAngle);
-        do {
-            currentRobotAngle = imu.getAngularOrientation().firstAngle;//Sets currentRobotAngle as the current robot angle
-            targetAngle = adjustAngles(targetAngle);//Makes it so the target angle does not wrap
-            angleError = currentRobotAngle - targetAngle;
-            angleError = adjustAngles(angleError);
-            pivot = angleError * kAngle;
-
-            if (pivot >= 0.0)
-            {
-                pivot = Range.clip(pivot, 0.15, MaxSpeed);
-            }
-            else
-            {
-                pivot = Range.clip(pivot, -MaxSpeed, -0.15);
-            }
-
-            speedFL = pivot;
-            speedFR = -pivot;
-            speedBL = pivot;
-            speedBR = -pivot;
-
-            motorFL.setPower(speedFL);
-            motorFR.setPower(speedFR);
-            motorBL.setPower(speedBL);
-            motorBR.setPower(speedBR);
-            idle();
-        }
-        while ((opModeIsActive() && (Math.abs(angleError) > 3.0)) && (runtime.seconds() < timeout));
-
-        stopDriving();
-    }
-    void reverseImuPivot(double referenceAngle, double targetAngle, double MaxSpeed, double kAngle, double timeout)
-    {
-        runtime.reset();
-        //counter-clockwise is positive
-        double pivot;
-        double currentRobotAngle;
-        double angleError;
-
-        targetAngle =  referenceAngle + targetAngle;//Adds the current angle to the target
-        targetAngle = adjustAngles(targetAngle);
-        do {
-            currentRobotAngle = imu.getAngularOrientation().firstAngle;//Sets currentRobotAngle as the current robot angle
-            targetAngle = adjustAngles(targetAngle);//Makes it so the target angle does not wrap
-            angleError = currentRobotAngle - targetAngle;
-            angleError = adjustAngles(angleError);
-            pivot = angleError * kAngle;
-
-            if (pivot >= 0.0)
-            {
-                pivot = Range.clip(pivot, 0.15, MaxSpeed);
-            }
-            else
-            {
-                pivot = Range.clip(pivot, -MaxSpeed, -0.15);
-            }
-
-            speedFL = -pivot;
-            speedFR = pivot;
-            speedBL = -pivot;
-            speedBR = pivot;
-
-            motorFL.setPower(speedFL);
-            motorFR.setPower(speedFR);
-            motorBL.setPower(speedBL);
-            motorBR.setPower(speedBR);
-            idle();
-        }
-        while ((opModeIsActive() && (Math.abs(angleError) > 3.0)) && (runtime.seconds() < timeout));
-
-        stopDriving();
-    }
-
-    // Makes robot drive to a point on the field
-    void driveToPoint(double targetX, double targetY, double targetAngle) throws InterruptedException
-    {
-        updateRobotLocation();
-
-        // Calculate how far we are from target point
-        double distanceToTarget = calculateDistance(targetX - robotX, targetY - robotY);
-        double deltaAngle = subtractAngles(targetAngle, robotAngle);
-        double DISTANCE_TOLERANCE = 40; // In mm
-        double ANGLE_TOLERANCE = 5; // In degrees
-
-        // Run until robot is within tolerable distance and angle
-        while(!(distanceToTarget < DISTANCE_TOLERANCE && deltaAngle < ANGLE_TOLERANCE) && opModeIsActive())
-        {
-            updateRobotLocation();
-
-            // In case robot drifts to the side
-            //TODO: ISSUE IN THIS CALCULATION (BEHAVIOUR: DRIVE ANGLE DRIFTS CONSISTENTLY NEGATIVE WHILE RUNNING)
-            double driveAngle = Math.toDegrees(Math.atan2(targetY - robotY, targetX - robotX)) - robotAngle;
-
-            // Decrease power as robot approaches target. Ensure it doesn't exceed power limits
-            double drivePower = Range.clip(distanceToTarget * DRIVE_POWER_CONSTANT, MIN_DRIVE_POWER, 0.3);
-
-            // In case the robot turns while driving
-            deltaAngle = subtractAngles(targetAngle, robotAngle);
-            double turnPower = -deltaAngle * TURN_POWER_CONSTANT;
-
-            // Set drive motor powers
-            driveMecanum(driveAngle, drivePower, turnPower);
-
-            // Recalculate distance for next check
-            distanceToTarget = calculateDistance(targetX - robotX, targetY - robotY);
-
-            idle();
-
-            telemetry.addData("driveAngle", driveAngle);
-            telemetry.addData("drivePower", drivePower);
-            telemetry.addData("turnPower", turnPower);
-
-            sendTelemetry();
-        }
-        stopDriving();
-    }
-
-    void turnToAngle(double targetAngle) throws InterruptedException
-    {
-        updateRobotLocation();
-
-        double deltaAngle = subtractAngles(targetAngle, robotAngle);
-        double ANGLE_TOLERANCE = 5.0; // In degrees
-
-        while(Math.abs(deltaAngle) > ANGLE_TOLERANCE && opModeIsActive())
-        {
-            updateRobotLocation();
-
-            // Recalculate how far away we are
-            deltaAngle = subtractAngles(targetAngle, robotAngle);
-
-            // Slow down as we approach target
-            double turnPower = Range.clip(deltaAngle * TURN_POWER_CONSTANT, -1.0, 1.0);
-
-            // Make sure turn power doesn't go below minimum power
-            if(turnPower > 0 && turnPower < MIN_DRIVE_POWER)
-                turnPower = MIN_DRIVE_POWER;
-            else if(turnPower < 0 && turnPower > -MIN_DRIVE_POWER)
-                turnPower = -MIN_DRIVE_POWER;
-
-            // Set drive motor power
-            driveMecanum(0.0, 0.0, turnPower);
-            sendTelemetry();
-            idle();
-        }
-        stopDriving();
-    }
-
-    // Updates robot's coordinates and angle
     void updateRobotLocation()
     {
         // Update robot angle
@@ -527,14 +370,13 @@ abstract class MasterAutonomous extends Master
         lastEncoderBR = motorBR.getCurrentPosition();
     }
 
-    public void stopDriving ()
+    public void stopDriving()
     {
         motorFL.setPower(0.0);
         motorFR.setPower(0.0);
         motorBL.setPower(0.0);
         motorBR.setPower(0.0);
     }
-
 
 
     public void sendTelemetry()
@@ -545,7 +387,6 @@ abstract class MasterAutonomous extends Master
         telemetry.addData("Robot Angle", robotAngle);
 
 
-
         // Debug info
         /*telemetry.addData("FL Encoder", motorFL.getCurrentPosition());
         telemetry.addData("FR Encoder", motorFR.getCurrentPosition());
@@ -554,4 +395,170 @@ abstract class MasterAutonomous extends Master
 
         telemetry.update();
     }
+
+
+
+
+
+
+
+
+    void imuPivot(double referenceAngle, double targetAngle, double MaxSpeed, double kAngle, double timeout)
+    {
+        runtime.reset();
+        //counter-clockwise is positive
+        double pivot;
+        double currentRobotAngle;
+        double angleError;
+
+        targetAngle = referenceAngle + targetAngle;//Adds the current angle to the target
+        targetAngle = adjustAngles(targetAngle);
+        do
+        {
+            currentRobotAngle = imu.getAngularOrientation().firstAngle;//Sets currentRobotAngle as the current robot angle
+            targetAngle = adjustAngles(targetAngle);//Makes it so the target angle does not wrap
+            angleError = currentRobotAngle - targetAngle;
+            angleError = adjustAngles(angleError);
+            pivot = angleError * kAngle;
+
+            if (pivot >= 0.0)
+            {
+                pivot = Range.clip(pivot, 0.15, MaxSpeed);
+            } else
+            {
+                pivot = Range.clip(pivot, -MaxSpeed, -0.15);
+            }
+
+            speedFL = pivot;
+            speedFR = -pivot;
+            speedBL = pivot;
+            speedBR = -pivot;
+
+            motorFL.setPower(speedFL);
+            motorFR.setPower(speedFR);
+            motorBL.setPower(speedBL);
+            motorBR.setPower(speedBR);
+            idle();
+        }
+        while ((opModeIsActive() && (Math.abs(angleError) > 3.0)) && (runtime.seconds() < timeout));
+
+        stopDriving();
+    }
+
+    void reverseImuPivot(double referenceAngle, double targetAngle, double MaxSpeed, double kAngle, double timeout)
+    {
+        runtime.reset();
+        //counter-clockwise is positive
+        double pivot;
+        double currentRobotAngle;
+        double angleError;
+
+        targetAngle = referenceAngle + targetAngle;//Adds the current angle to the target
+        targetAngle = adjustAngles(targetAngle);
+        do
+        {
+            currentRobotAngle = imu.getAngularOrientation().firstAngle;//Sets currentRobotAngle as the current robot angle
+            targetAngle = adjustAngles(targetAngle);//Makes it so the target angle does not wrap
+            angleError = currentRobotAngle - targetAngle;
+            angleError = adjustAngles(angleError);
+            pivot = angleError * kAngle;
+
+            if (pivot >= 0.0)
+            {
+                pivot = Range.clip(pivot, 0.15, MaxSpeed);
+            } else
+            {
+                pivot = Range.clip(pivot, -MaxSpeed, -0.15);
+            }
+
+            speedFL = -pivot;
+            speedFR = pivot;
+            speedBL = -pivot;
+            speedBR = pivot;
+
+            motorFL.setPower(speedFL);
+            motorFR.setPower(speedFR);
+            motorBL.setPower(speedBL);
+            motorBR.setPower(speedBR);
+            idle();
+        }
+        while ((opModeIsActive() && (Math.abs(angleError) > 3.0)) && (runtime.seconds() < timeout));
+
+        stopDriving();
+    }
+
+    void driveToPoint(double targetX, double targetY, double targetAngle) throws InterruptedException
+    {
+        updateRobotLocation();
+
+        // Calculate how far we are from target point
+        double distanceToTarget = calculateDistance(targetX - robotX, targetY - robotY);
+        double deltaAngle = subtractAngles(targetAngle, robotAngle);
+        double DISTANCE_TOLERANCE = 40; // In mm
+        double ANGLE_TOLERANCE = 5; // In degrees
+
+        // Run until robot is within tolerable distance and angle
+        while (!(distanceToTarget < DISTANCE_TOLERANCE && deltaAngle < ANGLE_TOLERANCE) && opModeIsActive())
+        {
+            updateRobotLocation();
+
+            // In case robot drifts to the side
+            //TODO: ISSUE IN THIS CALCULATION (BEHAVIOUR: DRIVE ANGLE DRIFTS CONSISTENTLY NEGATIVE WHILE RUNNING)
+            double driveAngle = Math.toDegrees(Math.atan2(targetY - robotY, targetX - robotX)) - robotAngle;
+
+            // Decrease power as robot approaches target. Ensure it doesn't exceed power limits
+            double drivePower = Range.clip(distanceToTarget * DRIVE_POWER_CONSTANT, MIN_DRIVE_POWER, 0.3);
+
+            // In case the robot turns while driving
+            deltaAngle = subtractAngles(targetAngle, robotAngle);
+            double turnPower = -deltaAngle * TURN_POWER_CONSTANT;
+
+            // Set drive motor powers
+            driveMecanum(driveAngle, drivePower, turnPower);
+
+            // Recalculate distance for next check
+            distanceToTarget = calculateDistance(targetX - robotX, targetY - robotY);
+
+            idle();
+
+            telemetry.addData("driveAngle", driveAngle);
+            telemetry.addData("drivePower", drivePower);
+            telemetry.addData("turnPower", turnPower);
+
+            sendTelemetry();
+        }
+        stopDriving();
+    }
+
+    void turnToAngle(double targetAngle) throws InterruptedException
+    {
+        updateRobotLocation();
+
+        double deltaAngle = subtractAngles(targetAngle, robotAngle);
+        double ANGLE_TOLERANCE = 5.0; // In degrees
+
+        while (Math.abs(deltaAngle) > ANGLE_TOLERANCE && opModeIsActive())
+        {
+            updateRobotLocation();
+
+            // Recalculate how far away we are
+            deltaAngle = subtractAngles(targetAngle, robotAngle);
+
+            // Slow down as we approach target
+            double turnPower = Range.clip(deltaAngle * TURN_POWER_CONSTANT, -1.0, 1.0);
+
+            // Make sure turn power doesn't go below minimum power
+            if (turnPower > 0 && turnPower < MIN_DRIVE_POWER)
+                turnPower = MIN_DRIVE_POWER;
+            else if (turnPower < 0 && turnPower > -MIN_DRIVE_POWER)
+                turnPower = -MIN_DRIVE_POWER;
+
+            // Set drive motor power
+            driveMecanum(0.0, 0.0, turnPower);
+            sendTelemetry();
+            idle();
+        }
+        stopDriving();
+    }
+
 }
