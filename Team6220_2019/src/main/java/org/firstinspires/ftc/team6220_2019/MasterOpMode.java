@@ -159,6 +159,35 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setPower(powerBR);
     }
 
+    public void navigateUsingEncoders (double driveAngle, double drivePower, double driveDistance)
+    {
+        double distanceRemaining = driveDistance;
+
+        // Convert drive angle and power to x and y components
+        double y = drivePower * Math.sin(Math.toRadians(driveAngle));
+        double x = drivePower * Math.cos(Math.toRadians(driveAngle));
+
+        // Signs for x, y, and w are based on the motor configuration and inherent properties of mecanum drive
+        double powerFL = -x - y;
+        double powerFR = -x + y;
+        double powerBL = x - y;
+        double powerBR = x + y;
+
+        while (distanceRemaining > Constants.POSITION_TOLERANCE_MM)
+        {
+            motorFL.setTargetPosition(motorFL.getCurrentPosition() + 280);
+            motorFL.setPower(powerFL);
+            motorFR.setTargetPosition(motorFR.getCurrentPosition() + 280);
+            motorFR.setPower(powerFR);
+            motorBL.setTargetPosition(motorBL.getCurrentPosition() + 280);
+            motorBL.setPower(powerBL);
+            motorBR.setTargetPosition(motorBR.getCurrentPosition() + 280);
+            motorBR.setPower(powerBR);
+
+            distanceRemaining -= drivePower * Constants.DRIVE_POWER_TO_ENCODER_PROPORTION;
+        }
+
+    }
     // The only difference between autonomousDriveMecanum and driveMecanum is that autonomousDriveMecanum
     // contains an adjustment for angle.
     public void autonomousDriveMecanum(double driveAngle, double drivePower, double w)

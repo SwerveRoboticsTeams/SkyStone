@@ -38,7 +38,7 @@ public class Constants
 
     // Tolerances
     public static final double ANGLE_TOLERANCE_DEG = 2.5;
-    public static final double POSITION_TOLERANCE_MM = 15.0;
+    public static final double POSITION_TOLERANCE_MM = 0.5;
     public static final double OPENCV_TOLERANCE_PIX = 0.5;
 
 
@@ -85,6 +85,9 @@ public class Constants
     public static final int LIFT_PLACE_POS = 2520; //todo Adjust
     public static final int NUM_TICKS_PER_STONE = 250; //THIS IS AN APPROXIMATION. todo Adjust
     //-------------------------------------------------
+
+    // Other encoder constants
+    public static final double DRIVE_POWER_TO_ENCODER_PROPORTION = 1; //todo Adjust
 
 
     // Ensure that input isn't used when no commands are given

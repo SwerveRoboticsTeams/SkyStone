@@ -111,24 +111,6 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         liftMotor.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
 
-        /*
-        // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
-        if(leftTrigger >= Constants.MINIMUM_TRIGGER_VALUE && rightTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //lowers
-        {
-            isRunToPosMode = false;
-            liftMotor.setPower( leftTrigger * Constants.LIFT_POWER_FACTOR_UP);
-        }
-        else if(rightTrigger >= Constants.MINIMUM_TRIGGER_VALUE && leftTrigger <= Constants.MINIMUM_TRIGGER_VALUE) //raises
-        {
-            isRunToPosMode = false;
-            liftMotor.setPower(-rightTrigger * Constants.LIFT_POWER_FACTOR_DOWN);
-        }
-        else
-        {
-            liftMotor.setPower(0);
-        }
-        */
-
         // This yields the fraction of 1 rotation that the motor has progressed through (in other
         // words, the range 0 - 1 corresponds to 0 - 360 degrees).
         double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
@@ -136,20 +118,21 @@ abstract public class MasterTeleOp extends MasterOpMode
         parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 2);
 
 
-        // todo Implement once encoder is working
-        /*
+
         // Code for automatic movement of arm-------------------------------------------------------------------
         // If driver 2 presses A, return lift to position just high enough to grab stone
         if (driver2.isButtonJustPressed(Button.A))
         {
             isRunToPosMode = true;
+            liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
 
             grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
 
-
+        // todo Implement once encoder is working
+        /*
         if(isRunToPosMode)
         {
             if(!hasLoweredArm)
