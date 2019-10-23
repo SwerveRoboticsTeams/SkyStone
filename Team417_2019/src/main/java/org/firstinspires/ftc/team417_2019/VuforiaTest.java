@@ -109,6 +109,7 @@ public class VuforiaTest extends MasterAutonomous {
                     OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
                     if (robotLocationTransform != null) {
                         lastLocation = robotLocationTransform;
+
                     }
                     else {
                         telemetry.addData("Null",0);
@@ -157,7 +158,11 @@ public class VuforiaTest extends MasterAutonomous {
         telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                 x, y, z);
         telemetry.update();
+        pause(5000);
+
         moveMaintainHeading(x,y,angles.thirdAngle, 0.2,0.8,5.0);
         targetsSkyStone.deactivate();
+        // gives time to look at telemetry
+        pause(10000);
     }
 }

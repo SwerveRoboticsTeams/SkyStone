@@ -372,10 +372,12 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
         waitForStart();
 
-        move(translation.get(0), 0, 0.2,0.8,5.0);
+        //move(translation.get(0), 0, 0.2,0.8,5.0);
         float angle = rotation.thirdAngle;
         //move(0,translation.get(1),0.2,0.8,5.0);
-        moveMaintainHeading(translation.get(0), translation.get(1), angle,0.2,0.9,7.0);
+        float moveX = translation.get(0);
+        float moveY = translation.get(1);
+        moveMaintainHeading(moveX, moveY, angle,0.2,0.9,7.0);
         telemetry.addData("movement finished",0);
         telemetry.update();
         // Disable Tracking when we are done;

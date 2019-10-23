@@ -69,11 +69,20 @@ public class TestMethods extends MasterAutonomous {
         rotation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         //double refAngle = angles.thirdAngle;
         //telemetry.addData("refAngle",refAngle);
-
-        moveMaintainHeading(-500, 100,rotation.thirdAngle,0.3, 0.8, 5.0);
-        // moveMaintainHeading(0, 0,angles.thirdAngle + 90,0.3, 0.8, 5.0);
+        // test pivot 45 degrees
+        moveMaintainHeading(0, 0,rotation.thirdAngle + 45,0.3, 0.8, 5.0);
         pause(2000);
-        moveMaintainHeading(500, 100,rotation.thirdAngle,0.3, 0.8, 5.0);
+
+        rotation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+        moveMaintainHeading(0, 0,rotation.thirdAngle - 45,0.3, 0.8, 5.0);
+        //pause(2000);
+
+        rotation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+        //moveMaintainHeading(1000, 0,rotation.thirdAngle,0.3, 0.5, 5.0);
+        // moveMaintainHeading(0, 0,angles.thirdAngle + 90,0.3, 0.8, 5.0);
+        //pause(5000);
+        rotation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+        //moveMaintainHeading(-1000, 0,rotation.thirdAngle,0.3, 0.5, 5.0);
         // moveMaintainHeading(0, 0,angles.thirdAngle - 90,0.3, 0.8, 5.0);
         //goToPosition2(0,0,200,200,0,0.7);
        // move(300, 0, 0.2, 0.75, 3.0);
