@@ -308,9 +308,9 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 0f;   // eg: Camera is 4 Inches in front of robot-center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 4.5f ;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = 9.0f;     // eg: Camera is ON the robot's center line
+        final float CAMERA_FORWARD_DISPLACEMENT  = 9.0f;   // eg: Camera is 4 Inches in front of robot-center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 5.0f ;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT     = 0f;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                     .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -334,7 +334,7 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
-        while (targetVisible == false) {
+        while (!opModeIsActive()) {
 
             // check all the trackable targets to see which one (if any) is visible.
             for (VuforiaTrackable trackable : allTrackables) {
@@ -356,7 +356,7 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
             if (targetVisible) {
                 // express position (translation) of robot in inches.
                 translation = lastLocation.getTranslation();
-                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0)  , translation.get(1) , translation.get(2));
 
                 // express the rotation of the robot in degrees.
