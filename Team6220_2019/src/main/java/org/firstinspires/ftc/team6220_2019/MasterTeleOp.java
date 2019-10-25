@@ -109,7 +109,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             hasPlacedStone = false;
         }
 
-        liftMotor.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
+        liftMotor.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
 
         // This yields the fraction of 1 rotation that the motor has progressed through (in other
         // words, the range 0 - 1 corresponds to 0 - 360 degrees).

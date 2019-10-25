@@ -29,6 +29,13 @@ abstract public class MasterOpMode extends LinearOpMode
     Servo parallelServo;
     //----------------------------------------------------------------
 
+    // Declare filters.  We currently have PID for turning and encoder navigation.------------------
+    PIDFilter rotationFilter;
+    PIDFilter translationFilter;
+
+    // Stores orientation of robot
+    double currentAngle = 0.0;
+
     // Create drivers
     DriverInput driver1;
     DriverInput driver2;
@@ -87,7 +94,7 @@ abstract public class MasterOpMode extends LinearOpMode
         collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // todo Change once encoder is working
-        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -115,6 +122,10 @@ abstract public class MasterOpMode extends LinearOpMode
         parameters.loggingTag = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+        // Initialize PID filters
+        rotationFilter = new PIDFilter(Constants.ROTATION_P, Constants.ROTATION_I, Constants.ROTATION_D);
+        translationFilter = new PIDFilter(Constants.TRANSLATION_P, Constants.TRANSLATION_I, Constants.TRANSLATION_D);
 
         // Add necessary items to callback---------------
         callback.add(driver1);
@@ -159,35 +170,84 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setPower(powerBR);
     }
 
-    public void navigateUsingEncoders (double driveAngle, double drivePower, double driveDistance)
+    // Uses encoders to make the robot drive to a specified relative position.  Also makes use of the
+    // imu to keep the robot at a constant heading during navigation.
+    // **Note:  initDeltaX/Y are in mm.
+    void navigateUsingEncoders(double initDeltaX, double initDeltaY, double maxPower)
     {
-        double distanceRemaining = driveDistance;
+        // Variables set every loop-------------------
+        double deltaX = initDeltaX;
+        double deltaY = initDeltaY;
+        double headingDiff = 0;
 
-        // Convert drive angle and power to x and y components
-        double y = drivePower * Math.sin(Math.toRadians(driveAngle));
-        double x = drivePower * Math.cos(Math.toRadians(driveAngle));
+        double driveAngle;
+        double drivePower;
+        double adjustedDrivePower;
+        double rotationPower;
 
-        // Signs for x, y, and w are based on the motor configuration and inherent properties of mecanum drive
-        double powerFL = -x - y;
-        double powerFR = -x + y;
-        double powerBL = x - y;
-        double powerBR = x + y;
+        // Find distance between robot and its destination
+        double distanceToTarget = calculateDistance(deltaX, deltaY);
+        //---------------------------------------------
+        double initHeading = getAngularOrientationWithOffset();
 
-        while (distanceRemaining > Constants.POSITION_TOLERANCE_MM)
+        motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Check to see if robot has arrived at destination within tolerances
+        while (((distanceToTarget > Constants.POSITION_TOLERANCE_IN) || (headingDiff > Constants.ANGLE_TOLERANCE_DEG)) && opModeIsActive())
         {
-            motorFL.setTargetPosition(motorFL.getCurrentPosition() + 280);
-            motorFL.setPower(powerFL);
-            motorFR.setTargetPosition(motorFR.getCurrentPosition() + 280);
-            motorFR.setPower(powerFR);
-            motorBL.setTargetPosition(motorBL.getCurrentPosition() + 280);
-            motorBL.setPower(powerBL);
-            motorBR.setTargetPosition(motorBR.getCurrentPosition() + 280);
-            motorBR.setPower(powerBR);
+            deltaX = initDeltaX - Constants.MM_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() +
+                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / (4 * Math.sqrt(2));
+            deltaY = initDeltaY - Constants.MM_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() -
+                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4;
 
-            distanceRemaining -= drivePower * Constants.DRIVE_POWER_TO_ENCODER_PROPORTION;
+            // Calculate how far off robot is from its initial heading
+            headingDiff = normalizeRotationTarget(getAngularOrientationWithOffset(), initHeading);
+
+            // Recalculate drive angle and distance remaining every loop
+            distanceToTarget = calculateDistance(deltaX, deltaY);
+            driveAngle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+            // Transform position and heading diffs to linear and rotation powers using filters----
+            translationFilter.roll(distanceToTarget);
+            drivePower = translationFilter.getFilteredValue();
+
+            // Ensure robot doesn't approach target position too slowly
+            if (Math.abs(drivePower) < Constants.MINIMUM_DRIVE_POWER)
+            {
+                drivePower = Math.signum(drivePower) * Constants.MINIMUM_DRIVE_POWER;
+            }
+            // Ensure robot doesn't ever drive faster than we want it to
+            else if (Math.abs(drivePower) > maxPower)
+            {
+                drivePower = Math.signum(drivePower) * maxPower;
+            }
+
+            // todo - signs should be properly accounted for.
+            // Additional factor is necessary to ensure turning power is large enough
+            rotationFilter.roll(-headingDiff);
+            rotationPower = rotationFilter.getFilteredValue();
+            //-------------------------------------------------------------------------------------
+
+            driveMecanum(driveAngle, drivePower, 0/*rotationPower*/);
+
+            telemetry.addData("Encoder Diff x: ", deltaX);
+            telemetry.addData("Encoder Diff y: ", deltaY);
+            telemetry.addData("Drive Power: ", drivePower);
+            telemetry.addData("Rotation Power: ", rotationPower);
+            telemetry.update();
+            idle();
         }
-
+        stopDriveMotors();
     }
+
     // The only difference between autonomousDriveMecanum and driveMecanum is that autonomousDriveMecanum
     // contains an adjustment for angle.
     public void autonomousDriveMecanum(double driveAngle, double drivePower, double w)
@@ -228,6 +288,50 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR.setPower(powerFR);
         motorBL.setPower(powerBL);
         motorBR.setPower(powerBR);
+    }
+
+    // Tell the robot to turn to a specified angle.  We can also limit the motor power while turning.
+    public void turnTo(double targetAngle, double maxPower)
+    {
+        double turningPower;
+        currentAngle = getAngularOrientationWithOffset();
+        double angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
+
+        // Robot only stops turning when it is within angle tolerance
+        while(Math.abs(angleDiff) >= Constants.ANGLE_TOLERANCE_DEG && opModeIsActive())
+        {
+            currentAngle = getAngularOrientationWithOffset();
+
+            // Give robot raw value for turning power
+            angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
+
+            // Send raw turning power through PID filter to adjust range and minimize oscillation
+            rotationFilter.roll(angleDiff);
+            turningPower = rotationFilter.getFilteredValue();
+
+            // Make sure turningPower doesn't go above maximum power
+            if (Math.abs(turningPower) > maxPower)
+            {
+                turningPower = maxPower * Math.signum(turningPower);
+            }
+
+            // Makes sure turningPower doesn't go below minimum power
+            if(Math.abs(turningPower) < Constants.MINIMUM_TURNING_POWER)
+            {
+                turningPower = Math.signum(turningPower) * Constants.MINIMUM_TURNING_POWER;
+            }
+
+            // Turns robot
+            driveMecanum(0.0, 0.0, -turningPower);
+
+            telemetry.addData("angleDiff: ", angleDiff);
+            telemetry.addData("Turning Power: ", turningPower);
+            telemetry.addData("Orientation: ", currentAngle);
+            telemetry.update();
+            idle();
+        }
+
+        stopDriveMotors();
     }
 
     // Note:  not in use

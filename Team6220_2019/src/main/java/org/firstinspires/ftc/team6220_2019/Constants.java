@@ -38,13 +38,14 @@ public class Constants
 
     // Tolerances
     public static final double ANGLE_TOLERANCE_DEG = 2.5;
-    public static final double POSITION_TOLERANCE_MM = 0.5;
+    public static final double POSITION_TOLERANCE_IN = 0.5;
     public static final double OPENCV_TOLERANCE_PIX = 0.5;
 
 
     // Movement control constants-----------------------
-    public static final double MINIMUM_DRIVE_POWER = 0.15;   // todo Adjust
-    public static final double MINIMUM_TURNING_POWER = 0.1;
+    public static final double MINIMUM_DRIVE_POWER = 0.05;   // todo Adjust
+    public static final double MAX_DRIVE_POWER = 0.3;   // todo Adjust
+    public static final double MINIMUM_TURNING_POWER = 0.02;
     // Constants for adjusting powers that are proportional to angle and position differences
     public static final double TURNING_POWER_FACTOR = 0.02;
     public static final double DRIVE_POWER_FACTOR = 0.003;
@@ -55,7 +56,7 @@ public class Constants
     // PID loop constants-------------------------------
     public static final double ROTATION_P = TURNING_POWER_FACTOR;
     public static final double ROTATION_I = 0.0;
-    public static final double ROTATION_D = 0.016;
+    public static final double ROTATION_D = 0.0;
     public static final double TRANSLATION_P = DRIVE_POWER_FACTOR;
     public static final double TRANSLATION_I = 0.00000002;    // todo Adjust
     public static final double TRANSLATION_D = 0.004;

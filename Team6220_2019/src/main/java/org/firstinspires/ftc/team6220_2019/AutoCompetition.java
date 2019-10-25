@@ -21,12 +21,25 @@ public class AutoCompetition extends MasterAutonomous
     public void runOpMode() throws InterruptedException
     {
         initialize();
+
+        setRobotStartingOrientation(90);
+
         vRes.activateTargets();
+        waitForStart();
+
+        //navigateUsingEncoders(400,0,0.6);
+        //navigateUsingEncoders(0,100,0.6);
+        //turnTo(180, 0.5);
+
+
 
         int targetNum = 0;
         while (opModeIsActive())
         {
-            if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
+            vuforiaFollowObject();
+            //driveToCoordinates(0, 0, 0);
+
+            /*if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
                 if(targetNum < navPoints.length - 1){
                     targetNum++;
                 }
@@ -34,7 +47,7 @@ public class AutoCompetition extends MasterAutonomous
                     break;
                 }
             }
-            //vuforiaFollowObject();
+            //vuforiaFollowObject();*/
 
             telemetry.update();
             idle();
