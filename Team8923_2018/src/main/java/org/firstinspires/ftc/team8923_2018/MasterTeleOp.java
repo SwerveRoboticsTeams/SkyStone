@@ -70,7 +70,7 @@ abstract class MasterTeleOp extends Master
     {
         // RUN FLIP
         //Manual control:
-        if(gamepad2.right_trigger > 0.1)
+        if(gamepad2.left_trigger > 0.1)
         {
             if(justSwitchedFlipModes)
             {
@@ -79,7 +79,7 @@ abstract class MasterTeleOp extends Master
             }
             motorFlip.setPower(gamepad2.right_trigger * 0.25);
         }
-        else if(gamepad2.left_trigger > 0.1)
+        else if(gamepad2.right_trigger > 0.1)
         {
             if(justSwitchedFlipModes)
             {
@@ -94,6 +94,19 @@ abstract class MasterTeleOp extends Master
             motorFlip.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorFlip.setTargetPosition(motorFlip.getCurrentPosition());
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
         //automatic half rotation
         else if(gamepad2.right_bumper && flipSuccState == 0 && !flipped)
         {

@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 abstract class MasterTeleOp extends Master
 {
+
+    boolean justSwitchedRunMode = true;
+
     public void driveMecanumTeleOp()
     {
         // Reverse drive if desired
@@ -55,21 +58,51 @@ abstract class MasterTeleOp extends Master
     }
     public void runClaw()
     {
-        if (gamepad2.left_trigger != 0)
+        double armTicks;
+        armTicks = motorArm.getCurrentPosition();
+
+//        if (gamepad2.left_trigger > 0.4)
+//        {
+//            motorArm.setPower(gamepad2.left_trigger * 0.1);
+//            telemetry.addData("arm encoder ticks", armTicks);
+//            telemetry.update();
+//
+//        }else{
+//
+//        }
+//        if (gamepad2.right_trigger > 0.4)
+//        {
+//            motorArm.setPower(-gamepad2.right_trigger * 0.1);
+//            telemetry.addData("arm encoder ticks", armTicks);
+//            telemetry.update();
+//
+//        }else{
+//        }
+        if(gamepad2.right_trigger > 0.1)
         {
-            motorArm.setPower(gamepad2.left_trigger * 0.25);
-
-        }else{
-            motorArm.setPower(0);
-
+            if(justSwitchedRunMode)
+            {
+                motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                justSwitchedRunMode = false;
+            }
+            motorArm.setPower(gamepad2.right_trigger * 0.25);
         }
-        if (gamepad2.right_trigger != 0)
+        else if(gamepad2.left_trigger > 0.1)
         {
-            motorArm.setPower(-gamepad2.right_trigger * 0.25);
-        }else{
-            motorArm.setPower(0);
+            if(justSwitchedRunMode)
+            {
+                motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                justSwitchedRunMode = false;
+            }
+            motorArm.setPower(-gamepad2.left_trigger * 0.25);
         }
-
+        else if(!(gamepad2.left_trigger > 0.1 || gamepad2.right_trigger > 0.1) && !justSwitchedRunMode)
+        {
+            justSwitchedRunMode = true;
+            motorArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorArm.setPower(1);
+            motorArm.setTargetPosition(motorArm.getCurrentPosition());
+        }
 
     }
 
