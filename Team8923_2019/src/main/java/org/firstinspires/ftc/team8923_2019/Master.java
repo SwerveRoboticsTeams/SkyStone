@@ -18,6 +18,8 @@ abstract class Master extends LinearOpMode
     DcMotor motorArm;
     CRServo intakeLeft;
     CRServo intakeRight;
+    Servo servoJoint;
+    Servo servoGrabber;
 
     BNO055IMU imu;
 
@@ -44,6 +46,8 @@ abstract class Master extends LinearOpMode
         intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
         intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
         motorArm = hardwareMap.get(DcMotor.class,  "motorArm");
+//        servoJoint = hardwareMap.get(Servo.class, "servoJoint");
+//        servoGrabber = hardwareMap.get(Servo.class, "servoGrabber");
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
