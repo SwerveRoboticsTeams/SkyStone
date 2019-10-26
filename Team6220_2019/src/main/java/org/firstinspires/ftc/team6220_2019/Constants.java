@@ -7,19 +7,17 @@ package org.firstinspires.ftc.team6220_2019;
 public class Constants
 {
     // Standard conversions
-    // This is for an Andymark 40; 20's and 60's are different
-    public static final int ANDYMARK_TICKS_PER_ROTATION = 1120;
-    public static final int TETRIX_TICKS_PER_ROTATION = 1440;
+    // This is for an AndyMark 40; 20s are 560 ticks / rot and 60s are 1680 ticks / rot
+    public static final int AM_40_TICKS_PER_ROTATION = 1120;
     public static final float MM_PER_INCH = 25.4f;
 
 
     // Robot specifications
-    public static final float WHEEL_DIAMETER_MM = 4 * MM_PER_INCH;    // 4 inch diameter wheel
-    public static final double GEAR_RATIO = 24.0 / 32.0;            // Driven to driving gear
+    public static final float WHEEL_DIAMETER_IN = 4;    // 4 inch diameter wheel
+    public static final double SPROCKET_RATIO = 16.0 / 16.0;            // Driven to driving sprocket teeth
     public static final double GRAB_ARM_LENGTH = 13.5;                // Grabber arm is 13.5 inches long
-    // Actually 25.4 ticks / inch
-    public static final double MM_PER_ANDYMARK_TICK = (Math.PI * WHEEL_DIAMETER_MM) / (ANDYMARK_TICKS_PER_ROTATION * GEAR_RATIO);
-    public static final float WHEEL_SEPARATION_MM = 15.5f * MM_PER_INCH;    // 4 inch diameter wheel
+    // todo Confirm this is correct
+    public static final double IN_PER_ANDYMARK_TICK = (Math.PI * WHEEL_DIAMETER_IN) / (0.5 * AM_40_TICKS_PER_ROTATION * SPROCKET_RATIO);
 
     // Drive mode constants
     public static final double SLOW_MODE_T_FACTOR = 0.3;
@@ -47,8 +45,8 @@ public class Constants
     public static final double MAX_DRIVE_POWER = 0.3;   // todo Adjust
     public static final double MINIMUM_TURNING_POWER = 0.02;
     // Constants for adjusting powers that are proportional to angle and position differences
-    public static final double TURNING_POWER_FACTOR = 0.02;
-    public static final double DRIVE_POWER_FACTOR = 0.003;
+    public static final double TURNING_POWER_FACTOR = 0.01;
+    public static final double DRIVE_POWER_FACTOR = 0.04;
     //------------------------------------------------
 
 
@@ -58,8 +56,8 @@ public class Constants
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
     public static final double TRANSLATION_P = DRIVE_POWER_FACTOR;
-    public static final double TRANSLATION_I = 0.00000002;    // todo Adjust
-    public static final double TRANSLATION_D = 0.004;
+    public static final double TRANSLATION_I = 0.0000005;    // todo Adjust
+    public static final double TRANSLATION_D = 0.1;
     //---------------------------------------------------
 
 

@@ -24,22 +24,24 @@ public class AutoCompetition extends MasterAutonomous
 
         setRobotStartingOrientation(90);
 
-        vRes.activateTargets();
+        //vRes.activateTargets();
         waitForStart();
 
-        //navigateUsingEncoders(400,0,0.6);
-        //navigateUsingEncoders(0,100,0.6);
-        //turnTo(180, 0.5);
+        // Park left or right of current position depending on alliance.
+        if (isRedAlliance)
+            navigateUsingEncoders(-24,0,0.5);
+        else
+            navigateUsingEncoders(24,0,0.5);
 
 
-
+        /*
         int targetNum = 0;
         while (opModeIsActive())
         {
             vuforiaFollowObject();
             //driveToCoordinates(0, 0, 0);
 
-            /*if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
+            *//*if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
                 if(targetNum < navPoints.length - 1){
                     targetNum++;
                 }
@@ -47,12 +49,12 @@ public class AutoCompetition extends MasterAutonomous
                     break;
                 }
             }
-            //vuforiaFollowObject();*/
+            //vuforiaFollowObject();*//*
 
             telemetry.update();
             idle();
         }
 
-        vRes.deactivateTargets();
+        vRes.deactivateTargets();*/
     }
 }

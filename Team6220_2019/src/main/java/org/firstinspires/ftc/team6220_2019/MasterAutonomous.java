@@ -5,12 +5,56 @@ package org.firstinspires.ftc.team6220_2019;
  */
 abstract public class MasterAutonomous extends MasterOpMode
 {
+    // Initialize booleans and variables used in runSetup().
+    boolean isRedAlliance = true;
+
+    // Initializes robot normally in addition to added autonomous functionality (e.g., Vuforia)
     @Override
     public void initialize()
     {
         super.initialize();
         vRes.initVuforia();
+        runSetup();
     }
+
+
+    // Allows the 1st driver to decide which autonomous routine should be run using gamepad input.
+    void runSetup()
+    {
+        // Accounts for delay between initializing the program and starting TeleOp.
+        lTime = timer.seconds();
+
+        // Ensure log can't overflow
+        telemetry.log().setCapacity(5);
+        telemetry.log().add("Red/Blue = B / X");
+
+        boolean settingUp = true;
+
+        while (settingUp)
+        {
+            // Finds the time elapsed each loop.
+            double eTime = timer.seconds() - lTime;
+            lTime = timer.seconds();
+
+            // Select start position.
+            if (driver1.isButtonJustPressed(Button.B))
+                isRedAlliance = true;
+            else if (driver1.isButtonJustPressed(Button.X))
+                isRedAlliance = false;
+            else if (driver1.isButtonJustPressed(Button.START)) // If the driver presses start, we exit setup.
+                settingUp = false;
+
+            // Display the current setup
+            telemetry.addData("Is on red alliance: ", isRedAlliance);
+            updateCallback(eTime);
+            telemetry.update();
+            idle();
+        }
+
+        telemetry.log().clear();
+        telemetry.log().add("Setup finished.");
+    }
+
 
     // This method can be used with the skystone navigation target.  It allows a robot to navigate
     // to the front of the target and follow it if it moves.

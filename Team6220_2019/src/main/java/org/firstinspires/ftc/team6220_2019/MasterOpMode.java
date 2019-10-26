@@ -54,8 +54,8 @@ abstract public class MasterOpMode extends LinearOpMode
     is concave up in the 1st quadrant is preferable to a 1st degree polynomial, since a driver
     generally needs more control in the low speed range than the high range.
    */
-    //                                             y = 0 + 0.25x + 0 + 0.75x^3
-    Polynomial stickCurve = new Polynomial(new double[]{0, 0.25, 0, 0.75});
+    //                                             y = 0 + 0.5x + 0 + 0.5x^3
+    Polynomial stickCurve = new Polynomial(new double[]{0, 0.5, 0, 0.5});
 
     // Variable that keeps track of the height of our tower. It tells autonomous and semi-autonomous drive how high the current tower is.
     int towerHeight = 0;
@@ -200,13 +200,13 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Check to see if robot has arrived at destination within tolerances
+        // Check to see if robot has arrived at destination within angle and position tolerances
         while (((distanceToTarget > Constants.POSITION_TOLERANCE_IN) || (headingDiff > Constants.ANGLE_TOLERANCE_DEG)) && opModeIsActive())
         {
-            deltaX = initDeltaX - Constants.MM_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() +
-                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / (4 * Math.sqrt(2));
-            deltaY = initDeltaY - Constants.MM_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() -
-                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4;
+            deltaX = initDeltaX - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
+                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / (4 /* Math.sqrt(2)*/);
+            deltaY = initDeltaY - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() +
+                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
 
             // Calculate how far off robot is from its initial heading
             headingDiff = normalizeRotationTarget(getAngularOrientationWithOffset(), initHeading);
@@ -215,8 +215,9 @@ abstract public class MasterOpMode extends LinearOpMode
             distanceToTarget = calculateDistance(deltaX, deltaY);
             driveAngle = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
+            // todo - signs should be properly accounted for.
             // Transform position and heading diffs to linear and rotation powers using filters----
-            translationFilter.roll(distanceToTarget);
+            translationFilter.roll(-distanceToTarget);
             drivePower = translationFilter.getFilteredValue();
 
             // Ensure robot doesn't approach target position too slowly
