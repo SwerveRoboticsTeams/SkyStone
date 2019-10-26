@@ -136,7 +136,7 @@ public class VuforiaResources
     private boolean targetVisible = false;
     private float phoneXRotate = 0;
     private float phoneYRotate = 0;
-    private float phoneZRotate = 90;
+    private float phoneZRotate = 180;
     //------------------------------------------------------------------------------------------------------------
 
 

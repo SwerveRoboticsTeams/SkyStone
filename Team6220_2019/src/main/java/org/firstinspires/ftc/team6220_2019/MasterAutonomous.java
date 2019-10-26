@@ -68,6 +68,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     public void vuforiaFollowObject()
     {
         vRes.getLocation();
+        double distanceToStone = 100;
 
         if (!vRes.getTargetVisibility())
         {
@@ -75,28 +76,39 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
         else
         {
-            // x, y, z defines the location of the center of the robot relative to the skystone.
-            // todo Need to test whether distance - 8 works correctly.
-            float x = vRes.translation.get(0) / Constants.MM_PER_INCH - 8;
-            float y = vRes.translation.get(1) / Constants.MM_PER_INCH;
-            float z = vRes.translation.get(2) / Constants.MM_PER_INCH;
-            telemetry.addData("x value: ", x);
-            telemetry.addData("y value: ", y);
-            telemetry.addData("z value: ", z);
-            // w is the rotation of the robot relative to the skystone in degrees.
-            float w = vRes.rotation.firstAngle;
-
-            float distance = distancePower((float) Math.sqrt(x * x + y * y));
-
-            float angle = (float) (Math.atan(y / x) * 180 / Math.PI);
-            if (x > 0)
+            if (distanceToStone > Constants.POSITION_TOLERANCE_IN)
             {
-                angle += 180;
-            }
-            angle = (float) normalizeAngle(angle);
+                // x, y, z defines the location of the center of the robot relative to the skystone (in inches).
+                // todo Need to test whether distance - 8 works correctly.
+                double x = vRes.translation.get(0) / Constants.MM_PER_INCH + 8;
+                double y = vRes.translation.get(1) / Constants.MM_PER_INCH;
+                double z = vRes.translation.get(2) / Constants.MM_PER_INCH;
+                telemetry.addData("x value: ", x);
+                telemetry.addData("y value: ", y);
+                telemetry.addData("z value: ", z);
+                // w is the rotation of the robot relative to the skystone in degrees.
+                double currentAngle = vRes.rotation.firstAngle;
 
-            autonomousDriveMecanum(angle, distance, rotationPower(w));
-            //driveMecanum(0, 0, 0);
+                distanceToStone = calculateDistance(x, y);
+                // todo - signs should be properly accounted for.
+                // Transform position and heading diffs to linear and rotation powers using filters----
+                translationFilter.roll(distanceToStone);
+                double drivePower = translationFilter.getFilteredValue();
+                rotationFilter.roll(currentAngle);
+                double rotationPower = rotationFilter.getFilteredValue();
+
+                double angle = (Math.atan(y / x) * 180 / Math.PI);
+                if (x > 0)
+                {
+                    angle += 180;
+                }
+                angle = normalizeAngle(angle);
+
+                // Drive robot.  Need to add 90 degrees to account for phone orientation relative to robot.
+                autonomousDriveMecanum(angle + 90, drivePower * 0.05, 0/*rotationPower*/);
+            }
+            else
+                stopDriveMotors();
         }
     }
 

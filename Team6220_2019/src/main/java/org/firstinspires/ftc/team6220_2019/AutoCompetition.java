@@ -22,17 +22,58 @@ public class AutoCompetition extends MasterAutonomous
     {
         initialize();
 
-        setRobotStartingOrientation(90);
+        setRobotStartingOrientation(180);
 
         //vRes.activateTargets();
         waitForStart();
 
-        // Park left or right of current position depending on alliance.
+        /*// Park left or right of current position depending on alliance.
         if (isRedAlliance)
             navigateUsingEncoders(-24,0,0.5);
         else
-            navigateUsingEncoders(24,0,0.5);
+            navigateUsingEncoders(24,0,0.5);*/
 
+        // Park left or right of current position depending on alliance.
+        if (isRedAlliance)
+        {
+            // Navigate to line of stones
+            navigateUsingEncoders(42, 0, 0.6);
+
+            // Start collecting
+            collectorLeft.setPower(Constants.COLLECTOR_POWER);
+            collectorRight.setPower(-Constants.COLLECTOR_POWER);
+
+            // Move forward to collect stone
+            navigateUsingEncoders(0, 8, 0.3);
+
+            // Stop collecting
+            collectorLeft.setPower(0);
+            collectorRight.setPower(0);
+
+            // Navigate under Skybridge
+            navigateUsingEncoders(-18, 0, 0.6);
+            navigateUsingEncoders(0, -30, 0.6);
+        }
+        else
+        {
+            // Navigate to line of stones
+            navigateUsingEncoders(-42, 0, 0.6);
+
+            // Start collecting
+            collectorLeft.setPower(Constants.COLLECTOR_POWER);
+            collectorRight.setPower(-Constants.COLLECTOR_POWER);
+
+            // Move forward to collect stone
+            navigateUsingEncoders(0, 8, 0.3);
+
+            // Stop collecting
+            collectorLeft.setPower(0);
+            collectorRight.setPower(0);
+
+            // Navigate under Skybridge
+            navigateUsingEncoders(18, 0, 0.6);
+            navigateUsingEncoders(0, -30, 0.6);
+        }
 
         /*
         int targetNum = 0;
