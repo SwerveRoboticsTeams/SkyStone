@@ -19,7 +19,7 @@ public class TeleOpCompetition extends MasterTeleOp
             driveMecanumTeleOp();
             runIntake();
             runClaw();
-            sendTelemetry();
+           // sendTelemetry();
 
             idle();
         }

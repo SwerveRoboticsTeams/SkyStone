@@ -93,16 +93,8 @@ abstract class MasterTeleOp extends Master
             justSwitchedFlipModes = true;
             motorFlip.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorFlip.setTargetPosition(motorFlip.getCurrentPosition());
+
         }
-
-
-
-
-
-
-
-
-
 
 
 

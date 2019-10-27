@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.team8923_2019;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 
 abstract class MasterTeleOp extends Master
 {
 
-    boolean justSwitchedRunMode = true;
+
+    boolean isRunToPosMode = false;
 
     public void driveMecanumTeleOp()
     {
@@ -52,57 +56,44 @@ abstract class MasterTeleOp extends Master
             intakeLeft.setPower(0.0);
             intakeRight.setPower(0.0);
         }
-        telemetry.addData("intake", gamepad1.dpad_up);
-        telemetry.update();
+//        telemetry.addData("intake", gamepad1.dpad_up);
+//        telemetry.update();
 
     }
     public void runClaw()
     {
-        double armTicks;
-        armTicks = motorArm.getCurrentPosition();
 
-//        if (gamepad2.left_trigger > 0.4)
-//        {
-//            motorArm.setPower(gamepad2.left_trigger * 0.1);
-//            telemetry.addData("arm encoder ticks", armTicks);
-//            telemetry.update();
-//
-//        }else{
-//
-//        }
-//        if (gamepad2.right_trigger > 0.4)
-//        {
-//            motorArm.setPower(-gamepad2.right_trigger * 0.1);
-//            telemetry.addData("arm encoder ticks", armTicks);
-//            telemetry.update();
-//
-//        }else{
-//        }
-        if(gamepad2.right_trigger > 0.1)
+        double rightStickY = gamepad2.right_stick_y;
+        Constants.ARM_MOTOR_TICKS = motorArm.getCurrentPosition();
+
+
+        if(rightStickY > Constants.MINIMUM_JOYSTICK_PWR)
         {
-            if(justSwitchedRunMode)
-            {
-                motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                justSwitchedRunMode = false;
-            }
-            motorArm.setPower(gamepad2.right_trigger * 0.25);
+            motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorArm.setPower(rightStickY * Constants.ARM_PWR_FACTOR);
         }
-        else if(gamepad2.left_trigger > 0.1)
+        else if(rightStickY < -Constants.MINIMUM_JOYSTICK_PWR)
         {
-            if(justSwitchedRunMode)
-            {
-                motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                justSwitchedRunMode = false;
-            }
-            motorArm.setPower(-gamepad2.left_trigger * 0.25);
+            motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorArm.setPower(-rightStickY * Constants.ARM_PWR_FACTOR);
         }
-        else if(!(gamepad2.left_trigger > 0.1 || gamepad2.right_trigger > 0.1) && !justSwitchedRunMode)
+        else
         {
-            justSwitchedRunMode = true;
             motorArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorArm.setPower(1);
             motorArm.setTargetPosition(motorArm.getCurrentPosition());
         }
+
+
+        telemetry.addData("ticks",Constants.ARM_MOTOR_TICKS);
+        telemetry.update();
+
+
+//        double deltaMotorPos = motorArm.getCurrentPosition() / Constants.ARM_MOTOR_TICKS;
+//        // Power the servo such that it remains parallel to the ground.
+//        servoJoint.setPosition(Constants.PARALLEL_SERVOJOINT_INIT + deltaMotorPos * 2);
+//
+
+
 
     }
 
