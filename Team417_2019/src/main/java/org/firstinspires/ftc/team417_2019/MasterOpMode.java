@@ -20,26 +20,29 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor motorFR = null; // hub 1 port 0
     DcMotor motorBL = null; // hub 2 port 1
     DcMotor motorBR = null; // hub 1 port 1
+    // hub 2 port 4
+    Servo skystoneGrabber = null;
+    // hub 1 port 2
+    DcMotor hanger = null;
+    // hub 2 port 2
+    DcMotor core2 = null;
+    // hub 1 port 3
+    DcMotor arm1 = null;
+    // hub 2 port 3
+    DcMotor arm2 = null;
+    // hub 2 port 2
+    Servo mainWristServo = null;
+    // hub 2 port 0
+    Servo smallGrabber  = null;
 
-  //  Servo marker = null;    // hub 2 port 4
-
-    DcMotor hanger = null;  // hub 1 port 2
-
-    DcMotor core2 = null;   // hub 2 port 2
-
-    DcMotor arm1 = null;    // hub 1 port 3
-    DcMotor arm2 = null;   // hub 2 port 3
-
-    Servo rev1 = null;     // hub 2 port 2
-    //CRServo vex1 = null;   // hub 2 port 0
-
-    // Declare sensors
-    BNO055IMU imu; // inertial measurement unit (located within the REV Hub)
+    // For movement using Vuforia
+    BNO055IMU imu;
     Orientation angles;
     OpenGLMatrix vuMark;
     VectorF translation;
 
     // Declare constants
+    // movement constants
     static final double COUNTS_PER_MOTOR_REV = 1120; // 40:1 motor
     static final double DRIVE_GEAR_REDUCTION = 1.0; // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0; // For figuring circumference
@@ -54,23 +57,22 @@ abstract public class MasterOpMode extends LinearOpMode
     static final int MAX_CORE_POS = 790;
     static final int MIN_CORE_POS = -15;
 
-    // Servo init and low positions
+    // change and edit these
+    // servo init and low positions
     static final double MARKER_LOW = -0.37;
     static final double MARKER_HIGH = 0.3;
 
     // declare color sensor variables
-    // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F,0F,0F};
     float hsvLeft[] = {0F,0F,0F};
     float hsvRight[] = {0F,0F,0F};
 
-    // declare motor powers
+    // motor powers
     double powerFL;
     double powerFR;
     double powerBL;
     double powerBR;
 
-    double powerGlyphUp = 0.6;
 
     public void initializeHardware()
     {
@@ -80,18 +82,17 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
 
-        //marker = hardwareMap.servo.get("marker");
-
         core2 = hardwareMap.dcMotor.get("core2");
 
         arm1 = hardwareMap.dcMotor.get("arm1");
         arm2 = hardwareMap.dcMotor.get("arm2");
 
-        //rev1 = hardwareMap.servo.get("rev1");
-
-        // vex1 = hardwareMap.crservo.get("vex1");
-
         hanger = hardwareMap.dcMotor.get("hanger");
+
+        // not currently in configuration ( need to be configured on the robot)
+        mainWristServo = hardwareMap.servo.get("mainWristServo");
+        skystoneGrabber = hardwareMap.servo.get("marker");
+        smallGrabber = hardwareMap.servo.get("smallGrabber");
 
         core2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         core2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
