@@ -19,24 +19,14 @@ public class TeleOpCompetition extends MasterTeleOp
         {
             Variables.ARM_MOTOR_TICKS = motorArm.getCurrentPosition() - Constants.ARM_STARTING_TICKS;
 
-            telemetry.addData("armStartingTicks", Constants.ARM_STARTING_TICKS);
-            telemetry.addData("armTicks", Variables.ARM_MOTOR_TICKS);
-
-            telemetry.update();
+//            servoGrabber.setPosition(0.5);
             driveMecanumTeleOp();
             runIntake();
             runClaw();
-           // sendTelemetry();
+            sendTelemetry();
 
             idle();
         }
     }
-    private double map(double value, double minValue, double maxValue, double minMappedValue, double maxMappedValue)
-    {
-        double valueDifference = maxValue - minValue;
-        double percentValueDifference = (value - minValue) / valueDifference;
-        double mappedDifference = maxMappedValue - minMappedValue;
 
-        return percentValueDifference * mappedDifference;
-    }
 }

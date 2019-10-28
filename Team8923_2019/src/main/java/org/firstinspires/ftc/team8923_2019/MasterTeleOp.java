@@ -10,9 +10,6 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 abstract class MasterTeleOp extends Master
 {
 
-
-    boolean isRunToPosMode = false;
-
     public void driveMecanumTeleOp()
     {
         // Reverse drive if desired
@@ -62,21 +59,20 @@ abstract class MasterTeleOp extends Master
 //        telemetry.update();
 
     }
+
     public void runClaw()
     {
+        double leftStickY = gamepad2.left_stick_y;
 
-        double rightStickY = gamepad2.right_stick_y;
-
-
-        if(rightStickY > Constants.MINIMUM_JOYSTICK_PWR)
+        if(leftStickY > Constants.MINIMUM_JOYSTICK_PWR)
         {
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorArm.setPower(rightStickY * Constants.ARM_PWR_FACTOR);
+            motorArm.setPower(leftStickY * Constants.ARM_PWR_FACTOR);
         }
-        else if(rightStickY < -Constants.MINIMUM_JOYSTICK_PWR)
+        else if(leftStickY < -Constants.MINIMUM_JOYSTICK_PWR)
         {
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorArm.setPower(rightStickY * Constants.ARM_PWR_FACTOR);
+            motorArm.setPower(leftStickY * Constants.ARM_PWR_FACTOR);
         }
         else
         {
@@ -86,40 +82,28 @@ abstract class MasterTeleOp extends Master
 
         }
 
-
-
-
-
-
         adjustClawPosition();
-
-
-
-
-
-
-
-
-
-//        double deltaMotorPos = motorArm.getCurrentPosition() / Constants.ARM_MOTOR_TICKS;
-//        // Power the servo such that it remains parallel to the ground.
-//        servoJoint.setPosition(Constants.PARALLEL_SERVOJOINT_INIT + deltaMotorPos * 2);
-//
-
-
-
+        toggleGrabber();
     }
 
     private void adjustClawPosition()
     {
-        if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARARREL_POINT)
+        if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARALLEL_POINT)
         {
-            // Input arm motor ticks and output servo positions
-            // mapping min and max arm ticks to min max servo positions
-
-            double adjustedServoPosition = map(Variables.ARM_MOTOR_TICKS, Constants.MIN_ENCODERCOUNT_PARARREL_POINT,Constants.MAX_ENCODERCOUNT_PARARREL_POINT, Constants.MIN_SERVOJOINT_PWR, Constants.MAX_SERVOJOINT_PWR);
+            double adjustedServoPosition = map(Variables.ARM_MOTOR_TICKS, Constants.MIN_ENCODERCOUNT_PARALLEL_POINT,Constants.MAX_ENCODERCOUNT_PARALLEL_POINT, Constants.MIN_SERVOJOINT_PWR, Constants.MAX_SERVOJOINT_PWR);
             servoJoint.setPosition(adjustedServoPosition);
         }
+    }
+
+    private void toggleGrabber()
+    {
+        double rightTrigger = gamepad2.right_trigger;
+        if(rightTrigger > Constants.MINIMUM_TRIGGER_VALUE){
+            servoGrabber.setPosition(rightTrigger*0.9);
+        }else{
+            servoGrabber.setPosition(0.5);
+        }
+
     }
 
     private double map(double value, double minValue, double maxValue, double minMappedValue, double maxMappedValue)
@@ -140,6 +124,8 @@ abstract class MasterTeleOp extends Master
         telemetry.addData("right stick y:", gamepad1.right_stick_y);
         telemetry.addData("right trigger:", gamepad2.right_trigger);
         telemetry.addData("left trigger:", gamepad2.left_trigger);
+        telemetry.addData("armStartingTicks", Constants.ARM_STARTING_TICKS);
+        telemetry.addData("armTicks", Variables.ARM_MOTOR_TICKS);
         telemetry.update();
     }
 }
