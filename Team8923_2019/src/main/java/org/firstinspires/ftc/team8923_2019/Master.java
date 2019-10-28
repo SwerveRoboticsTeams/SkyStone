@@ -46,8 +46,8 @@ abstract class Master extends LinearOpMode
         intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
         intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
         motorArm = hardwareMap.get(DcMotor.class,  "motorArm");
-//        servoJoint = hardwareMap.get(Servo.class, "servoJoint");
-//        servoGrabber = hardwareMap.get(Servo.class, "servoGrabber");
+        servoJoint = hardwareMap.get(Servo.class, "servoJoint");
+        servoGrabber = hardwareMap.get(Servo.class, "servoGrabber");
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -55,7 +55,7 @@ abstract class Master extends LinearOpMode
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //motorLift.setDirection(DcMotorSimple.Direction.REVERSE);
+
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -65,6 +65,9 @@ abstract class Master extends LinearOpMode
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Variables.STARTING_SERVO_JOINT_POSITION = servoJoint.getPosition();
+        Constants.ARM_STARTING_TICKS = motorArm.getCurrentPosition();
 
 
     }

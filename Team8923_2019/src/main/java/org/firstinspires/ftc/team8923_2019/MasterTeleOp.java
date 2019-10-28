@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 
+
+
 abstract class MasterTeleOp extends Master
 {
 
@@ -64,7 +66,6 @@ abstract class MasterTeleOp extends Master
     {
 
         double rightStickY = gamepad2.right_stick_y;
-        Constants.ARM_MOTOR_TICKS = motorArm.getCurrentPosition();
 
 
         if(rightStickY > Constants.MINIMUM_JOYSTICK_PWR)
@@ -75,17 +76,29 @@ abstract class MasterTeleOp extends Master
         else if(rightStickY < -Constants.MINIMUM_JOYSTICK_PWR)
         {
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorArm.setPower(-rightStickY * Constants.ARM_PWR_FACTOR);
+            motorArm.setPower(rightStickY * Constants.ARM_PWR_FACTOR);
         }
         else
         {
-            motorArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorArm.setTargetPosition(motorArm.getCurrentPosition());
+            motorArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            // Fix arm dropping
+
         }
 
 
-        telemetry.addData("ticks",Constants.ARM_MOTOR_TICKS);
-        telemetry.update();
+
+
+
+
+        adjustClawPosition();
+
+
+
+
+
+
+
 
 
 //        double deltaMotorPos = motorArm.getCurrentPosition() / Constants.ARM_MOTOR_TICKS;
@@ -95,6 +108,27 @@ abstract class MasterTeleOp extends Master
 
 
 
+    }
+
+    private void adjustClawPosition()
+    {
+        if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARARREL_POINT)
+        {
+            // Input arm motor ticks and output servo positions
+            // mapping min and max arm ticks to min max servo positions
+
+            double adjustedServoPosition = map(Variables.ARM_MOTOR_TICKS, Constants.MIN_ENCODERCOUNT_PARARREL_POINT,Constants.MAX_ENCODERCOUNT_PARARREL_POINT, Constants.MIN_SERVOJOINT_PWR, Constants.MAX_SERVOJOINT_PWR);
+            servoJoint.setPosition(adjustedServoPosition);
+        }
+    }
+
+    private double map(double value, double minValue, double maxValue, double minMappedValue, double maxMappedValue)
+    {
+        double valueDifference = maxValue - minValue;
+        double percentValueDifference = (value - minValue) / valueDifference;
+        double mappedDifference = maxMappedValue - minMappedValue;
+
+        return percentValueDifference * mappedDifference + minMappedValue;
     }
 
     void sendTelemetry()
