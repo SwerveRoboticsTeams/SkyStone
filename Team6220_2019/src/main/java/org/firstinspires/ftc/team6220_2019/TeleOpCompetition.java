@@ -27,10 +27,12 @@ public class TeleOpCompetition extends MasterTeleOp
              // Driver2 methods
             driveCollector();
             driveScoringSystem();
-            // Only toggle grabber if Button.A is just pressed.
+            // Only toggle grabber if Button.RIGHT_BUMPER is just pressed.
             if(driver2.isButtonJustPressed(Button.RIGHT_BUMPER))
                 toggleGrabber();
-
+            // Only toggle foundationServos if Button.B is just pressed.
+            if(driver2.isButtonJustPressed(Button.B))
+                toggleFoundationServos();
 
             /*
              Updates that need to happen each loop

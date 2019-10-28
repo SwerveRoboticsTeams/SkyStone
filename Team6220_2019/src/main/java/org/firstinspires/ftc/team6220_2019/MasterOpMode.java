@@ -27,6 +27,8 @@ abstract public class MasterOpMode extends LinearOpMode
 
     Servo grabberServo;
     Servo parallelServo;
+    Servo foundationServoLeft;
+    Servo foundationServoRight;
     //----------------------------------------------------------------
 
     // Declare filters.  We currently have PID for turning and encoder navigation.------------------
@@ -79,6 +81,9 @@ abstract public class MasterOpMode extends LinearOpMode
         grabberServo = hardwareMap.servo.get("grabberServo");
         parallelServo = hardwareMap.servo.get("parallelServo");
 
+        foundationServoLeft = hardwareMap.servo.get("foundationServoLeft");
+        foundationServoRight = hardwareMap.servo.get("foundationServoRight");
+
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -106,6 +111,8 @@ abstract public class MasterOpMode extends LinearOpMode
 
         grabberServo.setPosition(Constants.GRABBER_OPEN);
         parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT);
+        foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
+        foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
 
 
         stopDriveMotors();

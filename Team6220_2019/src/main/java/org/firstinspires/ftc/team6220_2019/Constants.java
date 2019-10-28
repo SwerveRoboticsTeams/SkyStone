@@ -38,6 +38,7 @@ public class Constants
     public static final double ANGLE_TOLERANCE_DEG = 2.5;
     public static final double POSITION_TOLERANCE_IN = 0.5;
     public static final double OPENCV_TOLERANCE_PIX = 0.5;
+    public static final double LIFT_MOTOR_TOLERANCE_ENC_TICKS = 20;
 
 
     // Movement control constants-----------------------
@@ -71,16 +72,21 @@ public class Constants
 
 
     // Servo positions--------------------------------
-    // 1 is closed, 0 is open
+    // For the grabber, 1 is closed, 0 is open
     public static final double GRABBER_OPEN = 0.6;
-    public static final double GRABBER_CLOSED = 0.8;
+    public static final double GRABBER_CLOSED = 0.9;
     public static final double PARALLEL_SERVO_INIT = 0.0;
+
+    public static final double FOUNDATION_SERVO_LEFT_OPEN = 1.0;
+    public static final double FOUNDATION_SERVO_LEFT_CLOSED = 0.5;
+    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 0.0;
+    public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0.5;
     //-------------------------------------------------
 
 
     // Encoder positions-------------------------------
     public static final double LIFT_MOTOR_TICKS = 2.0 * 1680.0;
-    public static final int LIFT_GRAB_POS = 300; //todo Adjust
+    public static final int LIFT_GRAB_POS = 100; //todo Adjust
     public static final int LIFT_PLACE_POS = 2520; //todo Adjust
     public static final int NUM_TICKS_PER_STONE = 250; //THIS IS AN APPROXIMATION. todo Adjust
     //-------------------------------------------------

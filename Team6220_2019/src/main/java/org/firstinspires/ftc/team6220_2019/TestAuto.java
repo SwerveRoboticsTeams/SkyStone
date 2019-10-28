@@ -32,7 +32,7 @@ public class TestAuto extends MasterAutonomous
 
         while (opModeIsActive())
         {
-            vuforiaFollowObject();
+            //vuforiaFollowObject();
 
             //driveToCoordinates(0, 0, 0);
 
