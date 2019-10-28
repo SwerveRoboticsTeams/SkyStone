@@ -12,6 +12,8 @@ abstract public class MasterTeleOp extends MasterOpMode
     boolean isRunToPosMode = false;
     // Remembers whether the grabber is open or closed.
     boolean isGrabberOpen = true;
+    // Remembers whether the foundation servos are open or closed.
+    boolean isFoundationServosOpen = false;
 
     // The following booleans help the program keep track of which step of placing a stone the grabber is in.
     boolean hasLoweredArm = false;
@@ -35,8 +37,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             {
                 tFactor = Constants.SLOW_MODE_T_FACTOR;
                 rFactor = Constants.SLOW_MODE_R_FACTOR;
-            }
-            else
+            } else
             {
                 tFactor = Constants.T_FACTOR;
                 rFactor = Constants.R_FACTOR;
@@ -75,8 +76,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         {
             collectorLeft.setPower(-Constants.COLLECTOR_POWER);
             collectorRight.setPower(Constants.COLLECTOR_POWER);
-        }
-        else if (driver2.isButtonPressed(Button.DPAD_DOWN))
+        } else if (driver2.isButtonPressed(Button.DPAD_DOWN))
         {
             collectorLeft.setPower(Constants.COLLECTOR_POWER);
             collectorRight.setPower(-Constants.COLLECTOR_POWER);
@@ -109,14 +109,14 @@ abstract public class MasterTeleOp extends MasterOpMode
             hasPlacedStone = false;
         }
 
-        liftMotor.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
+        if (!isRunToPosMode)
+            liftMotor.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
 
         // This yields the fraction of 1 rotation that the motor has progressed through (in other
         // words, the range 0 - 1 corresponds to 0 - 360 degrees).
         double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
         // Power the servo such that it remains parallel to the ground.
-        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 2);
-
+        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 1.55/*2*/);   // todo Does 2 need to be 4/3?
 
 
         // Code for automatic movement of arm-------------------------------------------------------------------
@@ -133,58 +133,40 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         // todo Implement once encoder is working
         /*
-        if(isRunToPosMode)
+        if (isRunToPosMode)
         {
-            if(!hasLoweredArm)
+            if (!hasLoweredArm)
             {
-                if(liftMotor.getTargetPosition() == Constants.LIFT_GRAB_POS)
+                if (Math.abs(liftMotor.getTargetPosition() - Constants.LIFT_GRAB_POS) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
                 {
                     hasLoweredArm = true;
-                }
-                else
+                } else
                 {
                     liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
                 }
-            }
-            else if(!hasGrabbedStone)
+            } else if (!hasGrabbedStone)
             {
-                if(grabberServo.getPosition() == Constants.GRABBER_CLOSED)
-                {
-                    hasGrabbedStone = true;
-                }
-                else
-                {
-                    grabberServo.setPosition(Constants.GRABBER_CLOSED);
-                }
-            }
-            else if(!hasRotatedArm)
+                grabberServo.setPosition(Constants.GRABBER_CLOSED);
+                hasGrabbedStone = true;
+            } else if (!hasRotatedArm)
             {
-                if(liftMotor.getTargetPosition() == Constants.LIFT_PLACE_POS)
+                if (Math.abs(liftMotor.getTargetPosition() - Constants.LIFT_PLACE_POS) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
                 {
                     hasRotatedArm = true;
-                }
-                else
+                } else
                 {
                     liftMotor.setTargetPosition(Constants.LIFT_PLACE_POS - Constants.NUM_TICKS_PER_STONE * towerHeight);
                 }
-            }
-            else if(!hasPlacedStone)
+            } else if (!hasPlacedStone)
             {
-                if(grabberServo.getPosition() == Constants.GRABBER_OPEN)
-                {
-                    hasPlacedStone = true;
-                }
-                else
-                {
-                    grabberServo.setPosition(Constants.GRABBER_OPEN);
-                }
-            }
-            else{
+                grabberServo.setPosition(Constants.GRABBER_OPEN);
+                hasPlacedStone = true;
+            } else
+            {
                 towerHeight++;
                 isRunToPosMode = false;
             }
-        }
-         */
+        }*/
 
 
         // Display telemetry data to drivers
@@ -194,6 +176,23 @@ abstract public class MasterTeleOp extends MasterOpMode
         telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
     }
 
+    public void toggleFoundationServos()
+    {
+        // Toggle position
+        if (isFoundationServosOpen)
+        {
+            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_CLOSED);
+            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_CLOSED);
+        } else
+        {
+            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
+            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
+        }
+        isFoundationServosOpen = !isFoundationServosOpen;
+
+        telemetry.addData("foundationServoLeft Position: ", foundationServoLeft.getPosition());
+        telemetry.addData("foundationServoRight Position: ", foundationServoRight.getPosition());
+    }
 
     public void toggleGrabber()
     {
@@ -201,8 +200,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         if (isGrabberOpen)
         {
             grabberServo.setPosition(Constants.GRABBER_CLOSED);
-        }
-        else
+        } else
         {
             grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
