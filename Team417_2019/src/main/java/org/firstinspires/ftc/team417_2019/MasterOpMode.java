@@ -20,7 +20,7 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor motorFR = null; // hub 1 port 0
     DcMotor motorBL = null; // hub 2 port 1
     DcMotor motorBR = null; // hub 1 port 1
-    // hub 2 port 4
+    // hub 2 port 0
     Servo skystoneGrabber = null;
     // hub 1 port 2
     DcMotor hanger = null;
@@ -30,9 +30,9 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor arm1 = null;
     // hub 2 port 3
     DcMotor arm2 = null;
-    // hub 2 port 2
+    // hub 2 port 3
     Servo mainWristServo = null;
-    // hub 2 port 0
+    // hub 2 port 5
     Servo smallGrabber  = null;
 
     // For movement using Vuforia
@@ -91,7 +91,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
         // not currently in configuration ( need to be configured on the robot)
         mainWristServo = hardwareMap.servo.get("mainWristServo");
-        skystoneGrabber = hardwareMap.servo.get("marker");
+        skystoneGrabber = hardwareMap.servo.get("skystoneGrabber");
         smallGrabber = hardwareMap.servo.get("smallGrabber");
 
         core2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

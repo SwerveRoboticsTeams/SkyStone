@@ -31,6 +31,9 @@ abstract public class MasterTeleOp extends MasterOpMode
     boolean isYButtonPressed = true;
 
     final double Krev = -1/1210.0;
+    boolean grabbed = false;
+    boolean prevAState = false;
+    boolean aPress = false;
     int targetCorePos = 0;
 
     AvgFilter filterJoyStickInput = new AvgFilter();
@@ -156,13 +159,40 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
 
 // Set Automatic Rev servo position
-        /*
+
         autoDouble = (double) (arm1.getCurrentPosition());
         autoDouble /=-1465.5;
-        autoRevPos =  autoDouble + 0.1; // high pos = -1058, low = 0
-        rev1.setPosition(autoRevPos);
+        autoRevPos =  autoDouble + 0.5; // high pos = -1058, low = 0
+        mainWristServo.setPosition(autoRevPos);
 
-         */
+        // Toggle grabber
+        if(grabbed)
+        {
+            // set smallGrabber to closed position
+            smallGrabber.setPosition(0.2);
+        }
+        else
+            {
+                // set smallGrabber to open position
+                smallGrabber.setPosition(0);
+            }
+
+        if(aPress)
+        {
+            grabbed = !grabbed;
+        }
+
+        if(! prevAState && gamepad2.a)
+        {
+            aPress = true;
+        }
+        else if(aPress)
+        {
+            aPress = false;
+        }
+        prevAState = gamepad2.a;
+
+
 
 // control hanger with G2 left and right bumpers
         /*
