@@ -42,9 +42,9 @@ abstract public class MasterAutonomous extends MasterOpMode
         telemetry.log().setCapacity(5);
         telemetry.log().add("Red / Blue = B / X");
         telemetry.log().add("Increase / Decrease Delay = DPad up / down");
-        telemetry.log().add("Press Start to exit setup.");
         telemetry.addData("Is scoring foundation: ", scoreFoundation);
         telemetry.addData("Number of SkyStones: ", numSkyStones);
+        telemetry.log().add("Press Start to exit setup.");
 
         boolean settingUp = true;
 
