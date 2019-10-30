@@ -24,14 +24,11 @@ public class AutoCompetition extends MasterAutonomous
 
         setRobotStartingOrientation(180);
 
-        //vRes.activateTargets();
+        vRes.activateTargets();
         waitForStart();
+        // Wait to start the match for 0-10 seconds, depending on setup input.
+        pauseWhileUpdating(delayCount);
 
-        /*// Park left or right of current position depending on alliance.
-        if (isRedAlliance)
-            navigateUsingEncoders(-24,0,0.5);
-        else
-            navigateUsingEncoders(24,0,0.5);*/
 
         // Park left or right of current position depending on alliance.
         if (isRedAlliance)
@@ -95,7 +92,7 @@ public class AutoCompetition extends MasterAutonomous
             telemetry.update();
             idle();
         }
-
-        vRes.deactivateTargets();*/
+        */
+        vRes.deactivateTargets();
     }
 }

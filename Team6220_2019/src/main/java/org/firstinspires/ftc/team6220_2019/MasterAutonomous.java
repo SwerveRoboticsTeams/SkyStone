@@ -5,8 +5,22 @@ package org.firstinspires.ftc.team6220_2019;
  */
 abstract public class MasterAutonomous extends MasterOpMode
 {
-    // Initialize booleans and variables used in runSetup().
+    // Initialize booleans used in runSetup()--------------------------------------------------
     boolean isRedAlliance = true;
+    // The amount of time we want to delay at the beginning of the match
+    int delayCount = 0;
+    // The number of SkyStones we want to score; can take a value from 0 - 2
+    int numSkyStones = 1;
+    // Whether we want to score the foundation or not
+    boolean scoreFoundation = true;
+    //------------------------------------------------------------------------------------------
+
+    // Initialize angles and distances for various differing setup options----------------------
+
+
+    //------------------------------------------------------------------------------------------
+
+
 
     // Initializes robot normally in addition to added autonomous functionality (e.g., Vuforia)
     @Override
@@ -18,7 +32,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
 
-    // Allows the 1st driver to decide which autonomous routine should be run using gamepad input.
+    // Allows the 1st driver to decide which autonomous routine should be run using gamepad input
     void runSetup()
     {
         // Accounts for delay between initializing the program and starting TeleOp.
@@ -26,7 +40,11 @@ abstract public class MasterAutonomous extends MasterOpMode
 
         // Ensure log can't overflow
         telemetry.log().setCapacity(5);
-        telemetry.log().add("Red/Blue = B / X");
+        telemetry.log().add("Red / Blue = B / X");
+        telemetry.log().add("Increase / Decrease Delay = DPad up / down");
+        telemetry.log().add("Press Start to exit setup.");
+        telemetry.addData("Is scoring foundation: ", scoreFoundation);
+        telemetry.addData("Number of SkyStones: ", numSkyStones);
 
         boolean settingUp = true;
 
@@ -36,16 +54,37 @@ abstract public class MasterAutonomous extends MasterOpMode
             double eTime = timer.seconds() - lTime;
             lTime = timer.seconds();
 
-            // Select start position.
+            // Select alliance
             if (driver1.isButtonJustPressed(Button.B))
                 isRedAlliance = true;
             else if (driver1.isButtonJustPressed(Button.X))
                 isRedAlliance = false;
-            else if (driver1.isButtonJustPressed(Button.START)) // If the driver presses start, we exit setup.
+
+            // Adjust match delay from 0 to 10 seconds
+            if (driver1.isButtonJustPressed(Button.DPAD_UP) && delayCount < 10)    // Don't want delay to be to large
+                delayCount++;
+            else if (driver1.isButtonJustPressed(Button.DPAD_DOWN) && delayCount > 0)   // Also don't want it to be negative
+                delayCount--;
+
+            // Adjust whether we score foundation
+            if (driver1.isButtonJustPressed(Button.Y))
+                scoreFoundation = !scoreFoundation;
+
+            // Adjust number of SkyStones scored from 0 to 2
+            if (driver1.isButtonJustPressed(Button.DPAD_RIGHT) && numSkyStones < 2)    // Increase number of SkyStones (2 max)
+                numSkyStones++;
+            else if (driver1.isButtonJustPressed(Button.DPAD_RIGHT) && numSkyStones > 0)    // Increase number of SkyStones (2 max)
+                numSkyStones--;
+
+            // If the driver presses start, we exit setup.
+            if (driver1.isButtonJustPressed(Button.START))
                 settingUp = false;
 
             // Display the current setup
             telemetry.addData("Is on red alliance: ", isRedAlliance);
+            telemetry.addData("Match delay: ", delayCount);
+            telemetry.addData("Is scoring foundation: ", scoreFoundation);
+            telemetry.addData("Number of SkyStones: ", numSkyStones);
             updateCallback(eTime);
             telemetry.update();
             idle();

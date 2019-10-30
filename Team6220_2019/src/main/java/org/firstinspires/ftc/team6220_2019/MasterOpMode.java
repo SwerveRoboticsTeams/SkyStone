@@ -179,7 +179,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Uses encoders to make the robot drive to a specified relative position.  Also makes use of the
     // imu to keep the robot at a constant heading during navigation.
-    // **Note:  initDeltaX/Y are in mm.
+    // **Note:  initDeltaX/Y are in inches.
     void navigateUsingEncoders(double initDeltaX, double initDeltaY, double maxPower)
     {
         // Variables set every loop-------------------
