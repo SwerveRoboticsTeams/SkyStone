@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team8923_2019;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 
 
@@ -13,10 +14,10 @@ abstract class MasterTeleOp extends Master
     public void driveMecanumTeleOp()
     {
         // Reverse drive if desired
-        if(gamepad1.right_stick_button)
-            reverseDrive = false;
-        if(gamepad1.left_stick_button)
+        if(gamepad1.a)
             reverseDrive = true;
+        if(gamepad1.b)
+            reverseDrive = false;
 
         if(gamepad1.dpad_down)
             slowModeDivisor = 3.0;
@@ -71,13 +72,15 @@ abstract class MasterTeleOp extends Master
         {
             // Move arm forward
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorArm.setPower(leftStickY * Constants.ARM_PWR_FACTOR);
+            Variables.ARM_PWR_FACTOR = 0.5;
+            motorArm.setPower(leftStickY * Variables.ARM_PWR_FACTOR);
         }
         else if(leftStickY < -Constants.MINIMUM_JOYSTICK_PWR)
         {
             // Move arm back
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorArm.setPower(leftStickY * Constants.ARM_PWR_FACTOR);
+            Variables.ARM_PWR_FACTOR = 0.135;
+            motorArm.setPower(leftStickY * Variables.ARM_PWR_FACTOR);
         }
         else
         {

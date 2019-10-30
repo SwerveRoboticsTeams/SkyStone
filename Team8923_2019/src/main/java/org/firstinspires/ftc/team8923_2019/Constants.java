@@ -7,7 +7,6 @@ public class Constants
 
 
     // The Arm
-    public static final double ARM_PWR_FACTOR = 0.135;
 
     public static final double MIN_ENCODERCOUNT_PARALLEL_POINT = -1344;
     public static final double MAX_ENCODERCOUNT_PARALLEL_POINT = -830;
