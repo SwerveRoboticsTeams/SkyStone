@@ -60,34 +60,40 @@ abstract class MasterTeleOp extends Master
 
     }
 
+
+
+
     public void runClaw()
     {
         double leftStickY = gamepad2.left_stick_y;
 
         if(leftStickY > Constants.MINIMUM_JOYSTICK_PWR)
         {
+            // Move arm forward
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorArm.setPower(leftStickY * Constants.ARM_PWR_FACTOR);
         }
         else if(leftStickY < -Constants.MINIMUM_JOYSTICK_PWR)
         {
+            // Move arm back
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorArm.setPower(leftStickY * Constants.ARM_PWR_FACTOR);
         }
         else
         {
+            // Stops arm
             motorArm.setTargetPosition(motorArm.getCurrentPosition());
             motorArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             // Fix arm dropping
 
         }
 
-        adjustClawPosition();
-        toggleGrabber();
+
     }
 
-    private void adjustClawPosition()
+    public void adjustClawPosition()
     {
+        // Make claw level to ground
         if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARALLEL_POINT)
         {
             double adjustedServoPosition = map(Variables.ARM_MOTOR_TICKS, Constants.MIN_ENCODERCOUNT_PARALLEL_POINT,Constants.MAX_ENCODERCOUNT_PARALLEL_POINT, Constants.MIN_SERVOJOINT_PWR, Constants.MAX_SERVOJOINT_PWR);
@@ -95,7 +101,7 @@ abstract class MasterTeleOp extends Master
         }
     }
 
-    private void toggleGrabber()
+    public void toggleGrabber()
     {
         double rightTrigger = gamepad2.right_trigger;
         if(rightTrigger > Constants.MINIMUM_TRIGGER_VALUE){
@@ -106,14 +112,17 @@ abstract class MasterTeleOp extends Master
 
     }
 
-    private double map(double value, double minValue, double maxValue, double minMappedValue, double maxMappedValue)
+    private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)
     {
-        double valueDifference = maxValue - minValue;
-        double percentValueDifference = (value - minValue) / valueDifference;
-        double mappedDifference = maxMappedValue - minMappedValue;
+        double valueDifference = maxInput - minInput;
+        double percentValueDifference = (value - minInput) / valueDifference;
+        double mappedDifference = maxMappedOutput - minMappedOutput;
 
-        return percentValueDifference * mappedDifference + minMappedValue;
+        return percentValueDifference * mappedDifference + minMappedOutput;
     }
+
+
+
 
     void sendTelemetry()
     {
