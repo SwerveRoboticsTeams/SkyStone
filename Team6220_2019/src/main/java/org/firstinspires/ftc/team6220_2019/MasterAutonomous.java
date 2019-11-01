@@ -13,6 +13,8 @@ abstract public class MasterAutonomous extends MasterOpMode
     int numSkyStones = 1;
     // Whether we want to score the foundation or not
     boolean scoreFoundation = true;
+    // Whether we want to park on far or close end of line under alliance Skybridge
+    boolean parkClose = true;
     //------------------------------------------------------------------------------------------
 
     // Initialize angles and distances for various differing setup options----------------------
@@ -41,9 +43,10 @@ abstract public class MasterAutonomous extends MasterOpMode
         // Ensure log can't overflow
         telemetry.log().setCapacity(5);
         telemetry.log().add("Red / Blue = B / X");
-        telemetry.log().add("Increase / Decrease Delay = DPad up / down");
-        telemetry.addData("Is scoring foundation: ", scoreFoundation);
-        telemetry.addData("Number of SkyStones: ", numSkyStones);
+        telemetry.log().add("Increase / Decrease Delay = DPad Up / Down");
+        telemetry.log().add("Score / Not Score foundation = Toggle Y");
+        telemetry.log().add("Increase / Decrease numSkyStones = DPad Left / Right");
+        telemetry.log().add("Park Close / Far = Toggle A");
         telemetry.log().add("Press Start to exit setup.");
 
         boolean settingUp = true;
@@ -76,6 +79,10 @@ abstract public class MasterAutonomous extends MasterOpMode
             else if (driver1.isButtonJustPressed(Button.DPAD_RIGHT) && numSkyStones > 0)    // Increase number of SkyStones (2 max)
                 numSkyStones--;
 
+            // Switch between park close and park far
+            if (driver1.isButtonJustPressed(Button.A))
+                parkClose = !parkClose;
+
             // If the driver presses start, we exit setup.
             if (driver1.isButtonJustPressed(Button.START))
                 settingUp = false;
@@ -85,6 +92,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             telemetry.addData("Match delay: ", delayCount);
             telemetry.addData("Is scoring foundation: ", scoreFoundation);
             telemetry.addData("Number of SkyStones: ", numSkyStones);
+            telemetry.addData("Is parking close: ", parkClose);
             updateCallback(eTime);
             telemetry.update();
             idle();
