@@ -26,8 +26,10 @@ public class Constants
     public static final double R_FACTOR = 1.0;
 
     public static final double LIFT_POWER_FACTOR = 0.6;
-     // Double to control power of collector motors
+     // Constants to control power of collector motors
     public static final double COLLECTOR_POWER = 1.0;
+    public static final double COLLECTOR_ROTATE_POWER = 0.3;    // todo Adjust
+
 
     // Autonomous Drive constants
     public static final float AUTONOMOUS_SCALE_DISTANCE = 24;

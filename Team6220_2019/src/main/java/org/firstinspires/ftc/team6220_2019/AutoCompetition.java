@@ -29,8 +29,18 @@ public class AutoCompetition extends MasterAutonomous
         // Wait to start the match for 0-10 seconds, depending on setup input.
         pauseWhileUpdating(delayCount);
 
+        // Position robot so it can view SkyStone image target
+        navigateUsingEncoders(0,16,0.7);
 
-        
+        // Find SkyStone image target
+
+        // Shift appropriately toward image target
+
+        // Drive forward and collect SkyStone
+        navigateUsingEncoders(0,28,0.5);
+
+
+
 
         /*
         int targetNum = 0;

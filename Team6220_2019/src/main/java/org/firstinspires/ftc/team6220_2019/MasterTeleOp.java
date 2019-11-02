@@ -70,19 +70,15 @@ abstract public class MasterTeleOp extends MasterOpMode
     }
 
 
+    // todo Make sure this works
+    // TeleOp method for driving collector.
     public void driveCollector()
     {
-        if (driver2.isButtonPressed(Button.DPAD_UP))
-        {
-            collectorLeft.setPower(-Constants.COLLECTOR_POWER);
-            collectorRight.setPower(Constants.COLLECTOR_POWER);
-        } else if (driver2.isButtonPressed(Button.DPAD_DOWN))
-        {
-            collectorLeft.setPower(Constants.COLLECTOR_POWER);
-            collectorRight.setPower(-Constants.COLLECTOR_POWER);
-        }
-        // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed, the motors don't continue running
-        else
+        if (driver2.isButtonPressed(Button.DPAD_UP))    // Spit out stone
+            runCollector(false, false);
+        else if (driver2.isButtonPressed(Button.DPAD_DOWN))     // Collect stone
+            runCollector(true, false);
+        else    // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed, the motors don't continue running
         {
             collectorLeft.setPower(0);
             collectorRight.setPower(0);

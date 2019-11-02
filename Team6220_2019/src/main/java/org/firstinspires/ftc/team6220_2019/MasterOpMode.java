@@ -342,6 +342,34 @@ abstract public class MasterOpMode extends LinearOpMode
         stopDriveMotors();
     }
 
+
+    // todo Make sure this works
+    // General method for driving collector (auto and TeleOp)
+    public void runCollector(boolean isCollectingIn, boolean isRotatingStone)
+    {
+        if (isRotatingStone)    // We are trying to spin stone for easier collection
+        {
+            collectorLeft.setPower(Constants.COLLECTOR_ROTATE_POWER);
+            collectorRight.setPower(Constants.COLLECTOR_ROTATE_POWER);
+        }
+        else    // We are collecting normally
+        {
+            if (isCollectingIn)
+            {
+                // Collect stone
+                collectorLeft.setPower(Constants.COLLECTOR_POWER);
+                collectorRight.setPower(-Constants.COLLECTOR_POWER);
+            }
+            else
+            {
+                // Spit out stone
+                collectorLeft.setPower(-Constants.COLLECTOR_POWER);
+                collectorRight.setPower(Constants.COLLECTOR_POWER);
+            }
+        }
+    }
+
+
     // Note:  not in use
     // Other opmodes must go through this method to prevent others from unnecessarily changing startingOrientation
     void setRobotStartingOrientation(double newValue)
