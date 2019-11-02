@@ -50,7 +50,7 @@ public class AutoCompetition extends MasterAutonomous
         // Drive forward and collect SkyStone
         navigateUsingEncoders(0,28,0.5, true);
 
-        // Grab stone and drive backwards (12 in + 3 in behind tile line)
+        // Grab SkyStone and drive backwards (12 in + 3 in behind tile line)
         toggleGrabber();
         navigateUsingEncoders(0,-15,0.5, false);
 
@@ -67,6 +67,15 @@ public class AutoCompetition extends MasterAutonomous
         toggleFoundationServos();
         navigateUsingEncoders(0,33,0.5, false);    // 33 = 2 * 24 - 16 (robot length) + 1 (extra distance)
         toggleFoundationServos();
+
+        // Move lift, drop SkyStone, and retract lift
+        liftMotor.setTargetPosition(Constants.LIFT_PLACE_POS);  // todo Adjust LIFT_PLACE_POS
+        liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+        pauseWhileUpdating(1.5);    // todo Adjust time
+        toggleGrabber();
+        liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
+        liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+        pauseWhileUpdating(1.5);
 
         // Navigate two tiles to park on line
         navigateUsingEncoders(48,0,0.8, false);
