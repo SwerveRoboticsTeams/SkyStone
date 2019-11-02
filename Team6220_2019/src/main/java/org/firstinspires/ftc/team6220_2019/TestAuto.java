@@ -36,6 +36,7 @@ public class TestAuto extends MasterAutonomous
 
             //driveToCoordinates(0, 0, 0);
 
+            // todo Test this code in order to implement more general navigation.
             /*if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
                 if(targetNum < navPoints.length - 1){
                     targetNum++;

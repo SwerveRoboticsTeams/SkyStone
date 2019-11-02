@@ -10,10 +10,6 @@ abstract public class MasterTeleOp extends MasterOpMode
     boolean driveReversed = true;
     // Tells us what drive mode the lift motor is in; by default, we use RUN_USING_ENCODER
     boolean isRunToPosMode = false;
-    // Remembers whether the grabber is open or closed.
-    boolean isGrabberOpen = true;
-    // Remembers whether the foundation servos are open or closed.
-    boolean isFoundationServosOpen = false;
 
     // The following booleans help the program keep track of which step of placing a stone the grabber is in.
     boolean hasLoweredArm = false;
@@ -170,36 +166,5 @@ abstract public class MasterTeleOp extends MasterOpMode
         telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
         telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
         telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
-    }
-
-    public void toggleFoundationServos()
-    {
-        // Toggle position
-        if (isFoundationServosOpen)
-        {
-            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_CLOSED);
-            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_CLOSED);
-        } else
-        {
-            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
-            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
-        }
-        isFoundationServosOpen = !isFoundationServosOpen;
-
-        telemetry.addData("foundationServoLeft Position: ", foundationServoLeft.getPosition());
-        telemetry.addData("foundationServoRight Position: ", foundationServoRight.getPosition());
-    }
-
-    public void toggleGrabber()
-    {
-        // Toggle position
-        if (isGrabberOpen)
-        {
-            grabberServo.setPosition(Constants.GRABBER_CLOSED);
-        } else
-        {
-            grabberServo.setPosition(Constants.GRABBER_OPEN);
-        }
-        isGrabberOpen = !isGrabberOpen;
     }
 }

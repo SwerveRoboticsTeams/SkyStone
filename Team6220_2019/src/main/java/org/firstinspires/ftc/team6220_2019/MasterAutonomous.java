@@ -190,7 +190,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         else if (Math.abs(y) < 36)
         {
             // Drive up if we are the blue team, and drive down if we are the red team.
-            if (isRed)
+            if (isRedAlliance)
             {
                 autonomousDriveMecanum(-90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             } else
@@ -204,7 +204,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             // This variable controls the y-coordinate of where we want our robot to park.
             float yCoordinate = 48; //MUST BE POSITIVE!!! THE ROBOT WILL PARK ON THE WRONG SIDE IF NEGATIVE!!!
             // Flip if we are the red team.
-            if (isRed)
+            if (isRedAlliance)
             {
                 yCoordinate *= -1;
             }
@@ -263,7 +263,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             if (bridge > 0)
             {
                 // Drive up if we are the blue team, and drive down if we are the red team.
-                if (isRed)
+                if (isRedAlliance)
                 {
                     autonomousDriveMecanum(-90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 } else
@@ -345,6 +345,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
     }
 
+    // todo We shouldn't need these now that we have implemented PID loops
     /**
      * Note: This method is private; it should never need to be called outside of this class.
      * distancePower limits the maximum value of power to Constants.AUTONOMOUS_SCALE_DISTANCE,

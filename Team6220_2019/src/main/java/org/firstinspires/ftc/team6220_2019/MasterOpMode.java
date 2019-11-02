@@ -11,8 +11,14 @@ import java.util.List;
 
 abstract public class MasterOpMode extends LinearOpMode
 {
-    // Boolean for team color.
-    boolean isRed;
+    // Remembers whether the grabber is open or closed.
+    boolean isGrabberOpen = true;
+    // Remembers whether the foundation servos are open or closed.
+    boolean areFoundationServosOpen = false;
+
+    // todo Adjust
+    // Distance (in inches) that we want to rotate collector before we start collecting.
+    int collectionDistance = 20;
 
     // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
     // opMode to be able to use some functionalities in that class.
@@ -179,8 +185,10 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Uses encoders to make the robot drive to a specified relative position.  Also makes use of the
     // imu to keep the robot at a constant heading during navigation.
+    // Finally, we use the boolean isCollecting to give us the option to control the collector
+    // while the robot is navigating.
     // **Note:  initDeltaX/Y are in inches.
-    void navigateUsingEncoders(double initDeltaX, double initDeltaY, double maxPower)
+    void navigateUsingEncoders(double initDeltaX, double initDeltaY, double maxPower, boolean isCollecting)
     {
         // Variables set every loop-------------------
         double deltaX = initDeltaX;
@@ -189,7 +197,6 @@ abstract public class MasterOpMode extends LinearOpMode
 
         double driveAngle;
         double drivePower;
-        double adjustedDrivePower;
         double rotationPower;
 
         // Find distance between robot and its destination
@@ -244,6 +251,17 @@ abstract public class MasterOpMode extends LinearOpMode
             rotationPower = rotationFilter.getFilteredValue();
             //-------------------------------------------------------------------------------------
 
+            // If it has been specified, collect while navigating.
+            if (isCollecting)
+            {
+                // If we have navigated less than collectionDistance, rotate the stone.
+                // Otherwise, collect the stone.
+                if (Math.abs(deltaY) < collectionDistance)
+                    runCollector(true, true);
+                else
+                    runCollector(true, false);
+            }
+
             driveMecanum(driveAngle, drivePower, 0/*rotationPower*/);
 
             telemetry.addData("Encoder Diff x: ", deltaX);
@@ -252,6 +270,13 @@ abstract public class MasterOpMode extends LinearOpMode
             telemetry.addData("Rotation Power: ", rotationPower);
             telemetry.update();
             idle();
+        }
+
+        // Turn off collector if we were running it.
+        if (isCollecting)
+        {
+            collectorLeft.setPower(0);
+            collectorRight.setPower(0);
         }
         stopDriveMotors();
     }
@@ -347,26 +372,58 @@ abstract public class MasterOpMode extends LinearOpMode
     // General method for driving collector (auto and TeleOp)
     public void runCollector(boolean isCollectingIn, boolean isRotatingStone)
     {
+        // Allows us to change direction of collector
+        double powerSign = 1.0;
+
+        // Reverse collector if we intend to spit out
+        if (!isCollectingIn)
+            powerSign = -1.0;
+
         if (isRotatingStone)    // We are trying to spin stone for easier collection
         {
-            collectorLeft.setPower(Constants.COLLECTOR_ROTATE_POWER);
-            collectorRight.setPower(Constants.COLLECTOR_ROTATE_POWER);
+            collectorLeft.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
+            collectorRight.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
         }
         else    // We are collecting normally
         {
-            if (isCollectingIn)
-            {
-                // Collect stone
-                collectorLeft.setPower(Constants.COLLECTOR_POWER);
-                collectorRight.setPower(-Constants.COLLECTOR_POWER);
-            }
-            else
-            {
-                // Spit out stone
-                collectorLeft.setPower(-Constants.COLLECTOR_POWER);
-                collectorRight.setPower(Constants.COLLECTOR_POWER);
-            }
+                collectorLeft.setPower(powerSign * Constants.COLLECTOR_POWER);
+                collectorRight.setPower(powerSign * -Constants.COLLECTOR_POWER);
         }
+    }
+
+
+    // Toggle position of both foundation servos between open and closed.
+    public void toggleFoundationServos()
+    {
+        if (areFoundationServosOpen)
+        {
+            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_CLOSED);
+            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_CLOSED);
+        }
+        else
+        {
+            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
+            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
+        }
+        areFoundationServosOpen = !areFoundationServosOpen;
+
+        //telemetry.addData("foundationServoLeft Position: ", foundationServoLeft.getPosition());
+        //telemetry.addData("foundationServoRight Position: ", foundationServoRight.getPosition());
+    }
+
+
+    // Toggle position of grabber between open and closed.
+    public void toggleGrabber()
+    {
+        if (isGrabberOpen)
+        {
+            grabberServo.setPosition(Constants.GRABBER_CLOSED);
+        }
+        else
+        {
+            grabberServo.setPosition(Constants.GRABBER_OPEN);
+        }
+        isGrabberOpen = !isGrabberOpen;
     }
 
 
