@@ -20,8 +20,6 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor motorFR = null; // hub 1 port 0
     DcMotor motorBL = null; // hub 2 port 1
     DcMotor motorBR = null; // hub 1 port 1
-    // hub 2 port 0
-    // Servo skystoneGrabber = null;
     // hub 2 port 2
     DcMotor core2 = null;
     // hub 1 port 3
@@ -87,7 +85,6 @@ abstract public class MasterOpMode extends LinearOpMode
 
         // not currently in configuration ( need to be configured on the robot)
         mainWristServo = hardwareMap.servo.get("mainWristServo");
-        // skystoneGrabber = hardwareMap.servo.get("skystoneGrabber");
         smallGrabber = hardwareMap.servo.get("smallGrabber");
 
         core2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -128,7 +125,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL.setPower(0);
         motorBR.setPower(0);
 
-        //vex1.setPower(0.0);
+        core2.setPower(0);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;

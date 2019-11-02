@@ -119,12 +119,14 @@ abstract public class MasterTeleOp extends MasterOpMode
         // control the extending with G2 right (extend) and left (retract) trigger
         if (gamepad2.right_trigger != 0)
         {
-            core2.setPower(0.99 * gamepad2.right_trigger);
+            double power = Range.clip(0.9 * gamepad2.right_trigger,0.3,1.0);
+            core2.setPower(power);
         }
         else if (gamepad2.left_trigger != 0)
         {
             isExtending = false;
-            core2.setPower(-0.99 * gamepad2.left_trigger);
+            double power = Range.clip(-0.9 * gamepad2.left_trigger,-1.0,-0.3);
+            core2.setPower(power);
         }
         else if (gamepad2.left_trigger==0 && gamepad2.right_trigger==0 && !isExtending)
         {
@@ -169,7 +171,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         if(grabbed)
         {
             // set smallGrabber to closed position
-            smallGrabber.setPosition(0.2);
+            smallGrabber.setPosition(0.4);
         }
         else
             {
@@ -262,7 +264,7 @@ abstract public class MasterTeleOp extends MasterOpMode
      */
 
     // should be skystone picking servo
-    void skystoneGrabber()
+    /*void skystoneGrabber()
     {
         // Press button y to toggle up and down
         if(isMarkerDown) skystoneGrabber.setPosition(MARKER_LOW);
@@ -274,7 +276,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             isMarkerDown = !isMarkerDown;
         }
         isYButtonPressed = gamepad2.y;
-    }
+    }*/
 
     void updateTelemetry()
     {
@@ -284,7 +286,6 @@ abstract public class MasterTeleOp extends MasterOpMode
         //telemetry.addData("motorMode", core2.getMode());
         telemetry.addData("core2:", core2.getCurrentPosition());
         telemetry.addData("arm1:", arm1.getCurrentPosition());
-        telemetry.addData("skystoneGrabber", skystoneGrabber.getPosition());
         telemetry.update();
     }
 }

@@ -83,7 +83,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * is explained below.
  */
 
-@Autonomous(name="SKYSTONE Vuforia Nav Webcam", group ="Concept")
+@Autonomous(name="Autonomous", group ="Concept")
 
 public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
@@ -335,6 +335,8 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
+
+
         while (!opModeIsActive()) {
 
             // check all the trackable targets to see which one (if any) is visible.
@@ -371,31 +373,39 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
             telemetry.update();
         }
 
-        double refAngle = imu.getAngularOrientation().firstAngle; // possibly move to initialization
-
         waitForStart();
 
-        //move(translation.get(0), 0, 0.2,0.8,5.0);
-        float angle = rotation.thirdAngle;
-        //move(0,translation.get(1),0.2,0.8,5.0);
         float moveX = translation.get(0);
         float moveY = translation.get(1);
+        double refAngle = imu.getAngularOrientation().firstAngle; // possibly move to initialization
+
+        telemetry.addData("x",moveX);
+        telemetry.addData("y",moveY);
+        telemetry.addData("refAngle", refAngle);
+        telemetry.addData("thirdAngle", rotation.thirdAngle);
+        telemetry.update();
+
+        //move(moveX,0,0.3,1.0,5.0);
+        //move(0, moveY - 200, 0.3,1.0,5.0);
+        //moveMaintainHeading(moveX , moveY - 100, rotation.thirdAngle,0.2,0.9,7.0);
+        //pivotWithReference(0,refAngle, 0.3,0.8);
+
+       /*
+        float moveY = translation.get(1);
         core2.setPower(0.4);
-        wait(3000);
+        sleep(2000);
         core2.setPower(0.0);
-        wait(1000);
-        moveMaintainHeading(moveX, moveY, refAngle,0.2,0.9,7.0);
+        sleep(1000);
         lowerSmallAmt();
         core2.setPower(-0.4);
-        wait(3000);
+        sleep(3000);
         core2.setPower(0.0);
-        wait(1000);
+        sleep(1000);
         move(0,-600,0.3,0.8,5.0);
         pivotWithReference(-90,refAngle,0.2,0.8);
         move(0, 600, 0.2, 0.8, 5.0);
-        telemetry.addData("movement finished",0);
-        telemetry.update();
-        //        // Disable Tracking when we are done;
+
+        */
         targetsSkyStone.deactivate();
     }
 }
