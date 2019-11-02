@@ -30,7 +30,7 @@ public class AutoCompetition extends MasterAutonomous
     {
         initialize();
 
-        // todo May need to change to sideways for optimal collection
+        // todo May need to change to sideways (180 degrees) for optimal collection
         // Start perpendicular to red wall
         setRobotStartingOrientation(90);
 
@@ -43,9 +43,8 @@ public class AutoCompetition extends MasterAutonomous
         // Position robot so it can view SkyStone image target
         navigateUsingEncoders(0,16,0.7, false);
 
-        // Find SkyStone image target
-
-        // Translate appropriate distance toward image target
+        // Find SkyStone image target and translate appropriate distance toward image target
+        vuforiaAlignWithSkyStone();
 
         // Drive forward and collect SkyStone
         navigateUsingEncoders(0,28,0.5, true);
@@ -57,8 +56,8 @@ public class AutoCompetition extends MasterAutonomous
         // Turn, navigate to center of foundation (+3.5 tiles), and turn again so foundationServos face
         // the foundation
         turnTo(0, 0.7);
-        // todo Account for translation shift
-        navigateUsingEncoders(0,84,0.8, false);
+        // todo Account for translation shift; done
+        navigateUsingEncoders(0,84 - robotShift,0.8, false);
         turnTo(-90, 0.7);
 
         // Drive up to foundation (forward 3 in + 1 in extra for good measure), activate foundationServos,

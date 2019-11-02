@@ -18,10 +18,10 @@ abstract public class MasterAutonomous extends MasterOpMode
     //------------------------------------------------------------------------------------------
 
     // Initialize angles and distances for various differing setup options----------------------
-
+    double stoneShift = 8; // Centers of stones are 8 in apart
+    double robotShift = 0;     // Actual distance the robot moved (will be changed)
 
     //------------------------------------------------------------------------------------------
-
 
 
     // Initializes robot normally in addition to added autonomous functionality (e.g., Vuforia)
@@ -112,16 +112,56 @@ abstract public class MasterAutonomous extends MasterOpMode
      * With a skystone defined as (0, 0, 0) absolutely, this method is designed to make the robot drive towards
      * the skystone at all times. It should follow a skystone if moved.
      */
-    public void vuforiaFollowObject()
+    public void vuforiaAlignWithSkyStone()
     {
         vRes.getLocation();
+
+        if (!vRes.getTargetVisibility())
+        {
+            // Don't change course from center stone if we can't ID target
+        } else
+        {
+            // x, y, z defines the location of the center of the robot relative to the SkyStone (in inches).
+            // todo Is MM -> IN conversion correct here?
+            // todo Is (1) correct index (normally y, but need x)?
+            double stoneDistance = vRes.translation.get(1) / Constants.MM_PER_INCH;
+            telemetry.addData("Stone distance: ", stoneDistance);
+            telemetry.update();
+
+            // todo Are +/- signs correct?
+            if (stoneDistance > stoneShift - Constants.POSITION_TOLERANCE_IN)   // If SkyStone is > 7.5 in right of center, shift right
+                robotShift = stoneShift;
+            else if (stoneDistance < -stoneShift + Constants.POSITION_TOLERANCE_IN)     // If SkyStone is > 7.5 in left of center, shift left
+                robotShift = -stoneShift;
+            else
+                robotShift = 0;     // Otherwise, SkyStone is center and we don't need to translate
+
+            // Translate shift distance
+            navigateUsingEncoders(robotShift, 0, 0.5, false);
+        }
+    }
+
+
+    // todo Test and adjust method
+
+    /**
+     * UNTESTED - - - UNTESTED - - - UNTESTED
+     * This method identifies the location of the SkyStone, using this information to determine
+     * whether it is in the left, center, or right orientation.  Next, it uses navigateUsingEncoders()
+     * to align the robot head-on with the SkyStone.
+     */
+    public void vuforiaFollowObject()
+    {
+        // Updates rotation and translation vectors
+        vRes.getLocation();
+
+
         double distanceToStone = 100;
 
         if (!vRes.getTargetVisibility())
         {
             driveMecanum(0, 0, 0.10);
-        }
-        else
+        } else
         {
             if (distanceToStone > Constants.POSITION_TOLERANCE_IN)
             {
@@ -153,11 +193,12 @@ abstract public class MasterAutonomous extends MasterOpMode
 
                 // Drive robot.  Need to add 90 degrees to account for phone orientation relative to robot.
                 autonomousDriveMecanum(angle + 90, drivePower * 0.05, 0/*rotationPower*/);
-            }
-            else
+            } else
                 stopDriveMotors();
         }
     }
+
+    // todo Implement (global coordinates)
 
     /**
      * UNTESTED - - - UNTESTED - - - UNTESTED
@@ -220,6 +261,8 @@ abstract public class MasterAutonomous extends MasterOpMode
             autonomousDriveMecanum(angle - vRes.rotation.firstAngle, distancePower(distance), 0);
         }
     }
+
+    // todo Implement (global coordinates)
 
     /**
      * UNTESTED - - - UNTESTED - - - UNTESTED
@@ -322,11 +365,12 @@ abstract public class MasterAutonomous extends MasterOpMode
         telemetry.update();
 
         double driveAngle = Math.atan((y - yPos) / (x - xPos));
-        if((x - xPos) > 0){
+        if ((x - xPos) > 0)
+        {
             driveAngle += 180;
         }
 
-        float distance = (float)Math.sqrt((y - yPos) * (y - yPos) + (x -xPos) * (x - xPos));
+        float distance = (float) Math.sqrt((y - yPos) * (y - yPos) + (x - xPos) * (x - xPos));
 
         double power = distancePower(distance);
 
@@ -335,17 +379,17 @@ abstract public class MasterAutonomous extends MasterOpMode
         else
             autonomousDriveMecanum(driveAngle, distancePower(distance), 0/*rotationPower((float)w - wRot)*/);
 
-        if(distance < Constants.POSITION_TOLERANCE_IN)
+        if (distance < Constants.POSITION_TOLERANCE_IN)
         { // functions as a tolerance variable.
             return true;
-        }
-        else
+        } else
         {
             return false;
         }
     }
 
     // todo We shouldn't need these now that we have implemented PID loops
+
     /**
      * Note: This method is private; it should never need to be called outside of this class.
      * distancePower limits the maximum value of power to Constants.AUTONOMOUS_SCALE_DISTANCE,
