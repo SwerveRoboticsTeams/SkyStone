@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.team417_2019;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -82,7 +83,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * is explained below.
  */
 
-@TeleOp(name="SKYSTONE Vuforia Nav Webcam", group ="Concept")
+@Autonomous(name="SKYSTONE Vuforia Nav Webcam", group ="Concept")
 
 public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
@@ -370,6 +371,8 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
             telemetry.update();
         }
 
+        double refAngle = imu.getAngularOrientation().firstAngle; // possibly move to initialization
+
         waitForStart();
 
         //move(translation.get(0), 0, 0.2,0.8,5.0);
@@ -377,10 +380,22 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
         //move(0,translation.get(1),0.2,0.8,5.0);
         float moveX = translation.get(0);
         float moveY = translation.get(1);
-        moveMaintainHeading(moveX, moveY, angle,0.2,0.9,7.0);
+        core2.setPower(0.4);
+        wait(3000);
+        core2.setPower(0.0);
+        wait(1000);
+        moveMaintainHeading(moveX, moveY, refAngle,0.2,0.9,7.0);
+        lowerSmallAmt();
+        core2.setPower(-0.4);
+        wait(3000);
+        core2.setPower(0.0);
+        wait(1000);
+        move(0,-600,0.3,0.8,5.0);
+        pivotWithReference(-90,refAngle,0.2,0.8);
+        move(0, 600, 0.2, 0.8, 5.0);
         telemetry.addData("movement finished",0);
         telemetry.update();
-        // Disable Tracking when we are done;
+        //        // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
     }
 }

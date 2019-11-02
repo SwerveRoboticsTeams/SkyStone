@@ -86,6 +86,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     double errorAngle;
 
     double avgDistError;
+    int curLiftPos = 0;
 
     public void autoInitializeRobot()
     {
@@ -123,7 +124,7 @@ abstract public class MasterAutonomous extends MasterOpMode
        targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
     }
 
-    public List<VuforiaTrackable> positionTargets() {
+    public void positionTargets() {
         // declare targets
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
         stoneTarget.setName("Stone Target");
@@ -207,7 +208,7 @@ abstract public class MasterAutonomous extends MasterOpMode
                 .translation(Constants.halfField, -Constants.quadField, Constants.mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
-        return targetsSkyStone;
+        //return targetsSkyStone;
     }
     // drive forwards/backwards/horizontal left and right function
     public void move(double x, double y, double minSpeed, double maxSpeed, double timeout) throws InterruptedException
@@ -647,6 +648,17 @@ abstract public class MasterAutonomous extends MasterOpMode
          double movementYPower = relativeY / Math.abs(relativeY) + Math.abs(relativeX);
     }
 
+    public void lowerSmallAmt() {
+        do
+        {
+            curLiftPos = arm1.getCurrentPosition();
+            arm1.setPower(0.35);
+            arm2.setPower(-0.35);
+        }
+        while (curLiftPos < -150);
+        arm1.setPower(0.0);
+        arm2.setPower(0.0);
+    }
     public void reset() {}
 
 }

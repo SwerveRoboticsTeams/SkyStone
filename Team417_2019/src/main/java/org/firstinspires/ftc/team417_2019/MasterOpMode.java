@@ -21,9 +21,7 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor motorBL = null; // hub 2 port 1
     DcMotor motorBR = null; // hub 1 port 1
     // hub 2 port 0
-    Servo skystoneGrabber = null;
-    // hub 1 port 2
-    DcMotor hanger = null;
+    // Servo skystoneGrabber = null;
     // hub 2 port 2
     DcMotor core2 = null;
     // hub 1 port 3
@@ -59,8 +57,8 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // change and edit these
     // servo init and low positions
-    static final double MARKER_LOW = -0.37;
-    static final double MARKER_HIGH = 0.3;
+    static final double MARKER_LOW = 0.5;
+    static final double MARKER_HIGH = 0.0;
 
     // declare color sensor variables
     float hsvValues[] = {0F,0F,0F};
@@ -87,11 +85,9 @@ abstract public class MasterOpMode extends LinearOpMode
         arm1 = hardwareMap.dcMotor.get("arm1");
         arm2 = hardwareMap.dcMotor.get("arm2");
 
-        hanger = hardwareMap.dcMotor.get("hanger");
-
         // not currently in configuration ( need to be configured on the robot)
         mainWristServo = hardwareMap.servo.get("mainWristServo");
-        skystoneGrabber = hardwareMap.servo.get("skystoneGrabber");
+        // skystoneGrabber = hardwareMap.servo.get("skystoneGrabber");
         smallGrabber = hardwareMap.servo.get("smallGrabber");
 
         core2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -102,10 +98,6 @@ abstract public class MasterOpMode extends LinearOpMode
 
         arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        hanger.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hanger.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

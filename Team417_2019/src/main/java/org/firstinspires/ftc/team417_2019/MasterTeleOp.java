@@ -119,12 +119,12 @@ abstract public class MasterTeleOp extends MasterOpMode
         // control the extending with G2 right (extend) and left (retract) trigger
         if (gamepad2.right_trigger != 0)
         {
-            core2.setPower(0.99);
+            core2.setPower(0.99 * gamepad2.right_trigger);
         }
         else if (gamepad2.left_trigger != 0)
         {
             isExtending = false;
-            core2.setPower(-0.99);
+            core2.setPower(-0.99 * gamepad2.left_trigger);
         }
         else if (gamepad2.left_trigger==0 && gamepad2.right_trigger==0 && !isExtending)
         {
@@ -136,10 +136,10 @@ abstract public class MasterTeleOp extends MasterOpMode
         // Press button y to toggle up and down
         if (gamepad2.y && !isExtending)
         {
-            isYButtonPressed = true;
+            //isYButtonPressed = true;
             isExtending = !isExtending;
         }
-        isYButtonPressed = gamepad2.y;
+        //isYButtonPressed = gamepad2.y;
         if (isExtending && arm1.getCurrentPosition() < -790) core2.setPower(0.1); // extends with toggle
 
     }
@@ -158,7 +158,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             arm2.setPower(0.0);
         }
 
-// Set Automatic Rev servo position
+        // Set Automatic Rev servo position
 
         autoDouble = (double) (arm1.getCurrentPosition());
         autoDouble /=-1465.5;
@@ -262,7 +262,7 @@ abstract public class MasterTeleOp extends MasterOpMode
      */
 
     // should be skystone picking servo
-    void marker()
+    void skystoneGrabber()
     {
         // Press button y to toggle up and down
         if(isMarkerDown) skystoneGrabber.setPosition(MARKER_LOW);
@@ -280,7 +280,6 @@ abstract public class MasterTeleOp extends MasterOpMode
     {
         //telemetry.addData("legato: ", isLegatoMode);
         telemetry.addData("reverse: ", isReverseMode);
-        telemetry.addData("hanger:", hanger.getCurrentPosition());
         telemetry.addData("autoRevPos:", autoRevPos);
         //telemetry.addData("motorMode", core2.getMode());
         telemetry.addData("core2:", core2.getCurrentPosition());

@@ -58,7 +58,10 @@ public class VuforiaTest extends MasterAutonomous {
        // initializes robot components
        initializeHardware();
 
+       positionTargets();
+
        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+
        allTrackables.addAll(targetsSkyStone);
 
         // Info:  The coordinate frame for the robot looks the same as the field.
