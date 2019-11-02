@@ -37,14 +37,14 @@ public class Constants
 
 
     // Tolerances
-    public static final double ANGLE_TOLERANCE_DEG = 2.5;
-    public static final double POSITION_TOLERANCE_IN = 0.5;
+    public static final double ANGLE_TOLERANCE_DEG = 1.0;
+    public static final double POSITION_TOLERANCE_IN = 0.2;
     public static final double OPENCV_TOLERANCE_PIX = 0.5;
     public static final double LIFT_MOTOR_TOLERANCE_ENC_TICKS = 20;
 
 
     // Movement control constants-----------------------
-    public static final double MINIMUM_DRIVE_POWER = 0.05;   // todo Adjust
+    public static final double MINIMUM_DRIVE_POWER = 0.08;   // todo Adjust
     public static final double MAX_DRIVE_POWER = 0.3;   // todo Adjust
     public static final double MINIMUM_TURNING_POWER = 0.02;
     // Constants for adjusting powers that are proportional to angle and position differences
@@ -53,14 +53,14 @@ public class Constants
     //------------------------------------------------
 
 
-    // todo Adjust for this year's robot
+    // todo Implement I and D terms
     // PID loop constants-------------------------------
     public static final double ROTATION_P = TURNING_POWER_FACTOR;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
     public static final double TRANSLATION_P = DRIVE_POWER_FACTOR;
-    public static final double TRANSLATION_I = 0.0000005;    // todo Adjust
-    public static final double TRANSLATION_D = 0.1;
+    public static final double TRANSLATION_I = 0/*0.0000005*/;
+    public static final double TRANSLATION_D = 0/*0.1*/;
     //---------------------------------------------------
 
 
@@ -83,13 +83,16 @@ public class Constants
     public static final double FOUNDATION_SERVO_LEFT_CLOSED = 0.5;
     public static final double FOUNDATION_SERVO_RIGHT_OPEN = 0.0;
     public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0.5;
+
+    // This converts encoder ticks to REV smart servo (in 225 degree mode) positions
+    public static final double MOTOR_TO_REV_SERVO_MOVEMENT = 1.55;
     //-------------------------------------------------
 
 
     // Encoder positions-------------------------------
     public static final double LIFT_MOTOR_TICKS = 2.0 * 1680.0;
     public static final int LIFT_GRAB_POS = 100; //todo Adjust
-    public static final int LIFT_PLACE_POS = 2520; //todo Adjust
+    public static final int LIFT_PLACE_POS = 2000; //todo Adjust
     public static final int NUM_TICKS_PER_STONE = 250; //THIS IS AN APPROXIMATION. todo Adjust
     //-------------------------------------------------
 

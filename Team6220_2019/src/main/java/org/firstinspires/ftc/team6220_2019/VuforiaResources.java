@@ -126,9 +126,9 @@ public class VuforiaResources
     // Todo Adjust these numbers for actual phone position on robot.
     // Next, translate the camera lens to where it is on the robot.
     // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-    final float CAMERA_FORWARD_DISPLACEMENT = 2.5f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
-    final float CAMERA_VERTICAL_DISPLACEMENT = 5.4f * mmPerInch;   // eg: Camera is 8 Inches above ground
-    final float CAMERA_LEFT_DISPLACEMENT = 7.3f * mmPerInch;     // eg: Camera is ON the robot's center line
+    final float CAMERA_FORWARD_DISPLACEMENT = 8.8f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
+    final float CAMERA_VERTICAL_DISPLACEMENT = 4.8f * mmPerInch;   // eg: Camera is 8 Inches above ground
+    final float CAMERA_LEFT_DISPLACEMENT = -6.5f * mmPerInch;     // eg: Camera is ON the robot's center line
 
     // Class Members
     private OpenGLMatrix lastLocation = null;
@@ -136,7 +136,7 @@ public class VuforiaResources
     private boolean targetVisible = false;
     private float phoneXRotate = 0;
     private float phoneYRotate = 0;
-    private float phoneZRotate = 180;
+    private float phoneZRotate = 0;
     //------------------------------------------------------------------------------------------------------------
 
 
@@ -154,6 +154,11 @@ public class VuforiaResources
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = CAMERA_CHOICE;
+        /**
+         * We also indicate which camera on the RC we wish to use.
+         */
+        parameters.cameraName = master.webcamName;
+        parameters.useExtendedTracking = false;
 
         // Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);

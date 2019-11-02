@@ -8,8 +8,6 @@ abstract public class MasterTeleOp extends MasterOpMode
     boolean slowMode = false;
     // Allows us to switch front of robot.
     boolean driveReversed = true;
-    // Tells us what drive mode the lift motor is in; by default, we use RUN_USING_ENCODER
-    boolean isRunToPosMode = false;
 
     // The following booleans help the program keep track of which step of placing a stone the grabber is in.
     boolean hasLoweredArm = false;
@@ -81,8 +79,8 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
     }
 
-
-    // Uses liftMotor to move scoring arm, with parallelServo keeping grabber parallel to the ground.
+    // TeleOp scoring system method.  Uses liftMotor to move scoring arm, with parallelServo
+    // keeping grabber parallel to the ground.
     public void driveScoringSystem()
     {
         //double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
@@ -123,7 +121,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
 
-        // todo Implement once encoder is working
+        // todo Implement once we have time
         /*
         if (isRunToPosMode)
         {

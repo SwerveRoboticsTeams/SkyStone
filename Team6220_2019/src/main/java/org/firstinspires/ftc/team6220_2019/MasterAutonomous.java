@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team6220_2019;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 /**
  * This class includes methods and fields that are useful for generic autonomous OpModes.
  */
@@ -29,7 +31,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     public void initialize()
     {
         super.initialize();
-        vRes.initVuforia();
+        //vRes.initVuforia();   // todo Uncomment
         runSetup();
     }
 
@@ -73,6 +75,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             if (driver1.isButtonJustPressed(Button.Y))
                 scoreFoundation = !scoreFoundation;
 
+            // todo Fix (only shows 1 / 2)
             // Adjust number of SkyStones scored from 0 to 2
             if (driver1.isButtonJustPressed(Button.DPAD_RIGHT) && numSkyStones < 2)    // Increase number of SkyStones (2 max)
                 numSkyStones++;
@@ -100,6 +103,37 @@ abstract public class MasterAutonomous extends MasterOpMode
 
         telemetry.log().clear();
         telemetry.log().add("Setup finished.");
+    }
+
+
+    // Autonomous scoring system method
+    public void runScoringSystemAuto(int targetPos)
+    {
+        int curLiftPos = liftMotor.getCurrentPosition();
+
+        // Set target position and power
+        isRunToPosMode = true;
+        liftMotor.setTargetPosition(targetPos);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+
+        // While outside of tolerance, continue drive liftMotor and parallelServo
+        while (Math.abs(targetPos - curLiftPos) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
+        {
+            curLiftPos = liftMotor.getCurrentPosition();
+
+            // This yields the fraction of 1 rotation that the motor has progressed through (in other
+            // words, the range 0 - 1 corresponds to 0 - 360 degrees).
+            double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
+            // Power the servo such that it remains parallel to the ground.
+            parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * Constants.MOTOR_TO_REV_SERVO_MOVEMENT);
+
+            // Display telemetry data
+            telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
+            telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
+            telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
+            telemetry.update();
+        }
     }
 
 

@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +16,19 @@ abstract public class MasterOpMode extends LinearOpMode
     // Remembers whether the grabber is open or closed.
     boolean isGrabberOpen = true;
     // Remembers whether the foundation servos are open or closed.
-    boolean areFoundationServosOpen = false;
+    boolean areFoundationServosOpen = true;
+    // Tells us what drive mode the lift motor is in; by default, we use RUN_USING_ENCODER
+    boolean isRunToPosMode = false;
+
+    /**
+     * This is the webcam we are to use. As with other hardware devices such as motors and
+     * servos, this device is identified using the robot configuration tool in the FTC application.
+     */
+    WebcamName webcamName = null;
 
     // todo Adjust
-    // Distance (in inches) that we want to rotate collector before we start collecting.
-    int collectionDistance = 20;
+    // Distance (in inches) that we want to start collecting after rotating collector.
+    int collectionDistance = 12;
 
     // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
     // opMode to be able to use some functionalities in that class.
@@ -73,6 +83,8 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         driver1 = new DriverInput(gamepad1);
         driver2 = new DriverInput(gamepad2);
+
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         // Drive motor initialization--------------------------------------
         motorFL = hardwareMap.dcMotor.get("motorFL");
@@ -193,16 +205,18 @@ abstract public class MasterOpMode extends LinearOpMode
         // Variables set every loop-------------------
         double deltaX = initDeltaX;
         double deltaY = initDeltaY;
-        double headingDiff = 0;
+        double initHeading = getAngularOrientationWithOffset();
 
         double driveAngle;
         double drivePower;
         double rotationPower;
 
-        // Find distance between robot and its destination
+        // Find distance and angle between robot and its destination
         double distanceToTarget = calculateDistance(deltaX, deltaY);
+
+        currentAngle = getAngularOrientationWithOffset();
+        double headingDiff = normalizeRotationTarget(initHeading, currentAngle);
         //---------------------------------------------
-        double initHeading = getAngularOrientationWithOffset();
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -223,7 +237,8 @@ abstract public class MasterOpMode extends LinearOpMode
                     motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
 
             // Calculate how far off robot is from its initial heading
-            headingDiff = normalizeRotationTarget(getAngularOrientationWithOffset(), initHeading);
+            currentAngle = getAngularOrientationWithOffset();
+            headingDiff = normalizeRotationTarget(initHeading, currentAngle);
 
             // Recalculate drive angle and distance remaining every loop
             distanceToTarget = calculateDistance(deltaX, deltaY);
@@ -256,29 +271,32 @@ abstract public class MasterOpMode extends LinearOpMode
             {
                 // If we have navigated less than collectionDistance, rotate the stone.
                 // Otherwise, collect the stone.
-                if (Math.abs(deltaY) < collectionDistance)
+                if (Math.abs(deltaY) > collectionDistance)
                     runCollector(true, true);
                 else
                     runCollector(true, false);
             }
 
-            driveMecanum(driveAngle, drivePower, 0/*rotationPower*/);
+            driveMecanum(driveAngle, drivePower, rotationPower);
 
             telemetry.addData("Encoder Diff x: ", deltaX);
             telemetry.addData("Encoder Diff y: ", deltaY);
-            telemetry.addData("Drive Power: ", drivePower);
-            telemetry.addData("Rotation Power: ", rotationPower);
+            telemetry.addData("Heading Diff: ", headingDiff);
             telemetry.update();
             idle();
         }
 
+        // Turn off drive motors
+        stopDriveMotors();
+
         // Turn off collector if we were running it.
         if (isCollecting)
         {
+            pauseWhileUpdating(2.0);
+
             collectorLeft.setPower(0);
             collectorRight.setPower(0);
         }
-        stopDriveMotors();
     }
 
     // The only difference between autonomousDriveMecanum and driveMecanum is that autonomousDriveMecanum
@@ -331,7 +349,7 @@ abstract public class MasterOpMode extends LinearOpMode
         double angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
 
         // Robot only stops turning when it is within angle tolerance
-        while(Math.abs(angleDiff) >= Constants.ANGLE_TOLERANCE_DEG && opModeIsActive())
+        while (Math.abs(angleDiff) >= Constants.ANGLE_TOLERANCE_DEG && opModeIsActive())
         {
             currentAngle = getAngularOrientationWithOffset();
 
@@ -349,7 +367,7 @@ abstract public class MasterOpMode extends LinearOpMode
             }
 
             // Makes sure turningPower doesn't go below minimum power
-            if(Math.abs(turningPower) < Constants.MINIMUM_TURNING_POWER)
+            if (Math.abs(turningPower) < Constants.MINIMUM_TURNING_POWER)
             {
                 turningPower = Math.signum(turningPower) * Constants.MINIMUM_TURNING_POWER;
             }
@@ -383,11 +401,10 @@ abstract public class MasterOpMode extends LinearOpMode
         {
             collectorLeft.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
             collectorRight.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
-        }
-        else    // We are collecting normally
+        } else    // We are collecting normally
         {
-                collectorLeft.setPower(powerSign * Constants.COLLECTOR_POWER);
-                collectorRight.setPower(powerSign * -Constants.COLLECTOR_POWER);
+            collectorLeft.setPower(powerSign * Constants.COLLECTOR_POWER);
+            collectorRight.setPower(powerSign * -Constants.COLLECTOR_POWER);
         }
     }
 
@@ -399,8 +416,7 @@ abstract public class MasterOpMode extends LinearOpMode
         {
             foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_CLOSED);
             foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_CLOSED);
-        }
-        else
+        } else
         {
             foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
             foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
@@ -418,8 +434,7 @@ abstract public class MasterOpMode extends LinearOpMode
         if (isGrabberOpen)
         {
             grabberServo.setPosition(Constants.GRABBER_CLOSED);
-        }
-        else
+        } else
         {
             grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
@@ -446,7 +461,12 @@ abstract public class MasterOpMode extends LinearOpMode
     // Prevents a single angle from being outside the range -180 to 180 degrees
     public double normalizeAngle(double rawAngle)
     {
-        return rawAngle % 360 - 180;
+        while (Math.abs(rawAngle) > 180)
+        {
+            rawAngle -= Math.signum(rawAngle) * 360;
+        }
+
+        return rawAngle;
     }
 
 

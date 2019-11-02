@@ -22,11 +22,15 @@ public class TestAuto extends MasterAutonomous
     {
         initialize();
 
-        setRobotStartingOrientation(90);
+        setRobotStartingOrientation(0);
 
-        vRes.activateTargets();
+        //vRes.activateTargets();
         waitForStart();
 
+        //navigateUsingEncoders(0,6,0.3,false);
+        //turnTo(-90,0.7);
+
+        navigateUsingEncoders(0,28,0.5, true);
 
         //int targetNum = 0;
 
@@ -50,6 +54,6 @@ public class TestAuto extends MasterAutonomous
             idle();
         }
 
-        vRes.deactivateTargets();
+        //vRes.deactivateTargets();
     }
 }
