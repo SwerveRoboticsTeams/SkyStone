@@ -24,24 +24,28 @@ public class TestAuto extends MasterAutonomous
 
         setRobotStartingOrientation(0);
 
-        //vRes.activateTargets();
+        vRes.activateTargets();
         waitForStart();
 
-        //navigateUsingEncoders(0,6,0.3,false);
-        //turnTo(-90,0.7);
+        /*
+        // Position robot so it can view SkyStone image target
+        navigateUsingEncoders(0,16,0.7, false);
 
-        navigateUsingEncoders(0,28,0.5, true);
+        // Drive toward stone while collecting
+        navigateUsingEncoders(0,28,0.3, true);*/
+        // Find SkyStone image target and translate appropriate distance toward image target
+        vuforiaAlignWithSkyStone();
 
         //int targetNum = 0;
-
         while (opModeIsActive())
         {
+            /*vRes.getLocation();
             //vuforiaFollowObject();
 
             //driveToCoordinates(0, 0, 0);
 
             // todo Test this code in order to implement more general navigation.
-            /*if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
+            if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
                 if(targetNum < navPoints.length - 1){
                     targetNum++;
                 }
@@ -49,11 +53,11 @@ public class TestAuto extends MasterAutonomous
                     break;
                 }
             }
-*/
+            */
             telemetry.update();
             idle();
         }
 
-        //vRes.deactivateTargets();
+        vRes.deactivateTargets();
     }
 }

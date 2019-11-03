@@ -123,12 +123,13 @@ public class VuforiaResources
     private static final float halfField = 72 * mmPerInch;
     private static final float quadField = 36 * mmPerInch;
 
-    // Todo Adjust these numbers for actual phone position on robot.
+    // todo Adjust these numbers for actual webcam position on robot.
+    // todo Also:  Not working?
     // Next, translate the camera lens to where it is on the robot.
     // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-    final float CAMERA_FORWARD_DISPLACEMENT = 8.8f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
-    final float CAMERA_VERTICAL_DISPLACEMENT = 4.8f * mmPerInch;   // eg: Camera is 8 Inches above ground
-    final float CAMERA_LEFT_DISPLACEMENT = -6.5f * mmPerInch;     // eg: Camera is ON the robot's center line
+    final float CAMERA_FORWARD_DISPLACEMENT = 8.8f * mmPerInch;   // eg: Camera is 8.8 Inches in front of robot center
+    final float CAMERA_VERTICAL_DISPLACEMENT = 4.8f * mmPerInch;   // eg: Camera is 4.8 Inches above ground
+    final float CAMERA_LEFT_DISPLACEMENT = -6.5f * mmPerInch;     // eg: Camera is 6.5 Inches right of the robot's center line
 
     // Class Members
     private OpenGLMatrix lastLocation = null;
@@ -378,7 +379,7 @@ public class VuforiaResources
         {
             master.telemetry.addData("Visible Target", "none");
         }
-        master.telemetry.update();
+        //master.telemetry.update();
     }
 
     public boolean getTargetVisibility()

@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 
 /**
  * This class includes methods and fields that are useful for generic autonomous OpModes.
@@ -21,7 +24,17 @@ abstract public class MasterAutonomous extends MasterOpMode
 
     // Initialize angles and distances for various differing setup options----------------------
     double stoneShift = 8; // Centers of stones are 8 in apart
-    double robotShift = 0;     // Actual distance the robot moved (will be changed)
+    double centerOffset = 6.5;
+    double robotShift = centerOffset;     // Actual distance the robot moved (will be changed)
+
+    // Change initial orientation based on red / blue alliance.  Red is default
+    double initAngle_side = 90;
+    // Change some turns based on alliance
+    double turnShift = 0;
+    // Account for translation being opposite directions relative to field on red / blue alliances
+    double robotShiftSign = 1.0;
+    // Account for center being shifted in opposite directions on red / blue alliance
+    double centerAdjustment = 0;
 
     //------------------------------------------------------------------------------------------
 
@@ -31,7 +44,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     public void initialize()
     {
         super.initialize();
-        //vRes.initVuforia();   // todo Uncomment
+        vRes.initVuforia();
         runSetup();
     }
 
@@ -53,7 +66,7 @@ abstract public class MasterAutonomous extends MasterOpMode
 
         boolean settingUp = true;
 
-        while (settingUp)
+        while (settingUp && !isStopRequested())
         {
             // Finds the time elapsed each loop.
             double eTime = timer.seconds() - lTime;
@@ -101,6 +114,15 @@ abstract public class MasterAutonomous extends MasterOpMode
             idle();
         }
 
+        // Adjust constants based on red / blue alliance selection
+        if (!isRedAlliance)
+        {
+            initAngle_side = -90;
+            turnShift = 180;
+            robotShiftSign = -1.0;
+            centerAdjustment = 2.0 * centerOffset;
+        }
+
         telemetry.log().clear();
         telemetry.log().add("Setup finished.");
     }
@@ -112,9 +134,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         int curLiftPos = liftMotor.getCurrentPosition();
 
         // Set target position and power
-        isRunToPosMode = true;
         liftMotor.setTargetPosition(targetPos);
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
 
         // While outside of tolerance, continue drive liftMotor and parallelServo
@@ -133,10 +153,46 @@ abstract public class MasterAutonomous extends MasterOpMode
             telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
             telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
             telemetry.update();
+            idle();
         }
     }
 
 
+    /**
+     * UNTESTED - - - UNTESTED - - - UNTESTED
+     * This method identifies the location of the SkyStone, using this information to determine
+     * whether it is in the left, center, or right orientation.  Next, it uses navigateUsingEncoders()
+     * to align the robot head-on with the SkyStone.
+     */
+    public void vuforiaAlignWithSkyStone()
+    {
+        vRes.getLocation();
+
+        if (!vRes.getTargetVisibility())
+        {
+            // Shift toward center stone if we can't ID target
+        } else
+        {
+            // Align with SkyStone
+            vRes.getLocation();
+            // todo This should use vRes.CAMERA_LEFT_DISPLACEMENT (in inches, not MM)
+            double stoneDistance = vRes.translation.get(1) / Constants.MM_PER_INCH;
+            telemetry.addData("stoneDistance: ", stoneDistance);
+            telemetry.update();
+
+            if (stoneDistance > (stoneShift - 2))  // Need to shift right
+                robotShift = stoneShift + 6.5;
+            else if (stoneDistance < (-stoneShift + 2))    // Need to shift left
+                robotShift = -stoneShift + 5.5; // todo Adjust further if necessary
+            // Otherwise, no change in shift is necessary (robotShift = 6.5 by default)
+        }
+
+        // Translate robot
+        navigateUsingEncoders(robotShift, 0, 0.3, false);
+    }
+
+
+    // todo Test and adjust method
     // This method can be used with the skystone navigation target.  It allows a robot to navigate
     // to the front of the target and follow it if it moves.
 
@@ -145,44 +201,6 @@ abstract public class MasterAutonomous extends MasterOpMode
      * NOTE: DO NOT USE THIS METHOD IN COMPETITION. THIS IS A TEST METHOD ONLY.
      * With a skystone defined as (0, 0, 0) absolutely, this method is designed to make the robot drive towards
      * the skystone at all times. It should follow a skystone if moved.
-     */
-    public void vuforiaAlignWithSkyStone()
-    {
-        vRes.getLocation();
-
-        if (!vRes.getTargetVisibility())
-        {
-            // Don't change course from center stone if we can't ID target
-        } else
-        {
-            // x, y, z defines the location of the center of the robot relative to the SkyStone (in inches).
-            // todo Is MM -> IN conversion correct here?
-            // todo Is (1) correct index (normally y, but need x)?
-            double stoneDistance = vRes.translation.get(1) / Constants.MM_PER_INCH;
-            telemetry.addData("Stone distance: ", stoneDistance);
-            telemetry.update();
-
-            // todo Are +/- signs correct?
-            if (stoneDistance > stoneShift - 5 * Constants.POSITION_TOLERANCE_IN)   // If SkyStone is > 7 in right of center, shift right
-                robotShift = stoneShift;
-            else if (stoneDistance < -stoneShift + 5 * Constants.POSITION_TOLERANCE_IN)     // If SkyStone is > 7 in left of center, shift left
-                robotShift = -stoneShift;
-            else
-                robotShift = 0;     // Otherwise, SkyStone is center and we don't need to translate
-
-            // Translate shift distance
-            navigateUsingEncoders(robotShift, 0, 0.5, false);
-        }
-    }
-
-
-    // todo Test and adjust method
-
-    /**
-     * UNTESTED - - - UNTESTED - - - UNTESTED
-     * This method identifies the location of the SkyStone, using this information to determine
-     * whether it is in the left, center, or right orientation.  Next, it uses navigateUsingEncoders()
-     * to align the robot head-on with the SkyStone.
      */
     public void vuforiaFollowObject()
     {

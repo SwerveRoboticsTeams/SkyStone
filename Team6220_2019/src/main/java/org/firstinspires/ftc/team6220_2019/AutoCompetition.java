@@ -19,64 +19,63 @@ import java.util.Scanner;
 @Autonomous(name = "AutoCompetition")
 public class AutoCompetition extends MasterAutonomous
 {
-
-    public int[][] navPoints = {{-18, -18},
-                                {-18, 18},
-                                {-18, 18},
-                                {-18, -18}};
-
     @Override
     public void runOpMode() throws InterruptedException
     {
         initialize();
 
-        // todo May need to change to sideways (180 degrees) for optimal collection
         // Start perpendicular to red wall
-        setRobotStartingOrientation(90);
+        setRobotStartingOrientation(initAngle_side);
 
         // Turn on Vuforia tracking
-        //vRes.activateTargets();
+        vRes.activateTargets();
         waitForStart();
         // Wait to start the match for 0-10 seconds, depending on setup input.
         pauseWhileUpdating(delayCount);
 
-        // Position robot so it can view SkyStone image target
-        navigateUsingEncoders(0,16,0.7, false);
+        // Position robot so it can view SkyStone image target, wait for a bit to recognize target
+        navigateUsingEncoders(0,12,0.4, false);
+        pauseWhileUpdating(3.0);
 
         // Find SkyStone image target and translate appropriate distance toward image target
-        //vuforiaAlignWithSkyStone();
+        vuforiaAlignWithSkyStone();
 
         // Drive forward and collect SkyStone
-        navigateUsingEncoders(0,30,0.5, true);
+        navigateUsingEncoders(0,36,0.2, true);
 
-        // Grab SkyStone and drive backwards (14 in + 3 in behind tile line)
+        // Lower grabber, then grab SkyStone and drive backwards (18 in + 3 in behind tile line)
+        runScoringSystemAuto(0);
         toggleGrabber();
-        navigateUsingEncoders(0,-17,0.5, false);
+        navigateUsingEncoders(0,-22,0.5, false);
+
+        // todo Need to add if() statement to distinguish whether we are scoring foundation
 
         // Turn, navigate to center of foundation (+3.5 tiles), and turn again so foundationServos face
         // the foundation
         turnTo(0, 0.7);
-        // todo Account for translation shift; done
-        navigateUsingEncoders(0,84 - robotShift,0.8, false);
-        turnTo(-90, 0.7);
+        navigateUsingEncoders(0,84 - robotShiftSign * robotShift - centerAdjustment,0.7, false);
+        turnTo(-90 + turnShift, 0.7);   // Account for turn shift if blue alliance (+180)
 
         // Drive up to foundation (forward 3 in + 6 in extra for good measure), activate foundationServos,
         // pull foundation into building site, then deactivate foundationServos
         navigateUsingEncoders(0,-9,0.3, false);
         toggleFoundationServos();
-        navigateUsingEncoders(0,38,0.4, false);    // 36 = 2 * 24 - 16 (robot length) + 6 (extra distance)
+        // todo Need to adjust backward translation?
+        navigateUsingEncoders(0,38,0.4, false);    // 38 = 2 * 24 - 16 (robot length) + 6 (extra distance)
+        // todo Need turnTo() to move foundation into building site?
         toggleFoundationServos();
 
         // Move lift, drop SkyStone, and retract lift
         runScoringSystemAuto(Constants.LIFT_PLACE_POS);
+        pauseWhileUpdating(0.5);
         toggleGrabber();
         runScoringSystemAuto(Constants.LIFT_GRAB_POS);
 
         // Navigate two tiles to park on line
-        navigateUsingEncoders(56,0,0.8, false);
+        navigateUsingEncoders(robotShiftSign * 56,0,0.7, false);
 
 
         // Turn off Vuforia tracking
-        //vRes.deactivateTargets();
+        vRes.deactivateTargets();
     }
 }

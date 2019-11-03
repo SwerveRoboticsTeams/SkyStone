@@ -26,9 +26,8 @@ abstract public class MasterOpMode extends LinearOpMode
      */
     WebcamName webcamName = null;
 
-    // todo Adjust
     // Distance (in inches) that we want to start collecting after rotating collector.
-    int collectionDistance = 12;
+    int collectionDistance = 13;
 
     // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
     // opMode to be able to use some functionalities in that class.
@@ -108,7 +107,6 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -116,7 +114,6 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -124,12 +121,19 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         grabberServo.setPosition(Constants.GRABBER_OPEN);
         parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT);
         foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
         foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
+
+        // Initialize lift in RUN_TO_POSITION so that it does not hit stone during collection
+        isRunToPosMode = true;
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
 
 
         stopDriveMotors();
@@ -291,7 +295,7 @@ abstract public class MasterOpMode extends LinearOpMode
         // Turn off collector if we were running it.
         if (isCollecting)
         {
-            pauseWhileUpdating(2.0);
+            pauseWhileUpdating(1.0);
 
             collectorLeft.setPower(0);
             collectorRight.setPower(0);
@@ -326,13 +330,13 @@ abstract public class MasterOpMode extends LinearOpMode
          However, powScalar should only be applied if it is greater than 1. Otherwise, we could
          unintentionally increase powers or even divide by 0
         */
-//        if (powScalar > 1)
-//        {
-//            powerFL /= powScalar;
-//            powerFR /= powScalar;
-//            powerBL /= powScalar;
-//            powerBR /= powScalar;
-//        }
+        if (powScalar > 1)
+        {
+            powerFL /= powScalar;
+            powerFR /= powScalar;
+            powerBL /= powScalar;
+            powerBR /= powScalar;
+        }
 
         motorFL.setPower(powerFL);
         motorFR.setPower(powerFR);

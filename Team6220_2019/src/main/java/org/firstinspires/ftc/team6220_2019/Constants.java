@@ -74,15 +74,15 @@ public class Constants
 
 
     // Servo positions--------------------------------
-    // For the grabber, 1 is closed, 0 is open
-    public static final double GRABBER_OPEN = 0.6;
+     // For the grabber, 1 is closed, 0 is open
+    public static final double GRABBER_OPEN = 0.65;
     public static final double GRABBER_CLOSED = 0.9;
     public static final double PARALLEL_SERVO_INIT = 0.0;
-
-    public static final double FOUNDATION_SERVO_LEFT_OPEN = 1.0;
-    public static final double FOUNDATION_SERVO_LEFT_CLOSED = 0.5;
-    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 0.0;
-    public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0.5;
+     // Open = stowed, closed = grabbing foundation
+    public static final double FOUNDATION_SERVO_LEFT_OPEN = 0.75;
+    public static final double FOUNDATION_SERVO_LEFT_CLOSED = 0.45;
+    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 0.05;
+    public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0.54;
 
     // This converts encoder ticks to REV smart servo (in 225 degree mode) positions
     public static final double MOTOR_TO_REV_SERVO_MOVEMENT = 1.55;
@@ -91,8 +91,8 @@ public class Constants
 
     // Encoder positions-------------------------------
     public static final double LIFT_MOTOR_TICKS = 2.0 * 1680.0;
-    public static final int LIFT_GRAB_POS = 100; //todo Adjust
-    public static final int LIFT_PLACE_POS = 2000; //todo Adjust
+    public static final int LIFT_GRAB_POS = 55;
+    public static final int LIFT_PLACE_POS = 2000;
     public static final int NUM_TICKS_PER_STONE = 250; //THIS IS AN APPROXIMATION. todo Adjust
     //-------------------------------------------------
 
