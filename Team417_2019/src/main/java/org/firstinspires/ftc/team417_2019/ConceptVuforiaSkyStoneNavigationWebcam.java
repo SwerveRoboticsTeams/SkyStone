@@ -51,6 +51,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGR
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 /**
@@ -308,9 +309,11 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
         }
 
         // Next, translate the camera lens to where it is on the robot.
-        // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
+        //x
         final float CAMERA_FORWARD_DISPLACEMENT  = 9.0f;   // eg: Camera is 4 Inches in front of robot-center
+        // z
         final float CAMERA_VERTICAL_DISPLACEMENT = 5.0f ;   // eg: Camera is 8 Inches above ground
+        //y
         final float CAMERA_LEFT_DISPLACEMENT     = 0f;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
@@ -344,7 +347,6 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
                     targetVisible = true;
-
                     // getUpdatedRobotLocation() will return null if no new information is available since
                     // the last time that call was made, or if the trackable is not currently visible.
                     OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
@@ -357,12 +359,9 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
-                // express position (translation) of robot in inches.
                 translation = lastLocation.getTranslation();
                 telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0)  , translation.get(1) , translation.get(2));
-
-                // express the rotation of the robot in degrees.
                 rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
 
@@ -375,18 +374,21 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
         waitForStart();
 
-        float moveX = translation.get(0);
-        float moveY = translation.get(1);
+        float yMovement = translation.get(0);
+        float xMovement = translation.get(1);
         double refAngle = imu.getAngularOrientation().firstAngle; // possibly move to initialization
 
-        telemetry.addData("x",moveX);
-        telemetry.addData("y",moveY);
+        telemetry.addData("x",xMovement);
+        telemetry.addData("y",yMovement);
         telemetry.addData("refAngle", refAngle);
         telemetry.addData("thirdAngle", rotation.thirdAngle);
         telemetry.update();
 
-        //move(moveX,0,0.3,1.0,5.0);
-        //move(0, moveY - 200, 0.3,1.0,5.0);
+        // move x
+        move(xMovement,0,0.3,1.0,5.0);
+        move(0, yMovement, 0.3,1.0,5.0);
+
+
         //moveMaintainHeading(moveX , moveY - 100, rotation.thirdAngle,0.2,0.9,7.0);
         //pivotWithReference(0,refAngle, 0.3,0.8);
 
