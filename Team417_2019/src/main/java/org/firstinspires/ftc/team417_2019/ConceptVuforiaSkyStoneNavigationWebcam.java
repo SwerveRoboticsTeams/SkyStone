@@ -361,7 +361,7 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
             if (targetVisible) {
                 translation = lastLocation.getTranslation();
                 telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0)  , translation.get(1) , translation.get(2));
+                        translation.get(1)  , translation.get(0) , translation.get(2));
                 rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
 
@@ -374,7 +374,7 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
         waitForStart();
 
-        float yMovement = translation.get(0);
+        float yMovement = -translation.get(0);
         float xMovement = translation.get(1);
         double refAngle = imu.getAngularOrientation().firstAngle; // possibly move to initialization
 
