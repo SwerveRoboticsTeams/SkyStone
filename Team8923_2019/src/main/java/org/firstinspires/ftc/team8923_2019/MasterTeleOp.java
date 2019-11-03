@@ -38,31 +38,28 @@ abstract class MasterTeleOp extends Master
         return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     }
 
-    public void runIntake()
-    {
-        if (gamepad1.dpad_up)
-        {
-            intakeLeft.setPower(1.0);
-            intakeRight.setPower(1.0);
-
-        }
-        else if (gamepad1.dpad_down)
-        {
-            intakeLeft.setPower(-1.0);
-            intakeRight.setPower(-1.0);
-        }
-        else
-        {
-            intakeLeft.setPower(0.0);
-            intakeRight.setPower(0.0);
-        }
-//        telemetry.addData("intake", gamepad1.dpad_up);
-//        telemetry.update();
-
-    }
-
-
-
+//    public void runIntake()
+//    {
+//        if (gamepad1.dpad_up)
+//        {
+//            intakeLeft.setPower(1.0);
+//            intakeRight.setPower(1.0);
+//
+//        }
+//        else if (gamepad1.dpad_down)
+//        {
+//            intakeLeft.setPower(-1.0);
+//            intakeRight.setPower(-1.0);
+//        }
+//        else
+//        {
+//            intakeLeft.setPower(0.0);
+//            intakeRight.setPower(0.0);
+//        }
+////        telemetry.addData("intake", gamepad1.dpad_up);
+////        telemetry.update();
+//
+//    }
 
     public void runClaw()
     {
@@ -72,14 +69,14 @@ abstract class MasterTeleOp extends Master
         {
             // Move arm forward
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Variables.ARM_PWR_FACTOR = 0.5;
+            setArmPowerBasedOnArmTicks();
             motorArm.setPower(leftStickY * Variables.ARM_PWR_FACTOR);
         }
         else if(leftStickY < -Constants.MINIMUM_JOYSTICK_PWR)
         {
             // Move arm back
             motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Variables.ARM_PWR_FACTOR = 0.135;
+            setArmPowerBasedOnArmTicks();
             motorArm.setPower(leftStickY * Variables.ARM_PWR_FACTOR);
         }
         else
@@ -92,6 +89,16 @@ abstract class MasterTeleOp extends Master
         }
 
 
+    }
+    private void setArmPowerBasedOnArmTicks()
+    {
+        if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARALLEL_POINT){
+            Variables.ARM_PWR_FACTOR = 0.135;
+        }else if(Variables.ARM_MOTOR_TICKS > -200){
+            Variables.ARM_PWR_FACTOR = 0.15;
+        }else{
+            Variables.ARM_PWR_FACTOR = 0.25;
+        }
     }
 
     public void adjustClawPosition()
@@ -115,6 +122,22 @@ abstract class MasterTeleOp extends Master
 
     }
 
+    public void toggleFoundationServos(){
+        if(gamepad1.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
+            servoFoundationLeft.setPosition(1.0);
+            servoFoundationRight.setPosition(0.0);
+        }else{
+            servoFoundationLeft.setPosition(0.0);
+            servoFoundationRight.setPosition(1.0);
+        }
+    }
+
+    public void resetArmTicksToZero(){
+        if(gamepad2.y){
+            Constants.ARM_STARTING_TICKS += Variables.ARM_MOTOR_TICKS;
+        }
+    }
+
     private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)
     {
         double valueDifference = maxInput - minInput;
@@ -123,9 +146,6 @@ abstract class MasterTeleOp extends Master
 
         return percentValueDifference * mappedDifference + minMappedOutput;
     }
-
-
-
 
     void sendTelemetry()
     {
@@ -138,6 +158,8 @@ abstract class MasterTeleOp extends Master
         telemetry.addData("left trigger:", gamepad2.left_trigger);
         telemetry.addData("armStartingTicks", Constants.ARM_STARTING_TICKS);
         telemetry.addData("armTicks", Variables.ARM_MOTOR_TICKS);
+        telemetry.addData("BL Power", powerBL);
+        telemetry.addData("BR Power", powerBR);
         telemetry.update();
     }
 }

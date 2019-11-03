@@ -16,11 +16,17 @@ abstract class Master extends LinearOpMode
     DcMotor motorBR;
     DcMotor motorDankUnderglow;
     DcMotor motorArm;
-    CRServo intakeLeft;
-    CRServo intakeRight;
+   // CRServo intakeLeft;
+   // CRServo intakeRight;
     Servo servoJoint;
     Servo servoGrabber;
+    Servo servoFoundationLeft;
+    Servo servoFoundationRight;
 
+    double powerFL;
+    double powerFR;
+    public double powerBL;
+    public double powerBR;
     BNO055IMU imu;
 
     double slowModeDivisor = 1.0;
@@ -43,11 +49,13 @@ abstract class Master extends LinearOpMode
         motorFR = hardwareMap.get(DcMotor.class, "motorFR");
         motorBL = hardwareMap.get(DcMotor.class, "motorBL");
         motorBR = hardwareMap.get(DcMotor.class, "motorBR");
-        intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
-        intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
+        //intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
+        //intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
         motorArm = hardwareMap.get(DcMotor.class,  "motorArm");
         servoJoint = hardwareMap.get(Servo.class, "servoJoint");
         servoGrabber = hardwareMap.get(Servo.class, "servoGrabber");
+        servoFoundationLeft = hardwareMap.get(Servo.class,"servoFoundationLeft");
+        servoFoundationRight = hardwareMap.get(Servo.class,"servoFoundationRight");
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -72,8 +80,6 @@ abstract class Master extends LinearOpMode
 
     }
 
-
-
     void driveMecanum(double driveAngle, double drivePower, double turnPower)
     {
         // Calculate x and y components of drive power, where y is forward (0 degrees) and x is right (-90 degrees)
@@ -94,10 +100,10 @@ abstract class Master extends LinearOpMode
         if(reverseDrive)
             turnPower = -turnPower;
 
-        double powerFL = y + x - turnPower;
-        double powerFR = y - x + turnPower;
-        double powerBL = y - x - turnPower;
-        double powerBR = y + x + turnPower;
+        powerFL = y + x - turnPower;
+        powerFR = y - x + turnPower;
+        powerBL = y - x - turnPower;
+        powerBR = y + x + turnPower;
 
         // Motor powers might be set above 1, so this scales all of the motor powers to stay
         // proportional and within power range

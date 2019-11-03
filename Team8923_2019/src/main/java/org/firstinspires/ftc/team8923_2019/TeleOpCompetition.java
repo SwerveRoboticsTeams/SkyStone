@@ -11,7 +11,6 @@ public class TeleOpCompetition extends MasterTeleOp
     public void runOpMode()
     {
 
-
         initHardware();
         waitForStart();
 
@@ -19,13 +18,15 @@ public class TeleOpCompetition extends MasterTeleOp
         {
             Variables.ARM_MOTOR_TICKS = motorArm.getCurrentPosition() - Constants.ARM_STARTING_TICKS;
 
-//            servoGrabber.setPosition(0.5);
+
             driveMecanumTeleOp();
-            runIntake();
+            //runIntake();
             runClaw();
             adjustClawPosition();
             toggleGrabber();
             sendTelemetry();
+            toggleFoundationServos();
+            resetArmTicksToZero();
 
             idle();
         }

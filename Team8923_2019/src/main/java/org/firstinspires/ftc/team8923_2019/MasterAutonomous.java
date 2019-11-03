@@ -43,11 +43,12 @@ abstract class MasterAutonomous extends Master
 
     Alliance alliance = Alliance.BLUE;
     StartLocations startLocation = StartLocations.DEPOT_SIDE;
+    Objectives objective = Objectives.PARK;
 
     boolean doneSettingUp = false;
 
-    ArrayList<Integer> delays = new ArrayList<>();
-    int numDelays = 0;
+    int delays = 0;
+    //int numDelays = 0;
     int delayTime = 0;
 
     // these values equal to one over the value (in mm for drive power and degrees for turn power)
@@ -74,153 +75,73 @@ abstract class MasterAutonomous extends Master
 
     enum Objectives
     {
-
+        PULL_FOUNDATION_AND_PARK,
+        PARK,
     }
 
     public void configureAutonomous()
     {
-        telemetry.addLine("helllooo");
+
         // waste the zero index because we can't have zero delays
-        delays.add(0);
+        boolean doneSettingUp = false;
         while (!doneSettingUp)
         {
-//            if (gamepad1.x)
-//                alliance = Alliance.BLUE;
-//                //means we are blue alliance
-//            else if (gamepad1.b)
-//                alliance = Alliance.RED;
-            // means we are red alliance
+            if (gamepad1.x)
+                alliance = Alliance.BLUE;
+                //means we are blue alliance
+            else if (gamepad1.b)
+                alliance = Alliance.RED;
 
-//            //means we are crater side
-//            if(gamepad1.dpad_left)
-//            {
-//                startLocation = StartLocations.CRATER;
-//                assist = Assist.NOT_ASSISTING;
-//            }
-//            //means we are depot side
-//            else if (gamepad1.dpad_right)
-//            {
-//                startLocation = StartLocations.DEPOT;
-//            }
-//
-//            if (startLocation == StartLocations.DEPOT && gamepad1.a)
-//            {
-//                assist = Assist.ASSISTING;
-//            }
-//            else if (gamepad1.y)
-//            {
-//                assist = Assist.NOT_ASSISTING;
-//            }
 
-//            if (gamepad1.dpad_up)
-//            {
-//                numDelays++;
-//                delays.add(1);
-//                boolean customizingTime = true;
-//
-//                while (!buttonsAreReleased(gamepad1))
-//                {
-//                    telemetry.update();
-//                    idle();
-//                }
-//
-//                while (customizingTime)
-//                {
-//                    if (gamepad1.dpad_up)
-//                        delays.set(numDelays, delays.get(numDelays) + 1);
-//                    else if (gamepad1.dpad_down && delays.get(numDelays) >= 0)
-//                        delays.set(numDelays, delays.get(numDelays) - 1);
-//                    if (delays.get(numDelays) <= 0)
-//                    {
-//                        delays.remove(numDelays);
-//                        numDelays--;
-//                        customizingTime = false;
-//                    }
-//                    if (gamepad1.a)
-//                        customizingTime = false;
-//                    else if (gamepad1.start)
-//                    {
-//                        customizingTime = false;
-//                        doneSettingUp = true;
-//                    }
-//
-//                    while (!buttonsAreReleased(gamepad1))
-//                    {
-//                        telemetry.update();
-//                        idle();
-//                    }
-//
-//                    telemetry.addData("Delay Number", numDelays);
-//                    telemetry.addLine("Delay Increase/Decrease: Dpad Up / Down ");
-//                    telemetry.addLine("Press 'A' to confirm");
-//                    telemetry.addData("delay time", delays.get(numDelays));
-//                    telemetry.update();
-//                }
-//            }
+            if(gamepad1.dpad_left)
+                startLocation = StartLocations.DEPOT_SIDE;
 
-//            if (gamepad1.start)
-//                doneSettingUp = true;
-//
-//            while (!buttonsAreReleased(gamepad1))
-//            {
-//                telemetry.update();
-//                idle();
-//            }
+
+            if (gamepad1.dpad_right)
+                startLocation = StartLocations.BUILD_SIDE;
+                reverseDrive = true;
+
+            if (gamepad1.dpad_up)
+                delays++;
+
+            if(gamepad1.dpad_down && delays >= 1)
+                delays--;
+
+            if(gamepad1.a){
+                switch (objective){
+                    case PARK:
+                        objective = Objectives.PULL_FOUNDATION_AND_PARK;
+                        break;
+                    case PULL_FOUNDATION_AND_PARK:
+                        objective = Objectives.PARK;
+                        break;
+                }
+
+            }
+
+            if (gamepad1.start)
+                doneSettingUp = true;
+
+
+            while (!buttonsAreReleased(gamepad1))
+            {
+                telemetry.update();
+                idle();
+            }
 
 //            // input information
-//            telemetry.addLine("Alliance Blue/Red: X/B");
-//            telemetry.addLine("Starting Position Crater/Depot: D-Pad Left/Right");
-//            telemetry.addLine("Add a delay: D-Pad Up");
-//            telemetry.addLine("After routine is complete and robot is on field, press Start");
-//            telemetry.addLine();
-//
-//            // setup data
-//            telemetry.addData("Alliance", alliance.name());
-//            telemetry.addData("Side", startLocation.name());
-//            for (int i = 1; i <= delays.size() - 1 && delays.size() != 1; i++)
-//            {
-//                telemetry.addData("delay " + i, delays.get(i));
-//            }
-//            telemetry.update();
+            telemetry.addLine("Alliance Blue/Red: X/B");
+            telemetry.addLine("Starting Position Depot/BuildSide: D-Pad Left/Right");
+            telemetry.addLine("Add a delay: D-Pad Up/Down");
+            telemetry.addLine("toggle objective: a park/park and foundation");
+            telemetry.addLine("After routine is complete and robot is on field, press Start");
 
-            //idle();
-        //}
-
-        // We could clear the telemetry at this point, but the drivers may want to see it
-//        telemetry.clear();
-//
-//        telemetry.addLine("Setup complete. Initializing...");
-
-        // Set coordinates based on alliance and starting location
-//        if(startLocation == StartLocations.DEPOT)
-//        {
-//            if(alliance == Alliance.RED)
-//            {
-//                robotX = StartLocations.RED_DEPOT_START_X.val;
-//                robotY = StartLocations.RED_DEPOT_START_Y.val;
-//                headingOffset = StartLocations.RED_DEPOT_START_ANGLE.val;
-//            }
-//            else if(alliance == Alliance.BLUE)
-//            {
-//                robotX = StartLocations.BLUE_DEPOT_START_X.val;
-//                robotY = StartLocations.BLUE_DEPOT_START_Y.val;
-//                headingOffset = StartLocations.BLUE_DEPOT_START_ANGLE.val;
-//            }
-//        }
-//        else if(startLocation == StartLocations.CRATER)
-//        {
-//            if (alliance == Alliance.RED)
-//            {
-//                robotX = StartLocations.RED_CRATER_START_X.val;
-//                robotY = StartLocations.RED_CRATER_START_Y.val;
-//                headingOffset = StartLocations.RED_CRATER_START_ANGLE.val;
-//            } else if (alliance == Alliance.BLUE)
-//            {
-//                robotX = StartLocations.BLUE_CRATER_START_X.val;
-//                robotY = StartLocations.BLUE_CRATER_START_Y.val;
-//                headingOffset = StartLocations.BLUE_CRATER_START_ANGLE.val;
-//            }
-            doneSettingUp = true;
+            telemetry.addLine();
+            telemetry.addData("alliance: ", alliance);
+            telemetry.addData( "startLocation:", startLocation);
+            telemetry.addData("delays:", delays);
+            telemetry.addData("objective", objective);
+            telemetry.update();
         }
     }
 
@@ -248,6 +169,7 @@ abstract class MasterAutonomous extends Master
         // Set IMU heading offset
         headingOffset = imu.getAngularOrientation().firstAngle - robotAngle;
 
+        grabbersUp();
         telemetry.clear();
         telemetry.update();
         telemetry.addLine("Initialized. Ready to start!");
@@ -394,6 +316,18 @@ abstract class MasterAutonomous extends Master
         telemetry.addData("BR Encoder", motorBR.getCurrentPosition());*/
 
         telemetry.update();
+    }
+
+    public void grabbersDown()
+    {
+        servoFoundationLeft.setPosition(1.0);
+        servoFoundationRight.setPosition(0.0);
+    }
+
+    public void grabbersUp()
+    {
+        servoFoundationLeft.setPosition(0.0);
+        servoFoundationRight.setPosition(1.0);
     }
 
 
