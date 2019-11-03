@@ -21,7 +21,7 @@ public class TeleOpCompetition extends MasterTeleOp
             lTime = timer.seconds();
 
 
-            // Operate robot mechanisms using methods from MasterTeleOp
+            // Operate robot mechanisms using methods from MasterTeleOp-----------------------------
              // Driver1 methods
             driveMecanumWithJoysticks();
              // Driver2 methods
@@ -33,6 +33,7 @@ public class TeleOpCompetition extends MasterTeleOp
             // Only toggle foundationServos if Button.B is just pressed.
             if(driver2.isButtonJustPressed(Button.B))
                 toggleFoundationServos();
+            //--------------------------------------------------------------------------------------
 
             /**
              Updates that need to happen each loop

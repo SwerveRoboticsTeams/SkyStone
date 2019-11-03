@@ -46,11 +46,11 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         double drivePower = tFactor * stickCurve.getOuput(driver1.getRightStickMagnitude());
 
-        double rotationPower = rFactor * stickCurve.getOuput(gamepad1.left_stick_x);
+        double rotationPower = rFactor * stickCurve.getOuput(driver1.getLeftStickX());
         //----------------------------------------------------------------------------------------
 
 
-        // Change drive direction based on driver input
+        // Change drive direction if Driver 1 presses left bumper
         if (driver1.isButtonJustPressed(Button.LEFT_BUMPER) && !driveReversed)
             driveReversed = true;
         else if (driver1.isButtonJustPressed(Button.LEFT_BUMPER) && driveReversed)
@@ -61,6 +61,11 @@ abstract public class MasterTeleOp extends MasterOpMode
             driveMecanum(angle, drivePower, rotationPower);
         else
             driveMecanum(angle + 180, drivePower, rotationPower);
+
+        // Add telemetry data for drivers
+        telemetry.addData("angle: ", angle);
+        telemetry.addData("drivePower: ", drivePower);
+        telemetry.addData("rotationPower: ", rotationPower);
     }
 
 
