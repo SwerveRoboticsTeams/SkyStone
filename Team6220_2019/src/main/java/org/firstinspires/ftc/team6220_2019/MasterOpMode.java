@@ -172,7 +172,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
         // Scale powers-------------------------
         /*
-         Motor powers might be set above 1 (e.g., x + y = 1 and w = -0.8), so we must scale all of
+         Motor powers might be set above 1 (e.g., x + y = 1.0 and w = 1.0), so we must scale all of
          the powers to ensure they are proportional and within the range {-1.0, 1.0}
         */
         double powScalar = SequenceUtilities.getLargestMagnitude(new double[]
@@ -181,13 +181,13 @@ abstract public class MasterOpMode extends LinearOpMode
          However, powScalar should only be applied if it is greater than 1. Otherwise, we could
          unintentionally increase powers or even divide by 0
         */
-//        if (powScalar > 1)
-//        {
-//            powerFL /= powScalar;
-//            powerFR /= powScalar;
-//            powerBL /= powScalar;
-//            powerBR /= powScalar;
-//        }
+        if (powScalar > 1)
+        {
+            powerFL /= powScalar;
+            powerFR /= powScalar;
+            powerBL /= powScalar;
+            powerBR /= powScalar;
+        }
 
         motorFL.setPower(powerFL);
         motorFR.setPower(powerFR);

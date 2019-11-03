@@ -34,16 +34,14 @@ public class TeleOpCompetition extends MasterTeleOp
             if(driver2.isButtonJustPressed(Button.B))
                 toggleFoundationServos();
 
-            /*
+            /**
              Updates that need to happen each loop
              Note:  eTime is not currently displayed (it interrupts other telemetry), but it may
              be useful later
             */
             //telemetry.addData("eTime:", eTime);
             updateCallback(eTime);
-            //collectorEncoderState = collectorChannel.channelState;
-            //telemetry.addData("Collector Channel: ", collectorEncoderState);
-            telemetry.addData("Current Tower Height: ", towerHeight);
+            //telemetry.addData("Current Tower Height: ", towerHeight);
             telemetry.update();
             idle();
         }

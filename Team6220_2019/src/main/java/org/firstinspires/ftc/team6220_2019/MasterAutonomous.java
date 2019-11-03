@@ -163,9 +163,9 @@ abstract public class MasterAutonomous extends MasterOpMode
             telemetry.update();
 
             // todo Are +/- signs correct?
-            if (stoneDistance > stoneShift - Constants.POSITION_TOLERANCE_IN)   // If SkyStone is > 7.5 in right of center, shift right
+            if (stoneDistance > stoneShift - 5 * Constants.POSITION_TOLERANCE_IN)   // If SkyStone is > 7 in right of center, shift right
                 robotShift = stoneShift;
-            else if (stoneDistance < -stoneShift + Constants.POSITION_TOLERANCE_IN)     // If SkyStone is > 7.5 in left of center, shift left
+            else if (stoneDistance < -stoneShift + 5 * Constants.POSITION_TOLERANCE_IN)     // If SkyStone is > 7 in left of center, shift left
                 robotShift = -stoneShift;
             else
                 robotShift = 0;     // Otherwise, SkyStone is center and we don't need to translate
