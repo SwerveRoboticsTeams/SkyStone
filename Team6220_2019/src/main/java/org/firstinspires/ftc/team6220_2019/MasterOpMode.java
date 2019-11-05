@@ -295,7 +295,7 @@ abstract public class MasterOpMode extends LinearOpMode
         // Turn off collector if we were running it.
         if (isCollecting)
         {
-            pauseWhileUpdating(1.0);
+            pauseWhileUpdating(0.5);
 
             collectorLeft.setPower(0);
             collectorRight.setPower(0);
