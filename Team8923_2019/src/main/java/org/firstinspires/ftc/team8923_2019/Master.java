@@ -77,6 +77,8 @@ abstract class Master extends LinearOpMode
         Variables.STARTING_SERVO_JOINT_POSITION = servoJoint.getPosition();
         Constants.ARM_STARTING_TICKS = motorArm.getCurrentPosition();
 
+        servoJoint.setPosition(0.1);
+
 
     }
 

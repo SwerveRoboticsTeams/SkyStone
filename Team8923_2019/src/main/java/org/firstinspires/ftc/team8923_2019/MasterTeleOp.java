@@ -93,7 +93,7 @@ abstract class MasterTeleOp extends Master
     private void setArmPowerBasedOnArmTicks()
     {
         if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARALLEL_POINT){
-            Variables.ARM_PWR_FACTOR = 0.135;
+            Variables.ARM_PWR_FACTOR = 0.25;
         }else if(Variables.ARM_MOTOR_TICKS > -200){
             Variables.ARM_PWR_FACTOR = 0.15;
         }else{
