@@ -204,6 +204,15 @@ abstract class MasterAutonomous extends Master
         newTargetFR = motorFR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
         newTargetBL = motorBL.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
         newTargetBR = motorBR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) + (int) Math.round(COUNTS_PER_MM * x * 1.15);
+
+        if(reverseDrive == true){
+            newTargetFL = -newTargetFL;
+            newTargetFR = -newTargetFR;
+            newTargetBL = -newTargetBL;
+            newTargetBR = -newTargetBR;
+
+        }
+
         runtime.reset();
         do
         {
@@ -227,10 +236,15 @@ abstract class MasterAutonomous extends Master
             speedBR = Range.clip(speedBR, minSpeed, speed);
             speedBR = speedBR * Math.signum(errorBR);
 
+
+
+
             motorFL.setPower(speedFL);
             motorFR.setPower(speedFR);
             motorBL.setPower(speedBL);
             motorBR.setPower(speedBR);
+
+
             idle();
         }
         while (opModeIsActive() &&
