@@ -14,6 +14,8 @@ public class TeleOpCompetition extends MasterTeleOp
         initHardware();
         waitForStart();
 
+       // double refereneAngle = imu.getAngularOrientation().secondAngle;
+
         while (opModeIsActive())
         {
             Variables.ARM_MOTOR_TICKS = motorArm.getCurrentPosition() - Constants.ARM_STARTING_TICKS;
@@ -27,7 +29,9 @@ public class TeleOpCompetition extends MasterTeleOp
             sendTelemetry();
             toggleFoundationServos();
             resetArmTicksToZero();
-
+            telemetry.clear();
+            telemetry.addData("reference angle: ", imu.getAngularOrientation());
+            telemetry.update();
             idle();
         }
     }

@@ -18,6 +18,7 @@ public class ParkDepotBlue extends MasterAutonomous
         initAuto();
         telemetry.clear();
         telemetry.update();
+
         double refereneAngle = imu.getAngularOrientation().secondAngle;
 
 
@@ -33,6 +34,7 @@ public class ParkDepotBlue extends MasterAutonomous
             imuPivot(refereneAngle,90,.3, .015, 3);
             // forward
             moveAuto(0, 700, .5, .1, 3);
+
             break;
         }
 
