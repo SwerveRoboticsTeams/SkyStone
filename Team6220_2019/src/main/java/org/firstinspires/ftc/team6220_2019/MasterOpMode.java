@@ -78,12 +78,20 @@ abstract public class MasterOpMode extends LinearOpMode
     int towerHeight = 0;
 
 
-    public void initialize()
+    // todo Add booleans to only init hardware that is currently on the robot for testing?
+    // Init all hardware devices on the robot.  Also specify whether we are using Vuforia (not
+    // initializing it saves a significant amount of time during testing).
+    public void initialize(boolean isUsingVuforia)
     {
         driver1 = new DriverInput(gamepad1);
         driver2 = new DriverInput(gamepad2);
 
-        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        if (isUsingVuforia)
+        {
+            webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+            vRes.initVuforia();
+            vRes.activateTargets(); // Also remember to deactivate them if using Vuforia!
+        }
 
         // Drive motor initialization--------------------------------------
         motorFL = hardwareMap.dcMotor.get("motorFL");

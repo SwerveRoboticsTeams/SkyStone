@@ -22,13 +22,12 @@ public class AutoCompetition extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        initialize();
+        initialize(true);
 
         // Start perpendicular to red wall
         setRobotStartingOrientation(initAngle_side);
 
-        // Turn on Vuforia tracking
-        vRes.activateTargets();
+
         waitForStart();
         // Wait to start the match for 0-10 seconds, depending on setup input.
         pauseWhileUpdating(delayCount);

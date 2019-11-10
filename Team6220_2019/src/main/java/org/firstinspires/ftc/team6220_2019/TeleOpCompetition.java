@@ -8,7 +8,8 @@ public class TeleOpCompetition extends MasterTeleOp
     @Override
     public void runOpMode() throws InterruptedException
     {
-        initialize();
+        // todo Use Vuforia for semiautonomous functionality in future
+        initialize(false);
 
         waitForStart();
         // Accounts for delay between initializing the program and starting TeleOp
