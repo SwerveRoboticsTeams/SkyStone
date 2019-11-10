@@ -20,21 +20,22 @@ public class TestAuto extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        initialize();
+        initialize(false);
 
         setRobotStartingOrientation(0);
 
-        vRes.activateTargets();
         waitForStart();
 
-        /*
-        // Position robot so it can view SkyStone image target
-        navigateUsingEncoders(0,16,0.7, false);
+        /*motorFL.setPower(-0.2);
+        motorFR.setPower(0.2);
+        motorBL.setPower(-0.2);
+        motorBR.setPower(0.2);*/
 
-        // Drive toward stone while collecting
-        navigateUsingEncoders(0,28,0.3, true);*/
+        navigateUsingEncoders(0,12,0.2, false);
+
+
         // Find SkyStone image target and translate appropriate distance toward image target
-        vuforiaAlignWithSkyStone();
+        //vuforiaAlignWithSkyStone();
 
         //int targetNum = 0;
         while (opModeIsActive())
@@ -58,6 +59,6 @@ public class TestAuto extends MasterAutonomous
             idle();
         }
 
-        vRes.deactivateTargets();
+        //vRes.deactivateTargets();
     }
 }

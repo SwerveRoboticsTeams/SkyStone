@@ -40,11 +40,11 @@ abstract public class MasterAutonomous extends MasterOpMode
 
 
     // Initializes robot normally in addition to added autonomous functionality (e.g., Vuforia)
+    // Also needs to pass in Vuforia use boolean
     @Override
-    public void initialize()
+    public void initialize(boolean isUsingVuforia)
     {
-        super.initialize();
-        vRes.initVuforia();
+        super.initialize(isUsingVuforia);
         runSetup();
     }
 
