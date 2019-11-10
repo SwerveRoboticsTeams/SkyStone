@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.ArrayList;
 import java.util.Locale;
 
-abstract class MasterAutonomous extends Master
+abstract class MasterAutonomous<rotationFilter> extends Master
 {
     private ElapsedTime runtime = new ElapsedTime();
     // robot's position and angle on the field tracked in these variables
@@ -41,9 +41,15 @@ abstract class MasterAutonomous extends Master
     int lastEncoderBL = 0;
     int lastEncoderBR = 0;
 
+
+
+
     Alliance alliance = Alliance.BLUE;
     StartLocations startLocation = StartLocations.DEPOT_SIDE;
     Objectives objective = Objectives.PARK;
+
+
+
 
     boolean doneSettingUp = false;
 
@@ -200,22 +206,41 @@ abstract class MasterAutonomous extends Master
 
     public void moveAuto(double x, double y, double speed, double minSpeed, double timeout) throws InterruptedException
     {
+        // Angle stuff
+
+        // Gets and sets original angle
+        double initHeading = imu.getAngularOrientation().secondAngle;
+        // Sets currentAngle to currentAngle
+        double currentAngle = imu.getAngularOrientation().secondAngle;
+        // Difference between angles
+        double headingDiff = normalizeRotationTarget(initHeading, currentAngle);
+
+        double rotationPower;
+
         newTargetFL = motorFL.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) + (int) Math.round(COUNTS_PER_MM * x * 1.15);
         newTargetFR = motorFR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
         newTargetBL = motorBL.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
         newTargetBR = motorBR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) + (int) Math.round(COUNTS_PER_MM * x * 1.15);
 
-        if(reverseDrive == true){
-            newTargetFL = -newTargetFL;
-            newTargetFR = -newTargetFR;
-            newTargetBL = -newTargetBL;
-            newTargetBR = -newTargetBR;
 
-        }
 
         runtime.reset();
         do
         {
+            rotationFilter.roll(-headingDiff);
+            rotationPower = rotationFilter.getFilteredValue();
+
+            newTargetFL += rotationPower;
+            newTargetFR += rotationPower;
+            newTargetBL += rotationPower;
+            newTargetBR += rotationPower;
+
+            if(reverseDrive == true){
+                newTargetFL = -newTargetFL;
+                newTargetFR = -newTargetFR;
+                newTargetBL = -newTargetBL;
+                newTargetBR = -newTargetBR;
+            }
 
             errorFL = newTargetFL - motorFL.getCurrentPosition();
             speedFL = Math.abs(errorFL * Kmove);
@@ -248,6 +273,8 @@ abstract class MasterAutonomous extends Master
 
             idle();
         }
+
+        // add angle tolerance here
         while (opModeIsActive() &&
                 (runtime.seconds() < timeout) &&
                 (Math.abs(errorFL) > TOL || Math.abs(errorFR) > TOL || Math.abs(errorBL) > TOL || Math.abs(errorBR) > TOL));
@@ -255,6 +282,22 @@ abstract class MasterAutonomous extends Master
         stopDriving();
     }
 
+    public double normalizeRotationTarget(double finalAngle, double initialAngle)
+    {
+        double diff = finalAngle - initialAngle;
+
+        return normalizeAngle(diff);
+    }
+
+    public double normalizeAngle(double rawAngle)
+    {
+        while (Math.abs(rawAngle) > 180)
+        {
+            rawAngle -= Math.signum(rawAngle) * 360;
+        }
+
+        return rawAngle;
+    }
     // normalizing the angle to be between -180 to 180
     public double adjustAngles(double angle)
     {
@@ -306,6 +349,8 @@ abstract class MasterAutonomous extends Master
         lastEncoderBL = motorBL.getCurrentPosition();
         lastEncoderBR = motorBR.getCurrentPosition();
     }
+
+
 
     public void stopDriving()
     {

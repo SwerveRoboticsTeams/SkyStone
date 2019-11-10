@@ -23,6 +23,8 @@ abstract class Master extends LinearOpMode
     Servo servoFoundationLeft;
     Servo servoFoundationRight;
 
+    PIDFilter rotationFilter;
+
     double powerFL;
     double powerFR;
     public double powerBL;
@@ -82,6 +84,8 @@ abstract class Master extends LinearOpMode
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        rotationFilter = new PIDFilter(Constants.ROTATION_P, Constants.ROTATION_I, Constants.ROTATION_D);
 
         Variables.STARTING_SERVO_JOINT_POSITION = servoJoint.getPosition();
         Constants.ARM_STARTING_TICKS = motorArm.getCurrentPosition();
