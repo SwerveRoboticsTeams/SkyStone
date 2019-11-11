@@ -20,45 +20,33 @@ public class TestAuto extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        initialize(false);
+        initialize(true, false);
 
         setRobotStartingOrientation(0);
 
+        vRes.getLocation();
+
         waitForStart();
 
-        /*motorFL.setPower(-0.2);
-        motorFR.setPower(0.2);
-        motorBL.setPower(-0.2);
-        motorBR.setPower(0.2);*/
 
-        navigateUsingEncoders(0,12,0.2, false);
+        // todo Test!
+        driveToCoordinates(0, 0, 0);
 
+        // todo Test once driveToCoordinates seems to work
+        /*int targetNum = 0;
 
-        // Find SkyStone image target and translate appropriate distance toward image target
-        //vuforiaAlignWithSkyStone();
-
-        //int targetNum = 0;
-        while (opModeIsActive())
+        if (driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0))
         {
-            /*vRes.getLocation();
-            //vuforiaFollowObject();
-
-            //driveToCoordinates(0, 0, 0);
-
-            // todo Test this code in order to implement more general navigation.
-            if(driveToCoordinates(navPoints[targetNum][0], navPoints[targetNum][1], 0)){
-                if(targetNum < navPoints.length - 1){
-                    targetNum++;
-                }
-                else{
-                    break;
-                }
+            if (targetNum < navPoints.length - 1)
+            {
+                targetNum++;
+            } else
+            {
+                break;
             }
-            */
-            telemetry.update();
-            idle();
-        }
+        }*/
 
-        //vRes.deactivateTargets();
+
+        vRes.deactivateTargets();
     }
 }
