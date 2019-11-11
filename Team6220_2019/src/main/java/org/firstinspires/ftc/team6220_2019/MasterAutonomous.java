@@ -40,12 +40,14 @@ abstract public class MasterAutonomous extends MasterOpMode
 
 
     // Initializes robot normally in addition to added autonomous functionality (e.g., Vuforia)
-    // Also needs to pass in Vuforia use boolean
-    @Override
-    public void initialize(boolean isUsingVuforia)
+    // Also needs to pass in Vuforia use boolean and another boolean (isRunningSetup) that
+    // specifies whether we need to use the controller to set up our autonomous.
+    public void initialize(boolean isUsingVuforia, boolean isRunningSetup)
     {
         super.initialize(isUsingVuforia);
-        runSetup();
+
+        if (isRunningSetup)
+            runSetup();
     }
 
 
@@ -404,39 +406,56 @@ abstract public class MasterAutonomous extends MasterOpMode
      * @param y is the y-coordinate of the point the robot should move towards.
      * @param w is the desired orientation of the robot, in degrees.
      */
-    public boolean driveToCoordinates(double x, double y, double w)
+    public void driveToCoordinates(double x, double y, double w)
     {
-        vRes.getLocation();
+        // Robot navigation parameters.
+        double driveAngle;
+        double drivePower;
+        double rotationPower;
 
+        // Extract initial location data.
+        vRes.getLocation();
         float xPos = vRes.translation.get(0);
         float yPos = vRes.translation.get(1);
-        float wRot = vRes.rotation.firstAngle;
+        // todo thirdAngle has value of 0 on y-axis of field; should have 90
+        float wRot = vRes.rotation.thirdAngle;      // thirdAngle = heading (different from IMU, which is firstAngle).
+        // Calculate distance from robot to target.
+        float distance = (float) calculateDistance(x - xPos, y - yPos);
+        // Calculate angle between robot and target.
+        float angleDiff = (float) normalizeRotationTarget(w, wRot);
 
-        telemetry.addData("xPos: ", xPos);
-        telemetry.addData("yPos: ", yPos);
-        telemetry.update();
-
-        double driveAngle = Math.atan((y - yPos) / (x - xPos));
-        if ((x - xPos) > 0)
+        // todo Implement angleDiff
+        // While we are outside of tolerance, continue to navigate.
+        while (distance > Constants.POSITION_TOLERANCE_IN /*|| angleDiff > Constants.ANGLE_TOLERANCE_DEG*/)
         {
-            driveAngle += 180;
-        }
+            // Update location data every loop.
+            vRes.getLocation();
+            xPos = vRes.translation.get(0);
+            yPos = vRes.translation.get(1);
+            wRot = vRes.rotation.thirdAngle;
+            distance = (float) calculateDistance(x - xPos, y - yPos);
+            angleDiff = (float) normalizeRotationTarget(w, wRot);
 
-        float distance = (float) Math.sqrt((y - yPos) * (y - yPos) + (x - xPos) * (x - xPos));
+            // Filter and roll location data to get robot navigation parameters.
+            translationFilter.roll(distance);
+            drivePower = translationFilter.getFilteredValue();
+            driveAngle = Math.atan2((y - yPos), (x - xPos));
+            rotationFilter.roll(angleDiff);
+            rotationPower = rotationFilter.getFilteredValue();
 
-        double power = distancePower(distance);
+            // todo Implement rotationPower
+            // Ensure drivePower is not too large.
+            Range.clip(drivePower, -Constants.MAX_DRIVE_POWER, Constants.MAX_DRIVE_POWER);
+            autonomousDriveMecanum(driveAngle, drivePower, 0/*rotationPower*/);
 
-        if (Math.abs(power) > Constants.MAX_DRIVE_POWER)
-            autonomousDriveMecanum(driveAngle, Constants.MAX_DRIVE_POWER, 0/*rotationPower((float)w - wRot)*/);
-        else
-            autonomousDriveMecanum(driveAngle, distancePower(distance), 0/*rotationPower((float)w - wRot)*/);
 
-        if (distance < Constants.POSITION_TOLERANCE_IN)
-        { // functions as a tolerance variable.
-            return true;
-        } else
-        {
-            return false;
+            telemetry.addData("xPos: ", xPos);
+            telemetry.addData("yPos: ", yPos);
+            telemetry.addData("driveAngle", driveAngle);
+            telemetry.addData("driveAngle", drivePower);
+            telemetry.addData("driveAngle", rotationPower);
+            telemetry.update();
+            idle();
         }
     }
 

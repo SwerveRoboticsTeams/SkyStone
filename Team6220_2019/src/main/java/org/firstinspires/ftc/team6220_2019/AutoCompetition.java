@@ -22,7 +22,7 @@ public class AutoCompetition extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        initialize(true);
+        initialize(true, true);
 
         // Start perpendicular to red wall
         setRobotStartingOrientation(initAngle_side);

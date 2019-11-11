@@ -379,7 +379,6 @@ public class VuforiaResources
         {
             master.telemetry.addData("Visible Target", "none");
         }
-        //master.telemetry.update();
     }
 
     public boolean getTargetVisibility()
