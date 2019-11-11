@@ -30,7 +30,7 @@ public class TeleOpCompetition extends MasterTeleOp
             toggleFoundationServos();
             resetArmTicksToZero();
             telemetry.clear();
-            telemetry.addData("reference angle: ", imu.getAngularOrientation());
+            //telemetry.addData("reference angle: ", imu.getAngularOrientation());
             telemetry.update();
             idle();
         }

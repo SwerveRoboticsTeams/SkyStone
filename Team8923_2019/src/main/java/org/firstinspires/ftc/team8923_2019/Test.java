@@ -27,7 +27,7 @@ public class Test extends MasterAutonomous
 
         while (opModeIsActive())
         {
-            imuPivot(refereneAngle, 90, .3, .015, 3);
+            moveAuto(-700,0,1.0,0.1,3);
             break;
         }
 

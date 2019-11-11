@@ -222,25 +222,26 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         newTargetBL = motorBL.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
         newTargetBR = motorBR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) + (int) Math.round(COUNTS_PER_MM * x * 1.15);
 
+        if(reverseDrive == true){
+            newTargetFL = -newTargetFL;
+            newTargetFR = -newTargetFR;
+            newTargetBL = -newTargetBL;
+            newTargetBR = -newTargetBR;
+        }
 
 
         runtime.reset();
         do
         {
-            rotationFilter.roll(-headingDiff);
-            rotationPower = rotationFilter.getFilteredValue();
+//            rotationFilter.roll(-headingDiff);
+//            rotationPower = rotationFilter.getFilteredValue();
+//
+//            newTargetFL += rotationPower;
+//            newTargetFR += rotationPower;
+//            newTargetBL += rotationPower;
+//            newTargetBR += rotationPower;
 
-            newTargetFL += rotationPower;
-            newTargetFR += rotationPower;
-            newTargetBL += rotationPower;
-            newTargetBR += rotationPower;
 
-            if(reverseDrive == true){
-                newTargetFL = -newTargetFL;
-                newTargetFR = -newTargetFR;
-                newTargetBL = -newTargetBL;
-                newTargetBR = -newTargetBR;
-            }
 
             errorFL = newTargetFL - motorFL.getCurrentPosition();
             speedFL = Math.abs(errorFL * Kmove);

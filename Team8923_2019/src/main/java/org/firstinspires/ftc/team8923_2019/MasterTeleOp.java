@@ -160,6 +160,8 @@ abstract class MasterTeleOp extends Master
         telemetry.addData("armTicks", Variables.ARM_MOTOR_TICKS);
         telemetry.addData("BL Power", powerBL);
         telemetry.addData("BR Power", powerBR);
+        telemetry.addData("FL Power", powerFL);
+        telemetry.addData("FR Power", powerFR);
         telemetry.update();
     }
 }
