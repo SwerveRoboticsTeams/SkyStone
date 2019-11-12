@@ -166,6 +166,7 @@ abstract public class MasterOpMode extends LinearOpMode
         // Add necessary items to callback---------------
         callback.add(driver1);
         callback.add(driver2);
+        //-----------------------------------------------
     }
 
 
@@ -311,7 +312,7 @@ abstract public class MasterOpMode extends LinearOpMode
     }
 
     // The only difference between autonomousDriveMecanum and driveMecanum is that autonomousDriveMecanum
-    // contains an adjustment for angle.
+    // contains an adjustment for angle to make movement compass-oriented; e.g., 0 would act as 90, driving forward.
     public void autonomousDriveMecanum(double driveAngle, double drivePower, double w)
     {
         // Adjustment to account for different axis reference frames.
@@ -470,6 +471,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
 
     // Prevents a single angle from being outside the range -180 to 180 degrees
+    // Note:  Although it seems like it would, mod n doesn't work for this method.
     public double normalizeAngle(double rawAngle)
     {
         while (Math.abs(rawAngle) > 180)

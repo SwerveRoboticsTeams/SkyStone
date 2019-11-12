@@ -30,7 +30,8 @@ public class TestAuto extends MasterAutonomous
 
 
         // todo Test!
-        driveToCoordinates(0, 0, 0);
+        // Position = a couple inches in front of red #2 VuMark
+        driveToCoordinates(-35, -45, 90, 0.3);
 
         // todo Test once driveToCoordinates seems to work
         /*int targetNum = 0;

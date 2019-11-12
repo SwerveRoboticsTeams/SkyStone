@@ -404,9 +404,9 @@ abstract public class MasterAutonomous extends MasterOpMode
      *
      * @param x is the x-coordinate of the point the robot should move towards.
      * @param y is the y-coordinate of the point the robot should move towards.
-     * @param w is the desired orientation of the robot, in degrees.
+     * @param targetAngle is the desired orientation of the robot, in degrees.
      */
-    public void driveToCoordinates(double x, double y, double w)
+    public void driveToCoordinates(double x, double y, double targetAngle, double maxDrivePower)
     {
         // Robot navigation parameters.
         double driveAngle;
@@ -415,48 +415,65 @@ abstract public class MasterAutonomous extends MasterOpMode
 
         // Extract initial location data.
         vRes.getLocation();
-        float xPos = vRes.translation.get(0);
-        float yPos = vRes.translation.get(1);
-        // todo thirdAngle has value of 0 on y-axis of field; should have 90
-        float wRot = vRes.rotation.thirdAngle;      // thirdAngle = heading (different from IMU, which is firstAngle).
+        float xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;   // Convert Vuforia mm to inches
+        float yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
+        currentAngle = normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET);      // thirdAngle = heading (different from IMU, which is firstAngle).
         // Calculate distance from robot to target.
         float distance = (float) calculateDistance(x - xPos, y - yPos);
         // Calculate angle between robot and target.
-        float angleDiff = (float) normalizeRotationTarget(w, wRot);
+        float angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
 
-        // todo Implement angleDiff
         // While we are outside of tolerance, continue to navigate.
-        while (distance > Constants.POSITION_TOLERANCE_IN /*|| angleDiff > Constants.ANGLE_TOLERANCE_DEG*/)
+        while ((distance > Constants.POSITION_TOLERANCE_IN || angleDiff > Constants.ANGLE_TOLERANCE_DEG) && !isStopRequested())
         {
             // Update location data every loop.
             vRes.getLocation();
-            xPos = vRes.translation.get(0);
-            yPos = vRes.translation.get(1);
-            wRot = vRes.rotation.thirdAngle;
-            distance = (float) calculateDistance(x - xPos, y - yPos);
-            angleDiff = (float) normalizeRotationTarget(w, wRot);
 
-            // Filter and roll location data to get robot navigation parameters.
-            translationFilter.roll(distance);
-            drivePower = translationFilter.getFilteredValue();
-            driveAngle = Math.atan2((y - yPos), (x - xPos));
-            rotationFilter.roll(angleDiff);
-            rotationPower = rotationFilter.getFilteredValue();
+            // If target is not visible, start turning in an attempt to regain view of it.
+            if (!vRes.getTargetVisibility())
+            {
+                currentAngle = getAngularOrientationWithOffset();
+                // todo Adjust time / power.
+                turnTo(currentAngle + 30, Constants.AUTO_SEARCH_TURN_POWER);    // Turn 15 degrees from current orientation, then search again.
+                pauseWhileUpdating(0.75);
+            }
+            else
+            {
+                xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;
+                yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
+                currentAngle = (float) normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET);  // Need to shift by 90 degrees to convert to math coordinates.
+                distance = (float) calculateDistance(x - xPos, y - yPos);
+                angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
 
-            // todo Implement rotationPower
-            // Ensure drivePower is not too large.
-            Range.clip(drivePower, -Constants.MAX_DRIVE_POWER, Constants.MAX_DRIVE_POWER);
-            autonomousDriveMecanum(driveAngle, drivePower, 0/*rotationPower*/);
+                // Filter and roll location data to get robot navigation parameters.
+                translationFilter.roll(distance);
+                drivePower = translationFilter.getFilteredValue();          // + 180 necessary to account for webcam
+                driveAngle = normalizeAngle(Math.toDegrees(Math.atan2((y - yPos), (x - xPos))) + Constants.WEBCAM_1_OFFSET);  // Take atan of y / x accounting for quadrant, then convert to degrees
+                // as required for autonomousDriveMecanum method.
+                // todo Properly account for - sign on rotationPower.
+                rotationFilter.roll(-angleDiff);
+                rotationPower = rotationFilter.getFilteredValue();
+
+                // Ensure drivePower and rotationPower are not too large.
+                drivePower = Range.clip(drivePower, -maxDrivePower, maxDrivePower);
+                rotationPower = Range.clip(rotationPower, -Constants.MAX_NAV_ROT_POWER, Constants.MAX_NAV_ROT_POWER);
+                // todo rotationPower is not great enough; need to cautiously increase power factor.
+                driveMecanum(driveAngle, drivePower, 0.1 * rotationPower);  // Don't want to give full rotation power.
 
 
-            telemetry.addData("xPos: ", xPos);
-            telemetry.addData("yPos: ", yPos);
-            telemetry.addData("driveAngle", driveAngle);
-            telemetry.addData("driveAngle", drivePower);
-            telemetry.addData("driveAngle", rotationPower);
-            telemetry.update();
-            idle();
+                telemetry.addData("xPos: ", xPos);
+                telemetry.addData("yPos: ", yPos);
+                telemetry.addData("currentAngle:", currentAngle);
+                telemetry.addData("angleDiff:", angleDiff);
+                telemetry.addData("driveAngle: ", driveAngle);
+                telemetry.addData("drivePower: ", drivePower);
+                telemetry.addData("rotationPower: ", rotationPower);
+                telemetry.update();
+                idle();
+            }
         }
+
+        stopDriveMotors();
     }
 
     // todo We shouldn't need these now that we have implemented PID loops

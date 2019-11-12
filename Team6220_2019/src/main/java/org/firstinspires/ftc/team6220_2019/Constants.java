@@ -24,6 +24,8 @@ public class Constants
     public static final double SLOW_MODE_R_FACTOR = 0.3;
     public static final double T_FACTOR = 1.0;
     public static final double R_FACTOR = 1.0;
+    public static final double MAX_NAV_ROT_POWER = 0.3;
+    public static final double AUTO_SEARCH_TURN_POWER = 0.2;
 
     public static final double LIFT_POWER_FACTOR = 0.6;
      // Constants to control power of collector motors
@@ -45,7 +47,7 @@ public class Constants
 
     // Movement control constants-----------------------
     public static final double MINIMUM_DRIVE_POWER = 0.08;   // todo Adjust
-    public static final double MAX_DRIVE_POWER = 0.3;   // todo Adjust
+    public static final double MAX_DRIVE_POWER = 1.0;   // todo Adjust
     public static final double MINIMUM_TURNING_POWER = 0.02;
     // Constants for adjusting powers that are proportional to angle and position differences
     public static final double TURNING_POWER_FACTOR = 0.01;
@@ -71,6 +73,8 @@ public class Constants
     // Vuforia constants
     public static final int IMAGE_WIDTH = 1280;
     public static final int IMAGE_HEIGHT = 720;
+    public static final int WEBCAM_1_OFFSET = 180;    // Need to account for fact that webcam faces opposite direction of drivetrain.
+    public static final int WEBCAM_2_OFFSET = 0;    // * 2nd webcam not currently in use.
 
 
     // Servo positions--------------------------------
