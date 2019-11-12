@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 abstract class MasterTeleOp extends Master
 {
 
+    double robotangle;
     public void driveMecanumTeleOp()
     {
         // Reverse drive if desired
@@ -156,12 +157,8 @@ abstract class MasterTeleOp extends Master
         telemetry.addData("right stick y:", gamepad1.right_stick_y);
         telemetry.addData("right trigger:", gamepad2.right_trigger);
         telemetry.addData("left trigger:", gamepad2.left_trigger);
-        telemetry.addData("armStartingTicks", Constants.ARM_STARTING_TICKS);
-        telemetry.addData("armTicks", Variables.ARM_MOTOR_TICKS);
-        telemetry.addData("BL Power", powerBL);
-        telemetry.addData("BR Power", powerBR);
-        telemetry.addData("FL Power", powerFL);
-        telemetry.addData("FR Power", powerFR);
+
+        telemetry.addData("robotAngle:", robotangle);
         telemetry.update();
     }
 }

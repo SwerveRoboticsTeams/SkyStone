@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 abstract class Master extends LinearOpMode
 {
     DcMotor motorFL;
@@ -23,13 +25,14 @@ abstract class Master extends LinearOpMode
     Servo servoFoundationLeft;
     Servo servoFoundationRight;
 
-    PIDFilter rotationFilter;
+    BNO055IMU imu;
 
     double powerFL;
     double powerFR;
     public double powerBL;
     public double powerBR;
-    BNO055IMU imu;
+
+
 
     double slowModeDivisor = 1.0;
 
@@ -59,14 +62,6 @@ abstract class Master extends LinearOpMode
         servoFoundationLeft = hardwareMap.get(Servo.class,"servoFoundationLeft");
         servoFoundationRight = hardwareMap.get(Servo.class,"servoFoundationRight");
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -85,7 +80,7 @@ abstract class Master extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rotationFilter = new PIDFilter(Constants.ROTATION_P, Constants.ROTATION_I, Constants.ROTATION_D);
+
 
         Variables.STARTING_SERVO_JOINT_POSITION = servoJoint.getPosition();
         Constants.ARM_STARTING_TICKS = motorArm.getCurrentPosition();

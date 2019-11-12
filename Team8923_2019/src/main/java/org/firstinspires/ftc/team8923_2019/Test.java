@@ -14,11 +14,11 @@ public class Test extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        configureAutonomous();
+        //configureAutonomous();
         initAuto();
         telemetry.clear();
         telemetry.update();
-        double refereneAngle = imu.getAngularOrientation().secondAngle;
+//        double refereneAngle = imu.getAngularOrientation().secondAngle;
 
 
         waitForStart();
@@ -28,6 +28,8 @@ public class Test extends MasterAutonomous
         while (opModeIsActive())
         {
             moveAuto(-700,0,1.0,0.1,3);
+            sendTelemetry();
+            //sleep(10000);
             break;
         }
 

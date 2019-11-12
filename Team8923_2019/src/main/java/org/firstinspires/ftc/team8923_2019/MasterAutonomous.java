@@ -5,6 +5,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -65,6 +73,16 @@ abstract class MasterAutonomous<rotationFilter> extends Master
 
     double MIN_DRIVE_POWER = 0.2; // don't let the robot go slower than this speed
     int TOL = 100;
+
+
+
+
+    Orientation lastAngles = new Orientation();
+
+    double globalAngle, power = .30, correction;
+
+
+
 
     enum Alliance
     {
@@ -160,6 +178,14 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+        // Makes sure imu is calibrated before continuing
+        while (!isStopRequested() && !imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
         telemetry.addData("Init State", "Init Finished");
         telemetry.addData("Alliance", alliance.name());
         telemetry.addData("Side", startLocation.name());
@@ -206,16 +232,9 @@ abstract class MasterAutonomous<rotationFilter> extends Master
 
     public void moveAuto(double x, double y, double speed, double minSpeed, double timeout) throws InterruptedException
     {
-        // Angle stuff
 
-        // Gets and sets original angle
-        double initHeading = imu.getAngularOrientation().secondAngle;
-        // Sets currentAngle to currentAngle
-        double currentAngle = imu.getAngularOrientation().secondAngle;
-        // Difference between angles
-        double headingDiff = normalizeRotationTarget(initHeading, currentAngle);
 
-        double rotationPower;
+        //correction = checkDirection();
 
         newTargetFL = motorFL.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) + (int) Math.round(COUNTS_PER_MM * x * 1.15);
         newTargetFR = motorFR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
@@ -233,15 +252,6 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         runtime.reset();
         do
         {
-//            rotationFilter.roll(-headingDiff);
-//            rotationPower = rotationFilter.getFilteredValue();
-//
-//            newTargetFL += rotationPower;
-//            newTargetFR += rotationPower;
-//            newTargetBL += rotationPower;
-//            newTargetBR += rotationPower;
-
-
 
             errorFL = newTargetFL - motorFL.getCurrentPosition();
             speedFL = Math.abs(errorFL * Kmove);
@@ -275,7 +285,6 @@ abstract class MasterAutonomous<rotationFilter> extends Master
             idle();
         }
 
-        // add angle tolerance here
         while (opModeIsActive() &&
                 (runtime.seconds() < timeout) &&
                 (Math.abs(errorFL) > TOL || Math.abs(errorFR) > TOL || Math.abs(errorBL) > TOL || Math.abs(errorBR) > TOL));
@@ -283,22 +292,64 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         stopDriving();
     }
 
-    public double normalizeRotationTarget(double finalAngle, double initialAngle)
-    {
-        double diff = finalAngle - initialAngle;
+//    private void resetAngle()
+//    {
+//        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//
+//        globalAngle = 0;
+//    }
+//
+//    private double getAngle()
+//    {
+//        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+//        // We have to process the angle because the imu works in euler angles so the Z axis is
+//        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+//        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+//
+//        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+//
+//
+//        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+//
+//        if (deltaAngle < -180)
+//            deltaAngle += 360;
+//        else if (deltaAngle > 180)
+//            deltaAngle -= 360;
+//
+//        globalAngle += deltaAngle;
+//
+//        lastAngles = angles;
+//
+//        return globalAngle;
+//    }
+//
+//    private double checkDirection()
+//    {
+//        // The gain value determines how sensitive the correction is to direction changes.
+//        // You will have to experiment with your robot to get small smooth direction changes
+//        // to stay on a straight line.
+//        double correction, angle, gain = .10;
+//
+//        angle = getAngle();
+//
+//        if (angle == 0)
+//            correction = 0;             // no adjustment.
+//        else
+//            correction = -angle;        // reverse sign of angle for correction.
+//
+//        correction = correction * gain;
+//
+//        return correction;
+//    }
 
-        return normalizeAngle(diff);
-    }
 
-    public double normalizeAngle(double rawAngle)
-    {
-        while (Math.abs(rawAngle) > 180)
-        {
-            rawAngle -= Math.signum(rawAngle) * 360;
-        }
 
-        return rawAngle;
-    }
+
+
+
+
+
+
     // normalizing the angle to be between -180 to 180
     public double adjustAngles(double angle)
     {
@@ -351,8 +402,6 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         lastEncoderBR = motorBR.getCurrentPosition();
     }
 
-
-
     public void stopDriving()
     {
         motorFL.setPower(0.0);
@@ -368,6 +417,7 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         telemetry.addData("X", robotX);
         telemetry.addData("Y", robotY);
         telemetry.addData("Robot Angle", robotAngle);
+
 
 
         // Debug info

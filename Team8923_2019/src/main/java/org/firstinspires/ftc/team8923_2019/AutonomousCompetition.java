@@ -18,7 +18,7 @@ public class AutonomousCompetition extends MasterAutonomous
         initAuto();
         telemetry.clear();
         telemetry.update();
-        double referenceAngle = imu.getAngularOrientation().secondAngle;
+
 
 
         waitForStart();
