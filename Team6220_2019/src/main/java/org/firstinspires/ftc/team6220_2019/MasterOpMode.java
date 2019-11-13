@@ -243,6 +243,7 @@ abstract public class MasterOpMode extends LinearOpMode
         // Check to see if robot has arrived at destination within angle and position tolerances
         while (((distanceToTarget > Constants.POSITION_TOLERANCE_IN) || (headingDiff > Constants.ANGLE_TOLERANCE_DEG)) && opModeIsActive())
         {
+            // todo Why does sqrt(2) not show up in empirical distance tests?
             deltaX = initDeltaX - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
                     motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / (4 /* Math.sqrt(2)*/);
             deltaY = initDeltaY - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() +
