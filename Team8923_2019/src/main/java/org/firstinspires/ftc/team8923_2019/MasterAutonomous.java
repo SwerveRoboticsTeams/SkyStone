@@ -252,22 +252,33 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         runtime.reset();
         do
         {
-
+            double robotAngle = imu.getAngularOrientation().firstAngle;
+            telemetry.addData("robot angle", robotAngle);
+            telemetry.update();
+            if(robotAngle > 0){
+                correction = 50;
+            }else if(robotAngle < 0){
+                correction = -50;
+            }
+            newTargetFL += correction;
             errorFL = newTargetFL - motorFL.getCurrentPosition();
             speedFL = Math.abs(errorFL * Kmove);
             speedFL = Range.clip(speedFL, minSpeed, speed);
             speedFL = speedFL * Math.signum(errorFL);
 
+            newTargetFR -= correction;
             errorFR = newTargetFR - motorFR.getCurrentPosition();
             speedFR = Math.abs(errorFR * Kmove);
             speedFR = Range.clip(speedFR, minSpeed, speed);
             speedFR = speedFR * Math.signum(errorFR);
 
+            newTargetBL += correction;
             errorBL = newTargetBL - motorBL.getCurrentPosition();
             speedBL = Math.abs(errorBL * Kmove);
             speedBL = Range.clip(speedBL, minSpeed, speed);
             speedBL = speedBL * Math.signum(errorBL);
 
+            newTargetBR -= correction;
             errorBR = newTargetBR - motorBR.getCurrentPosition();
             speedBR = Math.abs(errorBR * Kmove);
             speedBR = Range.clip(speedBR, minSpeed, speed);
@@ -417,7 +428,7 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         // Inform drivers of robot location
         telemetry.addData("X", robotX);
         telemetry.addData("Y", robotY);
-        telemetry.addData("Robot Angle", robotAngle);
+        telemetry.addData("Robot Angle", imu.getAngularOrientation().firstAngle);
 
 
 

@@ -13,20 +13,11 @@ public class TeleOpCompetition extends MasterTeleOp
     {
 
         initHardware();
-        double initialHeading = imu.getAngularOrientation().secondAngle;
-
         waitForStart();
-
-       // double refereneAngle = imu.getAngularOrientation().secondAngle;
 
         while (opModeIsActive())
         {
             Variables.ARM_MOTOR_TICKS = motorArm.getCurrentPosition() - Constants.ARM_STARTING_TICKS;
-
-            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-            imu = hardwareMap.get(BNO055IMU.class, "imu");
-            imu.initialize(parameters);
 
             driveMecanumTeleOp();
             //runIntake();
@@ -36,9 +27,6 @@ public class TeleOpCompetition extends MasterTeleOp
             sendTelemetry();
             toggleFoundationServos();
             resetArmTicksToZero();
-            telemetry.clear();
-            //telemetry.addData("reference angle: ", imu.getAngularOrientation());
-            telemetry.update();
             idle();
         }
     }
