@@ -281,6 +281,7 @@ abstract class MasterAutonomous<rotationFilter> extends Master
             motorBL.setPower(speedBL);
             motorBR.setPower(speedBR);
 
+            sendTelemetry();
 
             idle();
         }
