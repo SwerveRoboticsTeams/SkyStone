@@ -27,9 +27,13 @@ public class Test extends MasterAutonomous
 
         while (opModeIsActive())
         {
-            moveAuto(-700,0,.1,0.1,3);
-            //sendTelemetry();
-            //sleep(10000);
+            ///moveAuto(-700,0,.1,0.1,3);
+           // wait(2000);
+            double delatX = 300;
+            double deltaY = 400;
+            telemetry.addData("Imu angle: " ,imu.getAngularOrientation().firstAngle);
+            telemetry.addData("distance test: ", calculateDistance(delatX, deltaY));
+            telemetry.update();
 
         }
 

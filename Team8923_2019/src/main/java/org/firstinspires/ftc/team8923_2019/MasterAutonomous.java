@@ -5,19 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-abstract class MasterAutonomous<rotationFilter> extends Master
+abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 {
     private ElapsedTime runtime = new ElapsedTime();
     // robot's position and angle on the field tracked in these variables
@@ -25,6 +15,9 @@ abstract class MasterAutonomous<rotationFilter> extends Master
     double robotY;
     double robotAngle;
     double headingOffset = 0.0;
+
+    PIDFilter translationFilter;
+    PIDFilter rotationFilter;
 
     double Kmove = 1.0f / 1200.0f;
 
@@ -191,6 +184,9 @@ abstract class MasterAutonomous<rotationFilter> extends Master
         telemetry.addData("Side", startLocation.name());
         telemetry.addData("Delay Time", delayTime);
         telemetry.update();
+        // init Filters
+        rotationFilter = new PIDFilter(Constants.ROTATION_P, Constants.ROTATION_I, Constants.ROTATION_D);
+        translationFilter = new PIDFilter(Constants.TRANSLATION_P, Constants.TRANSLATION_I, Constants.TRANSLATION_D);
 
         // Set last known encoder values
         lastEncoderFL = motorFL.getCurrentPosition();
@@ -230,79 +226,158 @@ abstract class MasterAutonomous<rotationFilter> extends Master
     }
 
 
-    public void moveAuto(double x, double y, double speed, double minSpeed, double timeout) throws InterruptedException
+    /*
+    How to use imu to drive straight
+    1. declare variables
+     initial x and y, delta X and Y, initial heading
+    2. in loop (check if robot has reached location || angle is off with tolerances)
+       1. recalculate delta x and y (use to find difference between the robot's current and end location)
+        - need to do some encoder stuff
+       2. recalculate heading difference
+        - need to normalize angle
+       3. roll and get filters of rotation and translation
+       4. driveMecanum(driveAngle, drivePower, rotationPower)
+
+
+    */
+    public void moveAuto(double initDeltaX, double initDeltaY, double maxSpeed, double minSpeed, double timeout) throws InterruptedException
     {
 
 
-        //correction = checkDirection();
+        // Setting initial heading and robot angle to raw imu value
+        final double initHeading =  normalizeAngle(imu.getAngularOrientation().firstAngle);
+        robotAngle = imu.getAngularOrientation().firstAngle;
 
-        newTargetFL = motorFL.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) + (int) Math.round(COUNTS_PER_MM * x * 1.15);
-        newTargetFR = motorFR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
-        newTargetBL = motorBL.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) - (int) Math.round(COUNTS_PER_MM * x * 1.15);
-        newTargetBR = motorBR.getCurrentPosition() + (int) Math.round(COUNTS_PER_MM * y) + (int) Math.round(COUNTS_PER_MM * x * 1.15);
+        // Recalculate these variables every loop--------------------
 
-        if(reverseDrive == true){
-            newTargetFL = -newTargetFL;
-            newTargetFR = -newTargetFR;
-            newTargetBL = -newTargetBL;
-            newTargetBR = -newTargetBR;
-        }
+        double deltaX = initDeltaX;
+        double deltaY = initDeltaY;
+
+            // calculates heading difference (should return 0)
+        double headingDiff = normalizeAngle(initHeading - robotAngle);
+        double distanceToTarget = calculateDistance(deltaX, deltaY);
+
+
+        // Values we're trying to calculate to put into driveMecanum every loop
+        double driveAngle;
+        double drivePower;
+        double rotationPower;
+
+
+        motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+//        newTargetFL = motorFL.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) + (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+//        newTargetFR = motorFR.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) - (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+//        newTargetBL = motorBL.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) - (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+//        newTargetBR = motorBR.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) + (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+//
+//        if(reverseDrive == true){
+//            newTargetFL = -newTargetFL;
+//            newTargetFR = -newTargetFR;
+//            newTargetBL = -newTargetBL;
+//            newTargetBR = -newTargetBR;
+//        }
 
 
         runtime.reset();
-        do
+
+        // Check to see if robot has arrived at destination within angle and position tolerances
+        // todo Check conditional
+        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) || (runtime.seconds() < timeout) && opModeIsActive()))
         {
-            double robotAngle = imu.getAngularOrientation().firstAngle;
-            telemetry.addData("robot angle", robotAngle);
+
             telemetry.update();
-            if(robotAngle > 0){
-                correction = 50;
-            }else if(robotAngle < 0){
-                correction = -50;
+            // todo Check if this actually returns the delta x and y in mm
+            // Calculate difference in X and Y based on average encoder counts of motors
+            deltaX = initDeltaX - Constants.COUNTS_PER_MM * (motorFL.getCurrentPosition() -
+                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
+            deltaY = initDeltaY - Constants.COUNTS_PER_MM * (motorFL.getCurrentPosition() +
+                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
+
+
+
+            // Recalculates how far off robot is form its initial heading
+            robotAngle = imu.getAngularOrientation().firstAngle;
+            headingDiff = normalizeAngle(initHeading - robotAngle);
+
+            // Recalculates distance left and driveAngle
+            distanceToTarget = calculateDistance(deltaX, deltaY);
+            driveAngle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+            // Transform position and heading diffs
+            translationFilter.roll(-distanceToTarget);
+            drivePower = translationFilter.getFilteredValue();
+            rotationFilter.roll(-headingDiff);
+            rotationPower = rotationFilter.getFilteredValue();
+
+            // Ensure robot doesn't approach target position too slowly
+            if (Math.abs(drivePower) < minSpeed)
+            {
+                drivePower = Math.signum(drivePower) * minSpeed;
             }
-            newTargetFL += correction;
-            errorFL = newTargetFL - motorFL.getCurrentPosition();
-            speedFL = Math.abs(errorFL * Kmove);
-            speedFL = Range.clip(speedFL, minSpeed, speed);
-            speedFL = speedFL * Math.signum(errorFL);
-
-            newTargetFR -= correction;
-            errorFR = newTargetFR - motorFR.getCurrentPosition();
-            speedFR = Math.abs(errorFR * Kmove);
-            speedFR = Range.clip(speedFR, minSpeed, speed);
-            speedFR = speedFR * Math.signum(errorFR);
-
-            newTargetBL += correction;
-            errorBL = newTargetBL - motorBL.getCurrentPosition();
-            speedBL = Math.abs(errorBL * Kmove);
-            speedBL = Range.clip(speedBL, minSpeed, speed);
-            speedBL = speedBL * Math.signum(errorBL);
-
-            newTargetBR -= correction;
-            errorBR = newTargetBR - motorBR.getCurrentPosition();
-            speedBR = Math.abs(errorBR * Kmove);
-            speedBR = Range.clip(speedBR, minSpeed, speed);
-            speedBR = speedBR * Math.signum(errorBR);
+            // Ensure robot doesn't ever drive faster than we want it to
+            else if (Math.abs(drivePower) > maxSpeed)
+            {
+                drivePower = Math.signum(drivePower) * maxSpeed;
+            }
 
 
 
+//            newTargetFL += correction;
+//            errorFL = newTargetFL - motorFL.getCurrentPosition();
+//            speedFL = Math.abs(errorFL * Kmove);
+//            speedFL = Range.clip(speedFL, minSpeed, speed);
+//            speedFL = speedFL * Math.signum(errorFL);
+//
+//            newTargetFR -= correction;
+//            errorFR = newTargetFR - motorFR.getCurrentPosition();
+//            speedFR = Math.abs(errorFR * Kmove);
+//            speedFR = Range.clip(speedFR, minSpeed, speed);
+//            speedFR = speedFR * Math.signum(errorFR);
+//
+//            newTargetBL += correction;
+//            errorBL = newTargetBL - motorBL.getCurrentPosition();
+//            speedBL = Math.abs(errorBL * Kmove);
+//            speedBL = Range.clip(speedBL, minSpeed, speed);
+//            speedBL = speedBL * Math.signum(errorBL);
+//
+//            newTargetBR -= correction;
+//            errorBR = newTargetBR - motorBR.getCurrentPosition();
+//            speedBR = Math.abs(errorBR * Kmove);
+//            speedBR = Range.clip(speedBR, minSpeed, speed);
+//            speedBR = speedBR * Math.signum(errorBR);
 
-            motorFL.setPower(speedFL);
-            motorFR.setPower(speedFR);
-            motorBL.setPower(speedBL);
-            motorBR.setPower(speedBR);
 
-            sendTelemetry();
+
+            driveMecanum(driveAngle, drivePower, rotationPower);
+
+//            motorFL.setPower(speedFL);
+//            motorFR.setPower(speedFR);
+//            motorBL.setPower(speedBL);
+//            motorBR.setPower(speedBR);
+
+
+            telemetry.addData("Encoder Diff x: ", deltaX);
+            telemetry.addData("Encoder Diff y: ", deltaY);
+            telemetry.addData("Heading Diff: ", headingDiff);
+            telemetry.update();
 
             idle();
         }
 
-        while (opModeIsActive() &&
-                (runtime.seconds() < timeout) &&
-                (Math.abs(errorFL) > TOL || Math.abs(errorFR) > TOL || Math.abs(errorBL) > TOL || Math.abs(errorBR) > TOL));
+
 
         stopDriving();
     }
+
 
 //    private void resetAngle()
 //    {
@@ -394,8 +469,8 @@ abstract class MasterAutonomous<rotationFilter> extends Master
 
         // Convert to mm
         //TODO: maybe wrong proportions? something about 70/30 effectiveness maybe translation to MM is wrong
-        deltaX *= MM_PER_TICK;
-        deltaY *= MM_PER_TICK;
+        deltaX *= Constants.MM_PER_TICK;
+        deltaY *= Constants.MM_PER_TICK;
 
         /*
          * Delta x and y are intrinsic to the robot, so they need to be converted to extrinsic.
@@ -459,6 +534,15 @@ abstract class MasterAutonomous<rotationFilter> extends Master
 
 
 
+    public double normalizeAngle(double rawAngle)
+    {
+        while (Math.abs(rawAngle) > 180)
+        {
+            rawAngle -= Math.signum(rawAngle) * 360;
+        }
+
+        return rawAngle;
+    }
 
     void imuPivot(double referenceAngle, double targetAngle, double MaxSpeed, double kAngle, double timeout)
     {
