@@ -25,14 +25,14 @@ public class Constants
     public static final double MIN_SERVOJOINT_PWR = 0.40;
     public static final double MAX_SERVOJOINT_PWR = 0.10;
 
-    public static final double ROTATION_P = 0.01;
+    public static final double ROTATION_P = 0.0005;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
-    public static final double TRANSLATION_P = 0.04;
+    public static final double TRANSLATION_P = 0.001;
     public static final double TRANSLATION_I = 0.0;
     public static final double TRANSLATION_D = 0.0;
-    public static final double ANGLE_TOLERANCE_DEG = 1.0;
-    public static final double POSITION_TOLERANCE_MM = 1.0;
+    public static final double ANGLE_TOLERANCE_DEG = 5.0;
+    public static final double POSITION_TOLERANCE_MM = 20.0;
 
     public static double ARM_STARTING_TICKS;
 

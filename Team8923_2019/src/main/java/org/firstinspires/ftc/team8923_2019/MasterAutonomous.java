@@ -291,7 +291,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
         // Check to see if robot has arrived at destination within angle and position tolerances
         // todo Check conditional
-        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) || (runtime.seconds() < timeout) && opModeIsActive()))
+        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) || (runtime.seconds() < timeout)) && !isStopRequested())
         {
 
             telemetry.update();
@@ -315,7 +315,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
             // Transform position and heading diffs
             translationFilter.roll(-distanceToTarget);
             drivePower = translationFilter.getFilteredValue();
-            rotationFilter.roll(-headingDiff);
+            rotationFilter.roll(headingDiff);
             rotationPower = rotationFilter.getFilteredValue();
 
             // Ensure robot doesn't approach target position too slowly
@@ -356,8 +356,8 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 //            speedBR = speedBR * Math.signum(errorBR);
 
 
-
-            driveMecanum(driveAngle, drivePower, rotationPower);
+            reverseDrive = true;
+            driveMecanum(driveAngle - 90, drivePower, rotationPower);
 
 //            motorFL.setPower(speedFL);
 //            motorFR.setPower(speedFR);
@@ -365,9 +365,12 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 //            motorBR.setPower(speedBR);
 
 
-            telemetry.addData("Encoder Diff x: ", deltaX);
-            telemetry.addData("Encoder Diff y: ", deltaY);
-            telemetry.addData("Heading Diff: ", headingDiff);
+            telemetry.addData("driveAngle", driveAngle-90);
+            telemetry.addData("drivePower", drivePower);
+            telemetry.addData("rotationPower", rotationPower);
+            telemetry.addData("distance left", distanceToTarget);
+            telemetry.addData("distanceFilter",translationFilter.getFilteredValue());
+            telemetry.addData("rotationFilter",rotationFilter.getFilteredValue());
             telemetry.update();
 
             idle();
