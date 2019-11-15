@@ -160,12 +160,6 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
 
-    /**
-     * UNTESTED - - - UNTESTED - - - UNTESTED
-     * This method identifies the location of the SkyStone, using this information to determine
-     * whether it is in the left, center, or right orientation.  Next, it uses navigateUsingEncoders()
-     * to align the robot head-on with the SkyStone.
-     */
     public void vuforiaAlignWithSkyStone()
     {
         vRes.getLocation();
@@ -413,14 +407,14 @@ abstract public class MasterAutonomous extends MasterOpMode
         double rotationPower;
 
         // Extract initial location data.
-        //vRes.getLocation();
-        float xPos = 0/*vRes.translation.get(0) / Constants.MM_PER_INCH*/;   // Convert Vuforia mm to inches
-        float yPos = 0/*vRes.translation.get(1) / Constants.MM_PER_INCH*/;
+        vRes.getLocation();
+        float xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;   // Convert Vuforia mm to inches
+        float yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
         float lastX = xPos;    // Enooder backup nav distances.
         float lastY = yPos;
         boolean justLostTargets = true; // Starts true to ensure first if() below runs once.
 
-        currentAngle = startingOrientation/*normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET)*/;      // thirdAngle = heading (different from IMU, which is firstAngle).
+        currentAngle = normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET);      // thirdAngle = heading (different from IMU, which is firstAngle).
 
         // Calculate distance from robot to target.
         float distance = (float) calculateDistance(x - xPos, y - yPos);
@@ -432,32 +426,32 @@ abstract public class MasterAutonomous extends MasterOpMode
         // While we are outside of tolerance, continue to navigate.
         while ((distance > Constants.POSITION_TOLERANCE_IN || angleDiff > Constants.ANGLE_TOLERANCE_DEG) && !isStopRequested())
         {
-//            // Update location data every loop.
-//            vRes.getLocation();
-//
-//            // todo UNTESTED---UNTESTED---UNTESTED   Encoder backup nav needs field testing.
-//            // If target is not visible, start turning in an attempt to regain view of it.
-//            if (!vRes.getTargetVisibility() && justLostTargets)    // Approximate x and y position using encoders.
-//            {
-//                // Store last acquired x and y values in case we lose all targets.
-//                lastX = xPos;
-//                lastY = yPos;
-//
-//                justLostTargets = false;
-//
-//                // Reset motor encoders and return them to RUN_USING_ENCODERS.
-//                motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//                motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//                motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//                motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//                motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            }
-//            else if (!vRes.getTargetVisibility() && !justLostTargets)   // We just lost target visibility and need to store last available Vuforia data.
-//            {
+            // Update location data every loop.
+            vRes.getLocation();
+
+            // todo UNTESTED---UNTESTED---UNTESTED   Encoder backup nav needs field testing.
+            // If target is not visible, start turning in an attempt to regain view of it.
+            if (!vRes.getTargetVisibility() && justLostTargets)    // Approximate x and y position using encoders.
+            {
+                // Store last acquired x and y values in case we lose all targets.
+                lastX = xPos;
+                lastY = yPos;
+
+                justLostTargets = false;
+
+                // Reset motor encoders and return them to RUN_USING_ENCODERS.
+                motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            else if (!vRes.getTargetVisibility() && !justLostTargets)   // We just lost target visibility and need to store last available Vuforia data.
+            {
                 // Update positions using last Vuforia pos + distance measured by encoders (utilizes fact that encoders have been reset to 0).
                 xPos = lastX + (float) (Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
                         motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / (4 /*Math.sqrt(2)*/));
@@ -470,15 +464,15 @@ abstract public class MasterAutonomous extends MasterOpMode
                 /*// todo Adjust time / power.
                 turnTo(currentAngle + 30, Constants.AUTO_SEARCH_TURN_POWER);    // Turn 15 degrees from current orientation, then search again.
                 pauseWhileUpdating(0.75);*/
-//            }
-//            else     // Update global position and angle coordinates.
-//            {
-//                xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;
-//                yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
-//                currentAngle = (float) normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET);  // Need to shift by 90 degrees to convert to math coordinates.
-//                distance = (float) calculateDistance(x - xPos, y - yPos);
-//                angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
-//            }
+            }
+            else     // Update global position and angle coordinates.
+            {
+                xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;
+                yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
+                currentAngle = (float) normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET);  // Need to shift by 90 degrees to convert to math coordinates.
+                distance = (float) calculateDistance(x - xPos, y - yPos);
+                angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
+            }
             //-----------------------------------------------------------------------------------------------
 
 
