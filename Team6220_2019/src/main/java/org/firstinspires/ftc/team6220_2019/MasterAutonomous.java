@@ -160,12 +160,6 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
 
-    /**
-     * UNTESTED - - - UNTESTED - - - UNTESTED
-     * This method identifies the location of the SkyStone, using this information to determine
-     * whether it is in the left, center, or right orientation.  Next, it uses navigateUsingEncoders()
-     * to align the robot head-on with the SkyStone.
-     */
     public void vuforiaAlignWithSkyStone()
     {
         vRes.getLocation();
@@ -405,7 +399,7 @@ abstract public class MasterAutonomous extends MasterOpMode
      * @param y           is the y-coordinate of the point the robot should move towards.
      * @param targetAngle is the desired orientation of the robot, in degrees.
      */
-    public void driveToCoordinates(float x, float y, float targetAngle, float maxDrivePower)
+    public void driveToCoordinates(float x, float y, float targetAngle, double maxDrivePower)
     {
         // Robot navigation parameters.
         double driveAngle;

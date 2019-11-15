@@ -39,8 +39,8 @@ public class Constants
 
 
     // Tolerances
-    public static final double ANGLE_TOLERANCE_DEG = 1.0;
-    public static final double POSITION_TOLERANCE_IN = 0.2;
+    public static final double ANGLE_TOLERANCE_DEG = /*1.0*/3.0;
+    public static final double POSITION_TOLERANCE_IN = /*0.2*/1.0;
     public static final double OPENCV_TOLERANCE_PIX = 0.5;
     public static final double LIFT_MOTOR_TOLERANCE_ENC_TICKS = 20;
 

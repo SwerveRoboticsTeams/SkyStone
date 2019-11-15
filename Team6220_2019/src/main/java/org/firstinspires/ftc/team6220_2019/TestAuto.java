@@ -28,7 +28,10 @@ public class TestAuto extends MasterAutonomous
 
         waitForStart();
 
-        driveToCoordinates(-35, -45, 90, 0.3);
+        // Vuforia encoder backup test
+        driveToCoordinates(-15, -45, 90, 0.3);
+        pauseWhileUpdating(1.0);
+        driveToCoordinates(-45, -45, 90, 0.3);
 
         /*// todo Test!
         // Position = a couple inches in front of red #2 VuMark
