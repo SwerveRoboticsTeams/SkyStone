@@ -33,6 +33,7 @@ public class AutoCompetition extends MasterAutonomous
         pauseWhileUpdating(delayCount);
 
         // Position robot so it can view SkyStone image target, wait for a bit to recognize target
+        // todo Implement SkystoneDetection class to detect Skystone more reliably
         navigateUsingEncoders(-8, 0, 0.4, false);
         navigateUsingEncoders(0, 13, 0.5, false);
         pauseWhileUpdating(2.0);
