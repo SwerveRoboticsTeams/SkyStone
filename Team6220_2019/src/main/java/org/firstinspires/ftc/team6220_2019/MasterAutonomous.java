@@ -191,7 +191,6 @@ abstract public class MasterAutonomous extends MasterOpMode
     // todo Test and adjust method
     // This method can be used with the skystone navigation target.  It allows a robot to navigate
     // to the front of the target and follow it if it moves.
-
     /**
      * UNTESTED - - - UNTESTED - - - UNTESTED
      * NOTE: DO NOT USE THIS METHOD IN COMPETITION. THIS IS A TEST METHOD ONLY.
@@ -246,8 +245,8 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
     }
 
-    // todo Implement (global coordinates)
 
+    // todo Implement (global coordinates)
     /**
      * UNTESTED - - - UNTESTED - - - UNTESTED
      * DO NOT CALL THIS METHOD TO DRIVE TO THE BRIDGE IN THE MIDDLE OF AUTONOMOUS. DESPITE THE
@@ -310,8 +309,8 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
     }
 
-    // todo Implement (global coordinates)
 
+    // todo Implement (global coordinates)
     /**
      * UNTESTED - - - UNTESTED - - - UNTESTED
      * DO NOT USE THIS METHOD AT THE END OF AUTONOMOUS. DESPITE THE SIMILARITY TO
@@ -390,9 +389,15 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
     }
 
+
+    // todo Test method again now that IMU is being used to calculate angle.
     /**
-     * This method will drive the robot from its current position on the field to the coordinates (x, y) on the field, and orient the robot
-     * to face the direction w. It does not take into account placement of obstacles (e.g.: the Skybridge supports); thus,
+     * This method will drive the robot from its current position on the field to the coordinates (x, y)
+     * on the field and orient the robot to face the direction w.  It uses Vuforia to determine x and y
+     * coordinates; if an image target is not available, however, it updates its last known Vuforia position
+     * using encoders.  Finally, it uses the IMU to determine angle.
+     *
+     * This method does not take into account placement of obstacles (e.g.: the Skybridge supports); thus,
      * <b><u>DO NOT CALL THIS METHOD INDISCRIMINATELY!</u></b>
      *
      * @param x           is the x-coordinate of the point the robot should move towards.
@@ -401,6 +406,9 @@ abstract public class MasterAutonomous extends MasterOpMode
      */
     public void driveToCoordinates(float x, float y, float targetAngle, double maxDrivePower)
     {
+        // Starts true to ensure first if() statement below runs once after target is lost.
+        boolean justLostTargets = true;
+
         // Robot navigation parameters.
         double driveAngle;
         double drivePower;
@@ -412,9 +420,8 @@ abstract public class MasterAutonomous extends MasterOpMode
         float yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
         float lastX = xPos;    // Enooder backup nav distances.
         float lastY = yPos;
-        boolean justLostTargets = true; // Starts true to ensure first if() below runs once.
-
-        currentAngle = normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET);      // thirdAngle = heading (different from IMU, which is firstAngle).
+        // Use IMU for angle, as Vuforia angle has odd conventions and can cause target to be lost easily if one uses it to turn.
+        currentAngle = getAngularOrientationWithOffset();
 
         // Calculate distance from robot to target.
         float distance = (float) calculateDistance(x - xPos, y - yPos);
@@ -429,9 +436,9 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Update location data every loop.
             vRes.getLocation();
 
-            // todo UNTESTED---UNTESTED---UNTESTED   Encoder backup nav needs field testing.
-            // If target is not visible, start turning in an attempt to regain view of it.
-            if (!vRes.getTargetVisibility() && justLostTargets)    // Approximate x and y position using encoders.
+
+            // We just lost target visibility and need to store last available Vuforia data.
+            if (!vRes.getTargetVisibility() && justLostTargets)
             {
                 // Store last acquired x and y values in case we lose all targets.
                 lastX = xPos;
@@ -450,29 +457,26 @@ abstract public class MasterAutonomous extends MasterOpMode
                 motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
-            else if (!vRes.getTargetVisibility() && !justLostTargets)   // We just lost target visibility and need to store last available Vuforia data.
+            // Approximate x and y position using encoders.
+            else if (!vRes.getTargetVisibility() && !justLostTargets)
             {
                 // Update positions using last Vuforia pos + distance measured by encoders (utilizes fact that encoders have been reset to 0).
                 xPos = lastX + (float) (Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
                         motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / (4 /*Math.sqrt(2)*/));
                 yPos = lastY + (float) (Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() +
                         motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4);
-                currentAngle = getAngularOrientationWithOffset();       // Get orientation using IMU.
-                distance = (float) calculateDistance(x - xPos, y - yPos);
-                angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
-
-                /*// todo Adjust time / power.
-                turnTo(currentAngle + 30, Constants.AUTO_SEARCH_TURN_POWER);    // Turn 15 degrees from current orientation, then search again.
-                pauseWhileUpdating(0.75);*/
             }
-            else     // Update global position and angle coordinates.
+            // Update global position and angle coordinates.
+            else
             {
                 xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;
                 yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
-                currentAngle = (float) normalizeAngle(vRes.rotation.thirdAngle + 90 + Constants.WEBCAM_1_OFFSET);  // Need to shift by 90 degrees to convert to math coordinates.
-                distance = (float) calculateDistance(x - xPos, y - yPos);
-                angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
             }
+
+            // Get global orientation using IMU.
+            currentAngle = getAngularOrientationWithOffset();
+            distance = (float) calculateDistance(x - xPos, y - yPos);
+            angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
             //-----------------------------------------------------------------------------------------------
 
 

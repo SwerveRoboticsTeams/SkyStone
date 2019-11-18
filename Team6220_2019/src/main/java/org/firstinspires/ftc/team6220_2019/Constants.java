@@ -73,7 +73,7 @@ public class Constants
     // Vuforia constants
     public static final int IMAGE_WIDTH = 1280;
     public static final int IMAGE_HEIGHT = 720;
-    public static final int WEBCAM_1_OFFSET = 180;    // Need to account for fact that webcam faces opposite direction of drivetrain.
+    public static final double WEBCAM_1_OFFSET = 180.0;    // Need to account for fact that webcam faces opposite direction of drivetrain.
     public static final int WEBCAM_2_OFFSET = 0;    // * 2nd webcam not currently in use.
 
 

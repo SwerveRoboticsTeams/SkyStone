@@ -11,7 +11,8 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 
-public class SkystoneDetectionOpenCV extends OpenCVPipeline {
+public class SkystoneDetectionOpenCV extends OpenCVPipeline
+{
 
     private Mat blurred = new Mat();
     private Mat hsv = new Mat();
@@ -24,43 +25,44 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline {
     private ArrayList<Mat> hsvSplit = new ArrayList<>();
     private double mean1, mean2, mean3;
 
-    //todo once code works, make these constants in Constants class
+    // todo once code works, make these constants in Constants class
     private int[] section1 = {300, 100, 160, 100}; //{N, W, width, height}
     private int[] section2 = {300, 260, 160, 100};
     private int[] section3 = {300, 420, 160, 100};
 
     @Override
-    public Mat processFrame(Mat rgba, Mat gray){
-        //Convert RGBA to RGB to remove alpha
+    public Mat processFrame(Mat rgba, Mat gray)
+    {
+        // Convert RGBA to RGB to remove alpha
         Imgproc.cvtColor(rgba, rgba, Imgproc.COLOR_RGBA2RGB);
 
-        //Blur image to remove effect of noise
+        // Blur image to remove effect of noise
         Imgproc.GaussianBlur(rgba, blurred, new Size(5, 5), 0);
 
-        //Convert rgb into hsv and yuv
+        // Convert rgb into hsv and yuv
         Imgproc.cvtColor(rgba, hsv, Imgproc.COLOR_RGB2HSV);
         Imgproc.cvtColor(rgba, yuv, Imgproc.COLOR_RGB2YUV);
 
-        //Store yuv and hsv splits into Mat ArrayLists
+        // Store yuv and hsv splits into Mat ArrayLists
         Core.split(yuv, yuvSplit);
         Core.split(hsv, hsvSplit);
 
-        //Retrieve the u and h from the ArrayLists
+        // Retrieve the u and h from the ArrayLists
         u = yuvSplit.get(1);
         h = hsvSplit.get(0);
 
-        //u threshold detects yellow if u < 90
-        Imgproc.threshold(u, u,90, 255, Imgproc.THRESH_BINARY_INV);
+        // u threshold detects yellow if u < 90
+        Imgproc.threshold(u, u, 90, 255, Imgproc.THRESH_BINARY_INV);
 
-        //h threshold detects yellow if 15 < h < 30
+        // h threshold detects yellow if 15 < h < 30
         Imgproc.threshold(h, hLow, 15, 255, Imgproc.THRESH_BINARY);
         Imgproc.threshold(h, hHigh, 30, 255, Imgproc.THRESH_BINARY_INV);
         Core.min(hLow, hHigh, h);
 
-        //Yellow is detected only if both u and h detect yellow
+        // Yellow is detected only if both u and h detect yellow
         Core.min(u, h, finalMat);
 
-        //Take image subsets where stones should be
+        // Take image subsets where stones should be
         Rect sect1 = new Rect(section1[0], section1[1], section1[2], section1[3]);
         Rect sect2 = new Rect(section2[0], section2[1], section2[2], section2[3]);
         Rect sect3 = new Rect(section3[0], section3[1], section3[2], section3[3]);
@@ -68,12 +70,12 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline {
         cropped2 = new Mat(finalMat, sect2);
         cropped3 = new Mat(finalMat, sect3);
 
-        //Evaluate mean color value in each image subset. mean1, mean2, mean3 can now be called from the getter methods.
+        // Evaluate mean color value in each image subset. mean1, mean2, mean3 can now be called from the getter methods.
         mean1 = Core.mean(cropped1).val[0];
         mean2 = Core.mean(cropped2).val[0];
         mean3 = Core.mean(cropped3).val[0];
 
-        //Draw image subset boundaries for the purposes of testing and debugging.
+        // Draw image subset boundaries for the purposes of testing and debugging.
         Imgproc.rectangle(rgba, new Point(section1[0], section1[1]),
                 new Point(section1[0] + section1[3], section1[1] + section1[2]),
                 new Scalar(255, 0, 0), 5);
@@ -87,15 +89,19 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline {
         return rgba;
     }
 
-    public double getMean1(){
+    public double getMean1()
+    {
         return mean1;
     }
 
-    public double getMean2(){
+    public double getMean2()
+    {
         return mean2;
     }
 
-    public double getMean3(){
+    public double getMean3()
+    {
         return mean3;
     }
+
 }
