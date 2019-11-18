@@ -391,6 +391,7 @@ abstract public class MasterAutonomous extends MasterOpMode
 
 
     // todo Test method again now that IMU is being used to calculate angle.
+    // todo Consolidate use of floats and doubles
     /**
      * This method will drive the robot from its current position on the field to the coordinates (x, y)
      * on the field and orient the robot to face the direction w.  It uses Vuforia to determine x and y
@@ -404,7 +405,7 @@ abstract public class MasterAutonomous extends MasterOpMode
      * @param y           is the y-coordinate of the point the robot should move towards.
      * @param targetAngle is the desired orientation of the robot, in degrees.
      */
-    public void driveToCoordinates(float x, float y, float targetAngle, double maxDrivePower)
+    public void driveToCoordinates(float x, float y, double targetAngle, double maxDrivePower)
     {
         // Starts true to ensure first if() statement below runs once after target is lost.
         boolean justLostTargets = true;
@@ -426,7 +427,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         // Calculate distance from robot to target.
         float distance = (float) calculateDistance(x - xPos, y - yPos);
         // Calculate angle between robot and target.
-        float angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
+        double angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
 
 
         // Update location-----------------------------------------------------------------------------------
@@ -476,7 +477,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Get global orientation using IMU.
             currentAngle = getAngularOrientationWithOffset();
             distance = (float) calculateDistance(x - xPos, y - yPos);
-            angleDiff = (float) normalizeRotationTarget(targetAngle, currentAngle);
+            angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
             //-----------------------------------------------------------------------------------------------
 
 
