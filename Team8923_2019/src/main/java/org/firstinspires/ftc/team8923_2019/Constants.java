@@ -25,7 +25,7 @@ public class Constants
     public static final double MIN_SERVOJOINT_PWR = 0.40;
     public static final double MAX_SERVOJOINT_PWR = 0.10;
 
-    public static final double ROTATION_P = 0.0005;
+    public static final double ROTATION_P = 0.005;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
     public static final double TRANSLATION_P = 0.001;

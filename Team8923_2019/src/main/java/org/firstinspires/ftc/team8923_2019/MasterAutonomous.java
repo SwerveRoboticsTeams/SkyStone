@@ -369,6 +369,8 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
             telemetry.addData("drivePower", drivePower);
             telemetry.addData("rotationPower", rotationPower);
             telemetry.addData("distance left", distanceToTarget);
+            telemetry.addData("deltaX", deltaX);
+            telemetry.addData("deltaY", deltaY);
             telemetry.addData("distanceFilter",translationFilter.getFilteredValue());
             telemetry.addData("rotationFilter",rotationFilter.getFilteredValue());
             telemetry.update();

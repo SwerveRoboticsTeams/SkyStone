@@ -18,7 +18,7 @@ public class Test extends MasterAutonomous
         initAuto();
         telemetry.clear();
         telemetry.update();
-//        double refereneAngle = imu.getAngularOrientation().secondAngle;
+
 
 
         waitForStart();
@@ -28,9 +28,11 @@ public class Test extends MasterAutonomous
         while (opModeIsActive())
         {
             reverseDrive = false;
-            moveAuto(700,0,.05,0.3,3);
+            moveAuto(0,25.4*30,.1,0,3);
 
-            //driveMecanum(0,.4,0);
+            //driveMecanum(,0,.2);
+
+            // turn power counter clock
         }
 
     }
