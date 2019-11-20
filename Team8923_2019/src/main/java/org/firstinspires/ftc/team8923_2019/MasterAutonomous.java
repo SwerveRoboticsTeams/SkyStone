@@ -297,10 +297,10 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
             telemetry.update();
             // todo Check if this actually returns the delta x and y in mm
             // Calculate difference in X and Y based on average encoder counts of motors
-            deltaX = initDeltaX - Constants.COUNTS_PER_MM * (motorFL.getCurrentPosition() -
-                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
-            deltaY = initDeltaY - Constants.COUNTS_PER_MM * (motorFL.getCurrentPosition() +
-                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
+            deltaX = initDeltaX - (Constants.MM_PER_TICK - .117) * ((motorFL.getCurrentPosition() -
+                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4);
+            deltaY = initDeltaY - Constants.MM_PER_TICK * ((motorFL.getCurrentPosition() +
+                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4);
 
 
 
@@ -365,14 +365,18 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 //            motorBR.setPower(speedBR);
 
 
-            telemetry.addData("driveAngle", driveAngle-90);
-            telemetry.addData("drivePower", drivePower);
-            telemetry.addData("rotationPower", rotationPower);
+           // telemetry.addData("driveAngle", driveAngle-90);
+           // telemetry.addData("drivePower", drivePower);
+           // telemetry.addData("rotationPower", rotationPower);
             telemetry.addData("distance left", distanceToTarget);
             telemetry.addData("deltaX", deltaX);
             telemetry.addData("deltaY", deltaY);
             telemetry.addData("distanceFilter",translationFilter.getFilteredValue());
             telemetry.addData("rotationFilter",rotationFilter.getFilteredValue());
+            telemetry.addData("FL", motorFL.getCurrentPosition());
+            telemetry.addData("FR", motorFR.getCurrentPosition());
+            telemetry.addData("BL", motorBL.getCurrentPosition());
+            telemetry.addData("BR", motorBR.getCurrentPosition());
             telemetry.update();
 
             idle();

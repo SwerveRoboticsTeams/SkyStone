@@ -28,9 +28,9 @@ public class Test extends MasterAutonomous
         while (opModeIsActive())
         {
             reverseDrive = false;
-            moveAuto(0,25.4*30,.1,0,3);
+            moveAuto(25.4*30,0,.1,0,3);
 
-            //driveMecanum(,0,.2);
+
 
             // turn power counter clock
         }

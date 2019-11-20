@@ -117,7 +117,7 @@ abstract class MasterTeleOp extends Master
         if(rightTrigger > Constants.MINIMUM_TRIGGER_VALUE){
             servoGrabber.setPosition(rightTrigger*0.9);
         }else{
-            servoGrabber.setPosition(0.5);
+            servoGrabber.setPosition(0);
         }
 
     }
