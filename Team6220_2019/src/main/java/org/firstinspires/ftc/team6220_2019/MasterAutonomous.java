@@ -437,7 +437,6 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Update location data every loop.
             vRes.getLocation();
 
-
             // We just lost target visibility and need to store last available Vuforia data.
             if (!vRes.getTargetVisibility() && justLostTargets)
             {
@@ -494,7 +493,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Ensure drivePower and rotationPower are not too large.
             drivePower = Range.clip(drivePower, -maxDrivePower, maxDrivePower);
             rotationPower = Range.clip(rotationPower, -Constants.MAX_NAV_ROT_POWER, Constants.MAX_NAV_ROT_POWER);
-            driveMecanum(driveAngle, drivePower, 0.5 * rotationPower);  // Don't want to give full rotation power.
+            driveMecanum(driveAngle, drivePower, rotationPower);  // Don't want to give full rotation power.
             //-----------------------------------------------------------------------------------------------
 
 
