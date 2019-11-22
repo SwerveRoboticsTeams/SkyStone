@@ -66,6 +66,8 @@ abstract public class MasterTeleOp extends MasterOpMode
         telemetry.addData("angle: ", angle);
         telemetry.addData("drivePower: ", drivePower);
         telemetry.addData("rotationPower: ", rotationPower);
+        telemetry.addData("Left stick x: ", driver1.getLeftStickX());
+        telemetry.addData("Right stick x: ", driver1.getRightStickX());
     }
 
 
@@ -165,7 +167,7 @@ abstract public class MasterTeleOp extends MasterOpMode
 
 
         // Display telemetry data to drivers
-        telemetry.addData("Right stick y: ", rightStickY);
+        telemetry.addData("Driver 2 right stick y: ", rightStickY);
         telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
         telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
         telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());

@@ -30,9 +30,9 @@ public class TestAuto extends MasterAutonomous
 
         // Vuforia encoder backup test
         driveToCoordinates(24, -48, 90, 0.3);
-        pauseWhileUpdating(1.0);
+        /*pauseWhileUpdating(1.0);
         driveToCoordinates(24, -48, 180, 0.3);
-        driveToCoordinates(-48, -48, 180, 0.3);
+        driveToCoordinates(-48, -48, 180, 0.3);*/
 
         vRes.deactivateTargets();
     }
