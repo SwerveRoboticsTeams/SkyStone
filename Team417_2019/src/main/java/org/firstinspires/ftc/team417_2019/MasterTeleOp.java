@@ -161,10 +161,9 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
 
         // Set Automatic Rev servo position
-
-        autoDouble = (double) (arm1.getCurrentPosition());
-        autoDouble /=-1465.5;
-        autoRevPos =  autoDouble + 0.5; // high pos = -1058, low = 0
+        autoDouble = (double) (arm1.getCurrentPosition() + 150);
+        autoDouble = autoDouble * 0.4 / -738;
+        autoRevPos =  autoDouble + 0.335; // high pos = -1058, low = 0
         mainWristServo.setPosition(autoRevPos);
 
         // Toggle grabber
@@ -286,6 +285,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         //telemetry.addData("motorMode", core2.getMode());
         telemetry.addData("core2:", core2.getCurrentPosition());
         telemetry.addData("arm1:", arm1.getCurrentPosition());
+        telemetry.addData("mainWristServo:", mainWristServo.getPosition());
         telemetry.update();
     }
 }
