@@ -53,7 +53,7 @@ public class VuforiaWebCamOpenCV6220 extends LinearOpMode {
     SkystoneDetectionOpenCV OpenCV_detector;
 
     @Override
-    public void runOpMode()
+    public void runOpMode() throws InterruptedException
     {
         // Default webcam name
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -78,22 +78,13 @@ public class VuforiaWebCamOpenCV6220 extends LinearOpMode {
         // fullscreen display:
         //   app crashes if screen orientation switches from portrait to landscape
         //   screen goes to sleep, and webcam turns off a few minutes after init, and after play
-        //OpenCV_detector.init(hardwareMap.appContext, ActivityViewDisplay.getInstance(), 0, true);
-
         OpenCV_detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
 
-        telemetry.addData("Check 1", "");
-        telemetry.update();
-        // Set the OpenCV_detector
+        // Set the OpenCV_detector and enable it.
         vuforia.setDogeCVDetector(OpenCV_detector);
         vuforia.enableDogeCV();
-        // don't show Vuforia vuforia.showDebug();
-        telemetry.addData("Check 2", "");
-        telemetry.update();
         vuforia.start();
 
-        telemetry.addData("Check 3", "");
-        telemetry.update();
         // loop until user presses 'PLAY'
         // show detected mineral position telemetry
         while (!isStarted())
@@ -141,7 +132,6 @@ public class VuforiaWebCamOpenCV6220 extends LinearOpMode {
 
         // stop the vision system
         vuforia.stop();
-
     }
 
 }

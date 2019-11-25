@@ -19,6 +19,7 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline
     private Mat yuv = new Mat();
     private Mat h = new Mat(), u = new Mat();
     private Mat finalMat = new Mat();
+    private Mat displayMat = new Mat(); // Display debug info to the screen (this is what is returned)
     private Mat cropped1, cropped2, cropped3;
     private Mat hLow = new Mat(), hHigh = new Mat();
     private ArrayList<Mat> yuvSplit = new ArrayList<>();
@@ -26,13 +27,22 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline
     private double mean1, mean2, mean3;
 
     // todo once code works, make these constants in Constants class
-    private int[] section1 = {300, 100, 160, 100}; //{N, W, width, height}
+    /*private int[] section1 = {300, 100, 160, 100}; //{N, W, width, height}
     private int[] section2 = {300, 260, 160, 100};
-    private int[] section3 = {300, 420, 160, 100};
+    // todo x and y values are flipped for webcam!
+    private int[] section3 = {300, 280*//*420*//*, 160, 100};*/
+
+    private int[] section1 = {60, 200, 100, 200}; //{N, W, width, height}
+    private int[] section2 = {260, 200, 100, 200};
+    // todo x and y values are flipped for webcam!
+    private int[] section3 = {460, 200, 100, 200};
 
     @Override
     public Mat processFrame(Mat rgba, Mat gray)
     {
+        // Use displayMat to show contours on phone and rgba for actual data manipulation.
+        rgba.copyTo(displayMat);
+
         // Convert RGBA to RGB to remove alpha
         Imgproc.cvtColor(rgba, rgba, Imgproc.COLOR_RGBA2RGB);
 
@@ -66,6 +76,7 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline
         Rect sect1 = new Rect(section1[0], section1[1], section1[2], section1[3]);
         Rect sect2 = new Rect(section2[0], section2[1], section2[2], section2[3]);
         Rect sect3 = new Rect(section3[0], section3[1], section3[2], section3[3]);
+
         cropped1 = new Mat(finalMat, sect1);
         cropped2 = new Mat(finalMat, sect2);
         cropped3 = new Mat(finalMat, sect3);
@@ -76,17 +87,17 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline
         mean3 = Core.mean(cropped3).val[0];
 
         // Draw image subset boundaries for the purposes of testing and debugging.
-        Imgproc.rectangle(rgba, new Point(section1[0], section1[1]),
+        Imgproc.rectangle(displayMat, new Point(section1[0], section1[1]),
                 new Point(section1[0] + section1[3], section1[1] + section1[2]),
                 new Scalar(255, 0, 0), 5);
-        Imgproc.rectangle(rgba, new Point(section2[0], section2[1]),
+        Imgproc.rectangle(displayMat, new Point(section2[0], section2[1]),
                 new Point(section2[0] + section2[3], section2[1] + section2[2]),
                 new Scalar(0, 255, 0), 5);
-        Imgproc.rectangle(rgba, new Point(section3[0], section3[1]),
+        Imgproc.rectangle(displayMat, new Point(section3[0], section3[1]),
                 new Point(section3[0] + section3[3], section3[1] + section3[2]),
                 new Scalar(0, 0, 255), 5);
 
-        return rgba;
+        return displayMat;
     }
 
     public double getMean1()
