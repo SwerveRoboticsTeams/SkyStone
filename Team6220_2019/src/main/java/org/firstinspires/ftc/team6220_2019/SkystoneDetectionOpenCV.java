@@ -26,15 +26,9 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline
     private ArrayList<Mat> hsvSplit = new ArrayList<>();
     private double mean1, mean2, mean3;
 
-    // todo once code works, make these constants in Constants class
-    /*private int[] section1 = {300, 100, 160, 100}; //{N, W, width, height}
-    private int[] section2 = {300, 260, 160, 100};
-    // todo x and y values are flipped for webcam!
-    private int[] section3 = {300, 280*//*420*//*, 160, 100};*/
-
+    // todo Adjust w/ actual stones, make constants.
     private int[] section1 = {60, 200, 100, 200}; //{N, W, width, height}
     private int[] section2 = {260, 200, 100, 200};
-    // todo x and y values are flipped for webcam!
     private int[] section3 = {460, 200, 100, 200};
 
     @Override
