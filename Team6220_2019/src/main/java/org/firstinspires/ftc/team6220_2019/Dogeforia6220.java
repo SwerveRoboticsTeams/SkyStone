@@ -55,7 +55,6 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl {
     Bitmap rotatedBitmap;
     Mat inputMat;
     Mat outMat;
-    BlockingQueue<CloseableFrame> frames;
 
     MasterOpMode master;
 

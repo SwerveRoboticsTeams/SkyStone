@@ -1,3 +1,7 @@
+/**
+ * WARNING: THIS CLASS IS NOW OBSOLETE. ALL CODE RELATING TO VUFORIA IS FOUND IN Dogeforia6220!
+ */
+
 package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;

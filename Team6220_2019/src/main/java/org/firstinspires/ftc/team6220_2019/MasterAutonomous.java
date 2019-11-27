@@ -159,7 +159,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
     }
 
-
+    // todo rework aligning with skystone to work with OpenCV skystone detection
     public void vuforiaAlignWithSkyStone() throws InterruptedException
     {
         vuf.getLocation();
