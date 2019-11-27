@@ -28,7 +28,7 @@ public class Test extends MasterAutonomous
         while (opModeIsActive())
         {
             reverseDrive = false;
-            moveAuto(25.4*30,0,.1,0,3);
+            moveAuto(0,10*25.4,.1,0,3);
 
 
 
