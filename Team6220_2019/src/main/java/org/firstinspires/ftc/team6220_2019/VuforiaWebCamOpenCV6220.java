@@ -43,14 +43,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  *
  * 2018/09/30 Copied from OpenCvExampleBlueVisionDemo.java to experiment with various parameters.
  */
-@TeleOp(name="Dogeforia6220 Test")
-//@Disabled
-public class VuforiaWebCamOpenCV6220 extends LinearOpMode {
+
+public class VuforiaWebCamOpenCV6220 extends LinearOpMode{
 
     Dogeforia6220 vuforia;
     WebcamName webcamName;
     // DogeCV OpenCV_detector
     SkystoneDetectionOpenCV OpenCV_detector;
+
+    public double m1, m2, m3;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -97,9 +98,9 @@ public class VuforiaWebCamOpenCV6220 extends LinearOpMode {
         // run after user presses 'PLAY'
         while (opModeIsActive())
         {
-            double m1 = OpenCV_detector.getMean1();
-            double m2 = OpenCV_detector.getMean2();
-            double m3 = OpenCV_detector.getMean3();
+            m1 = OpenCV_detector.getMean1();
+            m2 = OpenCV_detector.getMean2();
+            m3 = OpenCV_detector.getMean3();
 
             telemetry.addData("Right stone: ", m1);
             telemetry.addData("Middle stone: ", m2);

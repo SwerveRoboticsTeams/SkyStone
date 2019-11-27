@@ -31,7 +31,9 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
     // opMode to be able to use some functionalities in that class.
-    VuforiaResources vRes = new VuforiaResources(this);
+
+    VuforiaWebCamOpenCV6220 skytoneDetector = new VuforiaWebCamOpenCV6220();
+    Dogeforia6220 vuf = skytoneDetector.vuforia;
 
     // Declare hardware devices---------------------------------------
     BNO055IMU imu;
@@ -89,8 +91,8 @@ abstract public class MasterOpMode extends LinearOpMode
         if (isUsingVuforia)
         {
             webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-            vRes.initVuforia();
-            vRes.activateTargets(); // Also remember to deactivate them if using Vuforia!
+            vuf.initVuforia();
+            vuf.activateTargets(); // Also remember to deactivate them if using Vuforia!
         }
 
         // Drive motor initialization--------------------------------------

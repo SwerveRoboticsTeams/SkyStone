@@ -3,8 +3,6 @@ package org.firstinspires.ftc.team6220_2019;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
-
 /**
  * This class includes methods and fields that are useful for generic autonomous OpModes.
  */
@@ -16,6 +14,8 @@ abstract public class MasterAutonomous extends MasterOpMode
     int delayCount = 0;
     // The number of SkyStones we want to score; can take a value from 0 - 2
     int numSkyStones = 1;
+    // The position of the SkyStone; initialized by vuforiaAlignWithSkystone()
+    int skyStonePos;
     // Whether we want to score the foundation or not
     boolean scoreFoundation = true;
     // Whether we want to park on far or close end of line under alliance Skybridge
@@ -160,19 +160,42 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
 
-    public void vuforiaAlignWithSkyStone()
+    public void vuforiaAlignWithSkyStone() throws InterruptedException
     {
-        vRes.getLocation();
+        vuf.getLocation();
 
-        if (!vRes.getTargetVisibility())
+        skytoneDetector.runOpMode();
+        /*
+         *  If the yellow filter value of the right stone is lower than that of the middle or
+         *  left stones, then it has more black and is therefore the SkyStone.
+         *
+         *  Otherwise, if the yellow value of the middle stone is less than that of the left
+         *  stone, the middle stone is the SkyStone.
+         *
+         *  Failing the first two options, the left stone is the SkyStone.
+         */
+        if(skytoneDetector.m1 < skytoneDetector.m2 && skytoneDetector.m1 < skytoneDetector.m3)
+        {
+            skyStonePos = 1;
+        }
+        else if(skytoneDetector.m2 < skytoneDetector.m3)
+        {
+            skyStonePos = 2;
+        }
+        else
+        {
+            skyStonePos = 3;
+        }
+
+        if (!vuf.getTargetVisibility())
         {
             // Shift toward center stone if we can't ID target
         } else
         {
             // Align with SkyStone
-            vRes.getLocation();
-            // todo This should use vRes.CAMERA_LEFT_DISPLACEMENT (in inches, not MM)
-            double stoneDistance = vRes.translation.get(1) / Constants.MM_PER_INCH;
+            vuf.getLocation();
+            // todo This should use vuf.CAMERA_LEFT_DISPLACEMENT (in inches, not MM)
+            double stoneDistance = vuf.translation.get(1) / Constants.MM_PER_INCH;
             telemetry.addData("stoneDistance: ", stoneDistance);
             telemetry.update();
 
@@ -200,12 +223,12 @@ abstract public class MasterAutonomous extends MasterOpMode
     public void vuforiaFollowObject()
     {
         // Updates rotation and translation vectors
-        vRes.getLocation();
+        vuf.getLocation();
 
 
         double distanceToStone = 100;
 
-        if (!vRes.getTargetVisibility())
+        if (!vuf.getTargetVisibility())
         {
             driveMecanum(0, 0, 0.10);
         } else
@@ -214,14 +237,14 @@ abstract public class MasterAutonomous extends MasterOpMode
             {
                 // x, y, z defines the location of the center of the robot relative to the skystone (in inches).
                 // todo Need to test whether distance - 8 works correctly.
-                double x = vRes.translation.get(0) / Constants.MM_PER_INCH + 8;
-                double y = vRes.translation.get(1) / Constants.MM_PER_INCH;
-                double z = vRes.translation.get(2) / Constants.MM_PER_INCH;
+                double x = vuf.translation.get(0) / Constants.MM_PER_INCH + 8;
+                double y = vuf.translation.get(1) / Constants.MM_PER_INCH;
+                double z = vuf.translation.get(2) / Constants.MM_PER_INCH;
                 telemetry.addData("x value: ", x);
                 telemetry.addData("y value: ", y);
                 telemetry.addData("z value: ", z);
                 // w is the rotation of the robot relative to the skystone in degrees.
-                double currentAngle = vRes.rotation.firstAngle;
+                double currentAngle = vuf.rotation.firstAngle;
 
                 distanceToStone = calculateDistance(x, y);
                 // todo - signs should be properly accounted for.
@@ -263,16 +286,16 @@ abstract public class MasterAutonomous extends MasterOpMode
      */
     public void driveCenterLineEndAutonomous()
     {
-        vRes.getLocation();
+        vuf.getLocation();
         // (x, y, z) is the location of the robot on the field.
-        float x = vRes.translation.get(0);
-        float y = vRes.translation.get(1);
-        float z = vRes.translation.get(2);
+        float x = vuf.translation.get(0);
+        float y = vuf.translation.get(1);
+        float z = vuf.translation.get(2);
 
         // Conditional to check for step one. 24 is an arbitrary number that may need adjusting.
         if (x > 24)
         {
-            autonomousDriveMecanum(180 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+            autonomousDriveMecanum(180 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
         }
         // Conditional to check for step two. 36 is a partially arbitrary number that may need adjusting.
         else if (Math.abs(y) < 36)
@@ -280,10 +303,10 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Drive up if we are the blue team, and drive down if we are the red team.
             if (isRedAlliance)
             {
-                autonomousDriveMecanum(-90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(-90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             } else
             {
-                autonomousDriveMecanum(90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
         }
         // If neither of the first two steps are true, then the third step is executed.
@@ -305,7 +328,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             }
             angle = (float) normalizeAngle(angle);
 
-            autonomousDriveMecanum(angle - vRes.rotation.firstAngle, distancePower(distance), 0);
+            autonomousDriveMecanum(angle - vuf.rotation.firstAngle, distancePower(distance), 0);
         }
     }
 
@@ -330,11 +353,11 @@ abstract public class MasterAutonomous extends MasterOpMode
      */
     public void driveToBridge(int bridge)
     {
-        vRes.getLocation();
+        vuf.getLocation();
         // (x, y, z) is the location of the robot on the field.
-        float x = vRes.translation.get(0);
-        float y = vRes.translation.get(1);
-        float z = vRes.translation.get(2);
+        float x = vuf.translation.get(0);
+        float y = vuf.translation.get(1);
+        float z = vuf.translation.get(2);
 
         int foundationTolerance = 24;
         int teamBridgeTolerance = 36;
@@ -343,7 +366,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         // Conditional to check for step one. foundationTolerance is an arbitrary number that may need adjusting.
         if (x > foundationTolerance)
         {
-            autonomousDriveMecanum(180 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+            autonomousDriveMecanum(180 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
         }
         // Conditional to check for step two. teamBridgeTolerance and centerTolerance are partially arbitrary
         // numbers that may need adjusting.
@@ -355,10 +378,10 @@ abstract public class MasterAutonomous extends MasterOpMode
                 // Drive up if we are the blue team, and drive down if we are the red team.
                 if (isRedAlliance)
                 {
-                    autonomousDriveMecanum(-90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(-90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 } else
                 {
-                    autonomousDriveMecanum(90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 }
             }
             // Otherwise, go to center bridge.
@@ -366,10 +389,10 @@ abstract public class MasterAutonomous extends MasterOpMode
             {
                 if (y > centerTolerance)
                 {
-                    autonomousDriveMecanum(-90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(-90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 } else if (y < -centerTolerance)
                 {
-                    autonomousDriveMecanum(90 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                    autonomousDriveMecanum(90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
                 }
             }
         }
@@ -379,12 +402,12 @@ abstract public class MasterAutonomous extends MasterOpMode
             // If we are left of the bridge, drive right.
             if (x < 0)
             {
-                autonomousDriveMecanum(-vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(-vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
             // Else, drive left.
             else
             {
-                autonomousDriveMecanum(180 - vRes.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
+                autonomousDriveMecanum(180 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
             }
         }
     }
@@ -416,9 +439,9 @@ abstract public class MasterAutonomous extends MasterOpMode
         double rotationPower;
 
         // Extract initial location data.
-        vRes.getLocation();
-        float xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;   // Convert Vuforia mm to inches
-        float yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
+        vuf.getLocation();
+        float xPos = vuf.translation.get(0) / Constants.MM_PER_INCH;   // Convert Vuforia mm to inches
+        float yPos = vuf.translation.get(1) / Constants.MM_PER_INCH;
         float lastX = xPos;    // Enooder backup nav distances.
         float lastY = yPos;
         // Use IMU for angle, as Vuforia angle has odd conventions and can cause target to be lost easily if one uses it to turn.
@@ -435,10 +458,10 @@ abstract public class MasterAutonomous extends MasterOpMode
         while ((distance > Constants.POSITION_TOLERANCE_IN || angleDiff > Constants.ANGLE_TOLERANCE_DEG) && !isStopRequested())
         {
             // Update location data every loop.
-            vRes.getLocation();
+            vuf.getLocation();
 
             // We just lost target visibility and need to store last available Vuforia data.
-            if (!vRes.getTargetVisibility() && justLostTargets)
+            if (!vuf.getTargetVisibility() && justLostTargets)
             {
                 // Store last acquired x and y values in case we lose all targets.
                 lastX = xPos;
@@ -458,7 +481,7 @@ abstract public class MasterAutonomous extends MasterOpMode
                 motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
             // Approximate x and y position using encoders.
-            else if (!vRes.getTargetVisibility() && !justLostTargets)
+            else if (!vuf.getTargetVisibility() && !justLostTargets)
             {
                 // Update positions using last Vuforia pos + distance measured by encoders (utilizes fact that encoders have been reset to 0).
                 xPos = lastX + (float) (Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
@@ -469,8 +492,8 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Update global position and angle coordinates.
             else
             {
-                xPos = vRes.translation.get(0) / Constants.MM_PER_INCH;
-                yPos = vRes.translation.get(1) / Constants.MM_PER_INCH;
+                xPos = vuf.translation.get(0) / Constants.MM_PER_INCH;
+                yPos = vuf.translation.get(1) / Constants.MM_PER_INCH;
             }
 
             // Get global orientation using IMU.

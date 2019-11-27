@@ -1,12 +1,6 @@
 package org.firstinspires.ftc.team6220_2019;
 
-import android.graphics.Point;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 @Autonomous(name = "TestAuto")
 public class TestAuto extends MasterAutonomous
@@ -24,7 +18,7 @@ public class TestAuto extends MasterAutonomous
 
         setRobotStartingOrientation(90);
 
-        vRes.getLocation();
+        vuf.getLocation();
 
         waitForStart();
 
@@ -34,6 +28,6 @@ public class TestAuto extends MasterAutonomous
         driveToCoordinates(24, -48, 180, 0.3);
         driveToCoordinates(-48, -48, 180, 0.3);*/
 
-        vRes.deactivateTargets();
+        vuf.deactivateTargets();
     }
 }
