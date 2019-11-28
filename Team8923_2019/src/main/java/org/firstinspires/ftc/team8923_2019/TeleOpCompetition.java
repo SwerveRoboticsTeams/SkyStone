@@ -17,17 +17,16 @@ public class TeleOpCompetition extends MasterTeleOp
 
         while (opModeIsActive())
         {
-            Variables.ARM_MOTOR_TICKS = motorArm.getCurrentPosition() - Constants.ARM_STARTING_TICKS;
 
             driveMecanumTeleOp();
-            //runIntake();
-            runClaw();
-            adjustClawPosition();
-            toggleGrabber();
+
             sendTelemetry();
             toggleFoundationServos();
-            resetArmTicksToZero();
+
+            runCapstoneGrabber();
+            runIntake();
             idle();
+
         }
     }
 

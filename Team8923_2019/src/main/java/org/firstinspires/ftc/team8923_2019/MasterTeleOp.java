@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team8923_2019;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Const;
@@ -38,104 +39,42 @@ abstract class MasterTeleOp extends Master
         return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     }
 
-//    public void runIntake()
-//    {
-//        if (gamepad1.dpad_up)
-//        {
-//            intakeLeft.setPower(1.0);
-//            intakeRight.setPower(1.0);
-//
-//        }
-//        else if (gamepad1.dpad_down)
-//        {
-//            intakeLeft.setPower(-1.0);
-//            intakeRight.setPower(-1.0);
-//        }
-//        else
-//        {
-//            intakeLeft.setPower(0.0);
-//            intakeRight.setPower(0.0);
-//        }
-////        telemetry.addData("intake", gamepad1.dpad_up);
-////        telemetry.update();
-//
-//    }
-
-    public void runClaw()
-    {
-        double leftStickY = gamepad2.left_stick_y;
-
-        if(leftStickY > Constants.MINIMUM_JOYSTICK_PWR)
-        {
-            // Move arm forward
-            motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            setArmPowerBasedOnArmTicks();
-            motorArm.setPower(leftStickY * Variables.ARM_PWR_FACTOR);
-        }
-        else if(leftStickY < -Constants.MINIMUM_JOYSTICK_PWR)
-        {
-            // Move arm back
-            motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            setArmPowerBasedOnArmTicks();
-            motorArm.setPower(leftStickY * Variables.ARM_PWR_FACTOR);
-        }
-        else
-        {
-            // Stops arm
-            motorArm.setTargetPosition(motorArm.getCurrentPosition());
-            motorArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            // Fix arm dropping
-
-        }
-
-
-    }
-    private void setArmPowerBasedOnArmTicks()
-    {
-        if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARALLEL_POINT){
-            Variables.ARM_PWR_FACTOR = 0.25;
-        }else if(Variables.ARM_MOTOR_TICKS > -200){
-            Variables.ARM_PWR_FACTOR = 0.15;
-        }else{
-            Variables.ARM_PWR_FACTOR = 0.25;
-        }
-    }
-
-    public void adjustClawPosition()
-    {
-        // Make claw level to ground
-        if(Variables.ARM_MOTOR_TICKS < Constants.MAX_ENCODERCOUNT_PARALLEL_POINT)
-        {
-            double adjustedServoPosition = map(Variables.ARM_MOTOR_TICKS, Constants.MIN_ENCODERCOUNT_PARALLEL_POINT,Constants.MAX_ENCODERCOUNT_PARALLEL_POINT, Constants.MIN_SERVOJOINT_PWR, Constants.MAX_SERVOJOINT_PWR);
-            servoJoint.setPosition(adjustedServoPosition);
-        }
-    }
-
-    public void toggleGrabber()
-    {
-        double rightTrigger = gamepad2.right_trigger;
-        if(rightTrigger > Constants.MINIMUM_TRIGGER_VALUE){
-            servoGrabber.setPosition(rightTrigger*0.9);
-        }else{
-            servoGrabber.setPosition(0);
-        }
-
-    }
-
     public void toggleFoundationServos(){
         if(gamepad1.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
-            servoFoundationLeft.setPosition(1.0);
-            servoFoundationRight.setPosition(0.0);
-        }else{
             servoFoundationLeft.setPosition(0.0);
             servoFoundationRight.setPosition(1.0);
+        }else{
+            servoFoundationLeft.setPosition(0.7);
+            servoFoundationRight.setPosition(0);
         }
     }
 
-    public void resetArmTicksToZero(){
-        if(gamepad2.y){
-            Constants.ARM_STARTING_TICKS += Variables.ARM_MOTOR_TICKS;
+    public void runCapstoneGrabber(){
+        if (gamepad2.y) {
+            servoCapstone.setPosition(0.0);
+        }else {
+            servoCapstone.setPosition(0.55);
         }
+
+
+    }
+
+    public void runIntake(){
+        if(gamepad2.dpad_down){
+            intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+            intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
+            intakeLeft.setPower(Constants.INTAKE_PWR);
+            intakeRight.setPower(Constants.INTAKE_PWR);
+        }else if(gamepad2.dpad_up){
+            intakeLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+            intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
+            intakeLeft.setPower(Constants.INTAKE_PWR);
+            intakeRight.setPower(Constants.INTAKE_PWR);
+        }else{
+            intakeLeft.setPower(0);
+            intakeRight.setPower(0);
+        }
+
     }
 
     private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)

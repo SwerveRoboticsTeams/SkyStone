@@ -17,13 +17,14 @@ abstract class Master extends LinearOpMode
     DcMotor motorBL;
     DcMotor motorBR;
     DcMotor motorDankUnderglow;
-    DcMotor motorArm;
-   // CRServo intakeLeft;
-   // CRServo intakeRight;
-    Servo servoJoint;
-    Servo servoGrabber;
+
+    DcMotor intakeLeft;
+    DcMotor intakeRight;
+
     Servo servoFoundationLeft;
     Servo servoFoundationRight;
+    Servo servoCapstone;
+
 
     BNO055IMU imu;
 
@@ -46,22 +47,23 @@ abstract class Master extends LinearOpMode
         motorFR = hardwareMap.get(DcMotor.class, "motorFR");
         motorBL = hardwareMap.get(DcMotor.class, "motorBL");
         motorBR = hardwareMap.get(DcMotor.class, "motorBR");
-        //intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
-        //intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
-        motorArm = hardwareMap.get(DcMotor.class,  "motorArm");
-        servoJoint = hardwareMap.get(Servo.class, "servoJoint");
-        servoGrabber = hardwareMap.get(Servo.class, "servoGrabber");
+        intakeLeft = hardwareMap.get(DcMotor.class, "intakeLeft");
+        intakeRight = hardwareMap.get(DcMotor.class, "intakeRight");
         servoFoundationLeft = hardwareMap.get(Servo.class,"servoFoundationLeft");
         servoFoundationRight = hardwareMap.get(Servo.class,"servoFoundationRight");
+        servoCapstone = hardwareMap.get(Servo.class, "servoCapstone");
 
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
+        intakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -70,15 +72,6 @@ abstract class Master extends LinearOpMode
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-
-        Variables.STARTING_SERVO_JOINT_POSITION = servoJoint.getPosition();
-        Constants.ARM_STARTING_TICKS = motorArm.getCurrentPosition();
-
-        servoJoint.setPosition(0.1);
-
 
     }
 
