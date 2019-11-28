@@ -1,12 +1,6 @@
 package org.firstinspires.ftc.team6220_2019;
 
-import android.graphics.Point;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 /**
  * General autonomous class.  During initialization, driver 1 selects various options, including
@@ -93,6 +87,6 @@ public class AutoCompetition extends MasterAutonomous
 
 
         // Turn off Vuforia tracking
-        vRes.deactivateTargets();
+        vuf.deactivateTargets();
     }
 }
