@@ -16,7 +16,6 @@ abstract class Master extends LinearOpMode
     DcMotor motorFR;
     DcMotor motorBL;
     DcMotor motorBR;
-    DcMotor motorDankUnderglow;
 
     DcMotor intakeLeft;
     DcMotor intakeRight;
@@ -53,16 +52,15 @@ abstract class Master extends LinearOpMode
         servoFoundationRight = hardwareMap.get(Servo.class,"servoFoundationRight");
         servoCapstone = hardwareMap.get(Servo.class, "servoCapstone");
 
-
+        // Set ZeroPowerBehavior
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
         intakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // Set Reversed Motors
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -75,9 +73,7 @@ abstract class Master extends LinearOpMode
 
     }
 
-    void
-
-    driveMecanum(double driveAngle, double drivePower, double turnPower)
+    void driveMecanum(double driveAngle, double drivePower, double turnPower)
     {
         // Calculate x and y components of drive power, where y is forward (0 degrees) and x is right (-90 degrees)
         double x = drivePower * -Math.sin(Math.toRadians(driveAngle));

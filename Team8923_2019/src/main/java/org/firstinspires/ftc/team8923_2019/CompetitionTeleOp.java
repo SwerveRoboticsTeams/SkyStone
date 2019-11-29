@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.team8923_2019 ;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "TeleOp Competition")
 
-public class TeleOpCompetition extends MasterTeleOp
+@TeleOp(name = "CompetitionTeleOp")
+
+public class CompetitionTeleOp extends MasterTeleOp
 {
     @Override
     public void runOpMode()

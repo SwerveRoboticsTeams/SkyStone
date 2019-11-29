@@ -5,12 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.corningrobotics.enderbots.endercv.ActivityViewDisplay;
 
 
+
 @Autonomous(name="GrabSkyStone", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
  */
 //@Disabled
-public class GrabSkyStoneAutonomous extends MasterAutonomous
+public class AutoGrabSkyStone extends MasterAutonomous
 {
 
     public SkystoneDetectionOpenCV detector;
@@ -66,4 +67,31 @@ public class GrabSkyStoneAutonomous extends MasterAutonomous
         }
 
     }
+    private void moveToSkyStone(){
+        // Moves robot forward toward skyStone and puts the 3 blocks in frame
+
+
+    }
+    private void collectSkyStone(){
+        // Determines which stone is the skyStone then collects it, Backs up, pushes it in and grabs it with the grabber
+
+
+    }
+
+    private void moveToFoundation(){
+        // turn robot so intake is toward foundation, moves to foundation side
+    }
+
+    private void pullFoundation(){
+        // turn toward foundation and pulls it to foundation park area
+    }
+
+    private void placeBlockInFoundation(){
+        // place Block in Foundation
+    }
+    private void parkOnLine(){
+        // park on line
+
+    }
+
 }

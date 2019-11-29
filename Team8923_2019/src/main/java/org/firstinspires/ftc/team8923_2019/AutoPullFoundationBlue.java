@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Runable shell for Master Autonomous code
  */
 //@Disabled
-public class PullFoundationBlue extends MasterAutonomous
+public class AutoPullFoundationBlue extends MasterAutonomous
 {
 
     @Override

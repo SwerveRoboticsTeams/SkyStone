@@ -3,12 +3,12 @@ package org.firstinspires.ftc.team8923_2019;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name="Autonomous Competition", group = "Swerve")
+@Autonomous(name="CompetitionAuto", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
  */
 //@Disabled
-public class AutonomousCompetition extends MasterAutonomous
+public class CompetitionAutonomous extends MasterAutonomous
 {
 
     @Override

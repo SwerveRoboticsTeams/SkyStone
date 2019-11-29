@@ -19,30 +19,16 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     PIDFilter translationFilter;
     PIDFilter rotationFilter;
 
-    double Kmove = 1.0f / 1200.0f;
-
-    int newTargetFL;
-    int newTargetFR;
-    int newTargetBL;
-    int newTargetBR;
-
     double speedFL;
     double speedFR;
     double speedBL;
     double speedBR;
-
-    int errorFL;
-    int errorFR;
-    int errorBL;
-    int errorBR;
 
     // Used to calculate distance traveled between loops
     int lastEncoderFL = 0;
     int lastEncoderFR = 0;
     int lastEncoderBL = 0;
     int lastEncoderBR = 0;
-
-
 
 
     Alliance alliance = Alliance.BLUE;
@@ -65,16 +51,6 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     double TURN_POWER_CONSTANT = 1.0 / 65; // start slowing down at 35 degrees away from the target angle;
 
     double MIN_DRIVE_POWER = 0.2; // don't let the robot go slower than this speed
-    int TOL = 100;
-
-
-
-
-    Orientation lastAngles = new Orientation();
-
-    double globalAngle, power = .30, correction;
-
-
 
 
     enum Alliance
@@ -96,7 +72,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         PARK,
     }
 
-    public void configureAutonomous()
+    void configureAutonomous()
     {
 
         // waste the zero index because we can't have zero delays
@@ -162,7 +138,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         }
     }
 
-    public void initAuto()
+    void initAuto()
     {
         telemetry.addData("Init State", "Init Started");
         telemetry.update();
@@ -204,43 +180,8 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
     }
 
-    void dankUnderglow(double power)
-    {
-        motorDankUnderglow.setPower(power);
-    }
 
-    void fastFlex()
-    {
-        dankUnderglow(0.0);
-        sleep(100);
-        dankUnderglow(-1.0);
-        sleep(100);
-        dankUnderglow(0.0);
-        sleep(100);
-        dankUnderglow(-1.0);
-        sleep(100);
-        dankUnderglow(0.0);
-        sleep(100);
-        dankUnderglow(-1.0);
-        idle();
-    }
-
-
-    /*
-    How to use imu to drive straight
-    1. declare variables
-     initial x and y, delta X and Y, initial heading
-    2. in loop (check if robot has reached location || angle is off with tolerances)
-       1. recalculate delta x and y (use to find difference between the robot's current and end location)
-        - need to do some encoder stuff
-       2. recalculate heading difference
-        - need to normalize angle
-       3. roll and get filters of rotation and translation
-       4. driveMecanum(driveAngle, drivePower, rotationPower)
-
-
-    */
-    public void moveAuto(double initDeltaX, double initDeltaY, double maxSpeed, double minSpeed, double timeout) throws InterruptedException
+    void moveAuto(double initDeltaX, double initDeltaY, double maxSpeed, double minSpeed, double timeout) throws InterruptedException
     {
 
 
@@ -388,126 +329,20 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     }
 
 
-//    private void resetAngle()
-//    {
-//        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-//
-//        globalAngle = 0;
-//    }
-//
-//    private double getAngle()
-//    {
-//        // We experimentally determined the Z axis is the axis we want to use for heading angle.
-//        // We have to process the angle because the imu works in euler angles so the Z axis is
-//        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
-//        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
-//
-//        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-//
-//
-//        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-//
-//        if (deltaAngle < -180)
-//            deltaAngle += 360;
-//        else if (deltaAngle > 180)
-//            deltaAngle -= 360;
-//
-//        globalAngle += deltaAngle;
-//
-//        lastAngles = angles;
-//
-//        return globalAngle;
-//    }
-//
-//    private double checkDirection()
-//    {
-//        // The gain value determines how sensitive the correction is to direction changes.
-//        // You will have to experiment with your robot to get small smooth direction changes
-//        // to stay on a straight line.
-//        double correction, angle, gain = .10;
-//
-//        angle = getAngle();
-//
-//        if (angle == 0)
-//            correction = 0;             // no adjustment.
-//        else
-//            correction = -angle;        // reverse sign of angle for correction.
-//
-//        correction = correction * gain;
-//
-//        return correction;
-//    }
 
-
-
-
-
-
-
-
-
-    // normalizing the angle to be between -180 to 180
-    public double adjustAngles(double angle)
+    void grabbersDown()
     {
-        while (angle > 180)
-            angle -= 360;
-        while (angle < -180)
-            angle += 360;
-        return angle;
+        servoFoundationLeft.setPosition(0.0);
+        servoFoundationRight.setPosition(1.0);
     }
 
-    void updateRobotLocation()
+    void grabbersUp()
     {
-        // Update robot angle
-        // subtraction here b/c imu returns a negative rotation when turned to the right
-        robotAngle = headingOffset - imu.getAngularOrientation().firstAngle;
-
-        // Calculate how far each motor has turned since last time
-        int deltaFL = motorFL.getCurrentPosition() - lastEncoderFL;
-        int deltaFR = motorFR.getCurrentPosition() - lastEncoderFR;
-        int deltaBL = motorBL.getCurrentPosition() - lastEncoderBL;
-        int deltaBR = motorBR.getCurrentPosition() - lastEncoderBR;
-
-        // Take average of encoder ticks to find translational x and y components. FR and BL are
-        // negative because of the direction at which they turn when going sideways
-        double deltaX = (deltaFL - deltaFR - deltaBL + deltaBR) / 4.0;
-        double deltaY = (deltaFL + deltaFR + deltaBL + deltaBR) / 4.0;
-
-        telemetry.addData("deltaX", deltaX);
-        telemetry.addData("deltaY", deltaY);
-
-        // Convert to mm
-        //TODO: maybe wrong proportions? something about 70/30 effectiveness maybe translation to MM is wrong
-        deltaX *= Constants.MM_PER_TICK;
-        deltaY *= Constants.MM_PER_TICK;
-
-        /*
-         * Delta x and y are intrinsic to the robot, so they need to be converted to extrinsic.
-         * Each intrinsic component has 2 extrinsic components, which are added to find the
-         * total extrinsic components of displacement. The extrinsic displacement components
-         * are then added to the previous position to set the new coordinates
-         */
-
-        robotX += deltaX * Math.sin(Math.toRadians(robotAngle)) + deltaY * Math.cos(Math.toRadians(robotAngle));
-        robotY += deltaX * -Math.cos(Math.toRadians(robotAngle)) + deltaY * Math.sin(Math.toRadians(robotAngle));
-
-        // Set last encoder values for next loop
-        lastEncoderFL = motorFL.getCurrentPosition();
-        lastEncoderFR = motorFR.getCurrentPosition();
-        lastEncoderBL = motorBL.getCurrentPosition();
-        lastEncoderBR = motorBR.getCurrentPosition();
+        servoFoundationLeft.setPosition(0.7);
+        servoFoundationRight.setPosition(0);
     }
 
-    public void stopDriving()
-    {
-        motorFL.setPower(0.0);
-        motorFR.setPower(0.0);
-        motorBL.setPower(0.0);
-        motorBR.setPower(0.0);
-    }
-
-
-    public void sendTelemetry()
+    void sendTelemetry()
     {
         // Inform drivers of robot location
         telemetry.addData("X", robotX);
@@ -525,33 +360,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         telemetry.update();
     }
 
-    public void grabbersDown()
-    {
-        servoFoundationLeft.setPosition(1.0);
-        servoFoundationRight.setPosition(0.0);
-    }
 
-    public void grabbersUp()
-    {
-        servoFoundationLeft.setPosition(0.0);
-        servoFoundationRight.setPosition(1.0);
-    }
-
-
-
-
-
-
-
-    public double normalizeAngle(double rawAngle)
-    {
-        while (Math.abs(rawAngle) > 180)
-        {
-            rawAngle -= Math.signum(rawAngle) * 360;
-        }
-
-        return rawAngle;
-    }
 
     void imuPivot(double referenceAngle, double targetAngle, double MaxSpeed, double kAngle, double timeout)
     {
@@ -712,4 +521,76 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         stopDriving();
     }
 
+
+    // Helper Functions-----------------------------------
+
+    private void stopDriving()
+    {
+        motorFL.setPower(0.0);
+        motorFR.setPower(0.0);
+        motorBL.setPower(0.0);
+        motorBR.setPower(0.0);
+    }
+
+    // normalizing the angle to be between -180 to 180
+    private double adjustAngles(double angle)
+    {
+        while (angle > 180)
+            angle -= 360;
+        while (angle < -180)
+            angle += 360;
+        return angle;
+    }
+
+    private void updateRobotLocation()
+    {
+        // Update robot angle
+        // subtraction here b/c imu returns a negative rotation when turned to the right
+        robotAngle = headingOffset - imu.getAngularOrientation().firstAngle;
+
+        // Calculate how far each motor has turned since last time
+        int deltaFL = motorFL.getCurrentPosition() - lastEncoderFL;
+        int deltaFR = motorFR.getCurrentPosition() - lastEncoderFR;
+        int deltaBL = motorBL.getCurrentPosition() - lastEncoderBL;
+        int deltaBR = motorBR.getCurrentPosition() - lastEncoderBR;
+
+        // Take average of encoder ticks to find translational x and y components. FR and BL are
+        // negative because of the direction at which they turn when going sideways
+        double deltaX = (deltaFL - deltaFR - deltaBL + deltaBR) / 4.0;
+        double deltaY = (deltaFL + deltaFR + deltaBL + deltaBR) / 4.0;
+
+        telemetry.addData("deltaX", deltaX);
+        telemetry.addData("deltaY", deltaY);
+
+        // Convert to mm
+        //TODO: maybe wrong proportions? something about 70/30 effectiveness maybe translation to MM is wrong
+        deltaX *= Constants.MM_PER_TICK;
+        deltaY *= Constants.MM_PER_TICK;
+
+        /*
+         * Delta x and y are intrinsic to the robot, so they need to be converted to extrinsic.
+         * Each intrinsic component has 2 extrinsic components, which are added to find the
+         * total extrinsic components of displacement. The extrinsic displacement components
+         * are then added to the previous position to set the new coordinates
+         */
+
+        robotX += deltaX * Math.sin(Math.toRadians(robotAngle)) + deltaY * Math.cos(Math.toRadians(robotAngle));
+        robotY += deltaX * -Math.cos(Math.toRadians(robotAngle)) + deltaY * Math.sin(Math.toRadians(robotAngle));
+
+        // Set last encoder values for next loop
+        lastEncoderFL = motorFL.getCurrentPosition();
+        lastEncoderFR = motorFR.getCurrentPosition();
+        lastEncoderBL = motorBL.getCurrentPosition();
+        lastEncoderBR = motorBR.getCurrentPosition();
+    }
+
+    private double normalizeAngle(double rawAngle)
+    {
+        while (Math.abs(rawAngle) > 180)
+        {
+            rawAngle -= Math.signum(rawAngle) * 360;
+        }
+
+        return rawAngle;
+    }
 }

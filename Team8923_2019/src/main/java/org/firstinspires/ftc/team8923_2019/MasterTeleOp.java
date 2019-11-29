@@ -34,12 +34,8 @@ abstract class MasterTeleOp extends Master
         driveMecanum(angle, power, turnPower);
     }
 
-    double calculateDistance(double deltaX, double deltaY)
+    public void toggleFoundationServos()
     {
-        return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-    }
-
-    public void toggleFoundationServos(){
         if(gamepad1.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
             servoFoundationLeft.setPosition(0.0);
             servoFoundationRight.setPosition(1.0);
@@ -49,7 +45,8 @@ abstract class MasterTeleOp extends Master
         }
     }
 
-    public void runCapstoneGrabber(){
+    public void runCapstoneGrabber()
+    {
         if (gamepad2.y) {
             servoCapstone.setPosition(0.0);
         }else {
@@ -59,7 +56,8 @@ abstract class MasterTeleOp extends Master
 
     }
 
-    public void runIntake(){
+    public void runIntake()
+    {
         if(gamepad2.dpad_down){
             intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -77,15 +75,6 @@ abstract class MasterTeleOp extends Master
 
     }
 
-    private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)
-    {
-        double valueDifference = maxInput - minInput;
-        double percentValueDifference = (value - minInput) / valueDifference;
-        double mappedDifference = maxMappedOutput - minMappedOutput;
-
-        return percentValueDifference * mappedDifference + minMappedOutput;
-    }
-
     void sendTelemetry()
     {
 
@@ -98,5 +87,16 @@ abstract class MasterTeleOp extends Master
 
 
         telemetry.update();
+    }
+
+
+    // Helper Functions
+    private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)
+    {
+        double valueDifference = maxInput - minInput;
+        double percentValueDifference = (value - minInput) / valueDifference;
+        double mappedDifference = maxMappedOutput - minMappedOutput;
+
+        return percentValueDifference * mappedDifference + minMappedOutput;
     }
 }
