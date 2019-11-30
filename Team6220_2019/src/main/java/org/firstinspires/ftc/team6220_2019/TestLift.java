@@ -37,7 +37,7 @@ public class TestLift extends MasterOpMode
             //motor2.setPower(gamepad1.right_stick_y);
             //motor3.setPower(gamepad1.right_stick_y);
             vex1.setPower(0.85 * gamepad1.left_stick_y);
-            vex2.setPower(-0.85 * gamepad1.left_stick_y);
+            vex2.setPower(0.85 * gamepad1.left_stick_y);
 
             telemetry.addData("Power1:", vex1.getPower());
             telemetry.addData("Power2:", vex2.getPower());
