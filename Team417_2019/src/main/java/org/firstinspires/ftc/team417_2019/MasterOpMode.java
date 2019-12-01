@@ -30,6 +30,10 @@ abstract public class MasterOpMode extends LinearOpMode
     Servo mainWristServo = null;
     // hub 2 port 5
     Servo smallGrabber  = null;
+    // hub 2 port 0
+    Servo leftFoundationPuller = null;
+    // hub 2 port 1
+    Servo rightFoundationPuller = null;
 
     // For movement using Vuforia
     BNO055IMU imu;
@@ -86,6 +90,8 @@ abstract public class MasterOpMode extends LinearOpMode
         // not currently in configuration ( need to be configured on the robot)
         mainWristServo = hardwareMap.servo.get("mainWristServo");
         smallGrabber = hardwareMap.servo.get("smallGrabber");
+        leftFoundationPuller = hardwareMap.servo.get("leftFoundationPuller");
+        rightFoundationPuller = hardwareMap.servo.get("rightFoundationPuller");
 
         core2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         core2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

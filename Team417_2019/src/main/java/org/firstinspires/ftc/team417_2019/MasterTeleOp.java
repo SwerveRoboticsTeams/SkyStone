@@ -170,7 +170,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         if(grabbed)
         {
             // set smallGrabber to closed position
-            smallGrabber.setPosition(0.4);
+            smallGrabber.setPosition(0.7);
         }
         else
             {
