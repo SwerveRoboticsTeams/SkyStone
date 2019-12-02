@@ -26,21 +26,29 @@ public class TestLift extends MasterOpMode
         motor2 = hardwareMap.dcMotor.get("motor2");
         motor3 = hardwareMap.dcMotor.get("motor3");
 
-        vex1 = hardwareMap.crservo.get("vex1");
-        vex2 = hardwareMap.crservo.get("vex2");
+        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+//        vex1 = hardwareMap.crservo.get("vex1");
+//        vex2 = hardwareMap.crservo.get("vex2");
 
         waitForStart();
 
         while (opModeIsActive())
         {
-            //motor1.setPower(gamepad1.right_stick_y);
-            //motor2.setPower(gamepad1.right_stick_y);
-            //motor3.setPower(gamepad1.right_stick_y);
-            vex1.setPower(0.85 * gamepad1.left_stick_y);
-            vex2.setPower(0.85 * gamepad1.left_stick_y);
+            motor1.setPower(-gamepad1.right_stick_y);
+            motor2.setPower(-gamepad1.right_stick_y);
+            motor3.setPower(gamepad1.right_stick_y);
+//            vex1.setPower(0.85 * gamepad1.left_stick_y);
+//            vex2.setPower(0.85 * gamepad1.left_stick_y);
 
-            telemetry.addData("Power1:", vex1.getPower());
-            telemetry.addData("Power2:", vex2.getPower());
+            telemetry.addData("Lift Power:", motor1.getPower());
+//          telemetry.addData("Power1:", vex1.getPower());
+//          telemetry.addData("Power2:", vex2.getPower());
             telemetry.update();
             idle();
         }
