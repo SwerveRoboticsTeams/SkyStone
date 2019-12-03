@@ -3,6 +3,8 @@ package org.firstinspires.ftc.team417_2019;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -37,8 +39,9 @@ abstract public class MasterAutonomous extends MasterOpMode
 
     boolean isLogging = true;
 
-    //
+    Dogeforia vuforia;
     WebcamName webcamName;
+    OpenCVDetect OpenCV_detector;
 
     // VARIABLES FOR VUFORIA
     public VuforiaTrackable targetInView = null;
@@ -48,7 +51,6 @@ abstract public class MasterAutonomous extends MasterOpMode
 
     // Vuforia Class Members
     public OpenGLMatrix lastLocation = null;
-    public VuforiaLocalizer vuforia = null;
     public boolean targetVisible = false;
     public float cameraXRotate    = 0;
     public float cameraYRotate    = 0;
@@ -113,15 +115,36 @@ abstract public class MasterAutonomous extends MasterOpMode
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         // show display on screen
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         // specify Vuforia parameters used to instantiate engine
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.fillCameraMonitorViewParent = true;
         parameters.cameraName = webcamName;
         parameters.useExtendedTracking = false;
         //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        vuforia = new Dogeforia(parameters);
+        vuforia.enableConvertFrameToBitmap();
+
+        OpenCV_detector = new OpenCVDetect();
+
+        OpenCV_detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, true);
         // Load the data sets for the trackable objects (stored in 'assets')
-       targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
+        // fullscreen display:
+        //   app crashes if screen orientation switches from portrait to landscape
+        //   screen goes to sleep, and webcam turns off a few minutes after init, and after play
+        //OpenCV_detector.init(hardwareMap.appContext, ActivityViewDisplay.getInstance(), 0, true);
+        OpenCV_detector.setShowCountours(false);
+        // Set the OpenCV_detector
+        vuforia.setDogeCVDetector(OpenCV_detector);
+        vuforia.enableDogeCV();
+        // don't show Vuforia vuforia.showDebug();
+        vuforia.start();
+
+        targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
+
+        telemetry.addData("Done: ", "initializing");
+        telemetry.update();
     }
 
     public void positionTargets() {
