@@ -10,7 +10,9 @@ import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 
 
 abstract class MasterTeleOp extends Master
+
 {
+    boolean clawIsOut = false;
 
     public void driveMecanumTeleOp()
     {
@@ -73,6 +75,33 @@ abstract class MasterTeleOp extends Master
             intakeRight.setPower(0);
         }
 
+    }
+
+    public void runLift()
+    {
+        if(gamepad2.left_stick_y > Constants.MINIMUM_JOYSTICK_PWR){
+            motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorLift.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
+        }else if(gamepad2.left_stick_y < -Constants.MINIMUM_JOYSTICK_PWR){
+            motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorLift.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
+        }else{
+            motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorLift.setTargetPosition(motorLift.getCurrentPosition());
+        }
+    }
+
+    public void runClaw(){
+        if(gamepad2.a){
+            if(clawIsOut){
+                servoJoint.setPosition(1);
+                clawIsOut = false;
+
+            }else {
+                servoJoint.setPosition(0);
+                clawIsOut = true;
+            }
+        }
     }
 
     void sendTelemetry()

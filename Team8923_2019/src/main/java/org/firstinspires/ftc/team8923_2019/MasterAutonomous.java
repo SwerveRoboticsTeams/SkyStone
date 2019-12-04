@@ -328,8 +328,6 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         stopDriving();
     }
 
-
-
     void grabbersDown()
     {
         servoFoundationLeft.setPosition(0.0);

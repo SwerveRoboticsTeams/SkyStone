@@ -20,9 +20,14 @@ abstract class Master extends LinearOpMode
     DcMotor intakeLeft;
     DcMotor intakeRight;
 
+    DcMotor motorLift;
+
     Servo servoFoundationLeft;
     Servo servoFoundationRight;
     Servo servoCapstone;
+
+    Servo servoJoint;
+    Servo servoClaw;
 
 
     BNO055IMU imu;
@@ -46,19 +51,29 @@ abstract class Master extends LinearOpMode
         motorFR = hardwareMap.get(DcMotor.class, "motorFR");
         motorBL = hardwareMap.get(DcMotor.class, "motorBL");
         motorBR = hardwareMap.get(DcMotor.class, "motorBR");
+
         intakeLeft = hardwareMap.get(DcMotor.class, "intakeLeft");
         intakeRight = hardwareMap.get(DcMotor.class, "intakeRight");
+
+        motorLift = hardwareMap.get(DcMotor.class, "motorLift");
+
         servoFoundationLeft = hardwareMap.get(Servo.class,"servoFoundationLeft");
         servoFoundationRight = hardwareMap.get(Servo.class,"servoFoundationRight");
         servoCapstone = hardwareMap.get(Servo.class, "servoCapstone");
+        servoJoint = hardwareMap.get(Servo.class,"servoJoint");
+        servoClaw = hardwareMap.get(Servo.class,"servoClaw");
+
 
         // Set ZeroPowerBehavior
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         intakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        motorLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set Reversed Motors
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -70,6 +85,10 @@ abstract class Master extends LinearOpMode
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //servoJoint.setPosition(0);
 
     }
 

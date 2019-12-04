@@ -17,6 +17,9 @@ public class Constants
     public static final double MINIMUM_DRIVE_POWER = 0.08;
 
 
+    //lift
+    public static final double LIFT_PWR = 1;
+
     public static final double ROTATION_P = 0.005;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
