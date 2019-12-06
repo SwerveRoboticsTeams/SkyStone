@@ -40,7 +40,8 @@ abstract public class MasterOpMode extends LinearOpMode
 
     DcMotor motorFL, motorFR, motorBL, motorBR;
     DcMotor collectorLeft, collectorRight;
-    DcMotor liftMotor, slideMotor;
+    //DcMotor liftMotor;
+    DcMotor slideMotor;
 
     Servo grabberServo;
     Servo parallelServo;
@@ -104,7 +105,7 @@ abstract public class MasterOpMode extends LinearOpMode
         collectorLeft = hardwareMap.dcMotor.get("collectorLeft");
         collectorRight = hardwareMap.dcMotor.get("collectorRight");
 
-        liftMotor = hardwareMap.dcMotor.get("liftMotor");
+        //liftMotor = hardwareMap.dcMotor.get("liftMotor");
         grabberServo = hardwareMap.servo.get("grabberServo");
         parallelServo = hardwareMap.servo.get("parallelServo");
 
@@ -144,11 +145,13 @@ abstract public class MasterOpMode extends LinearOpMode
 
         // Initialize lift in RUN_TO_POSITION so that it does not hit stone during collection
         isRunToPosMode = true;
+        /*
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+         */
 
 
         stopDriveMotors();
@@ -363,13 +366,23 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Extends or retracts the horizontal slides. Positive power extends.
     public void runSlideMotor(double power, double maxPower){
-        if(Math.abs(power) < maxPower){
+        double pos = slideMotor.getCurrentPosition();
+        if(power > 0 && power < maxPower && pos < Constants.SLIDE_MOTOR_MAX_DIST) //forwards and power < maxPower
+        {
             slideMotor.setPower(power);
         }
-        else if(power < -1 * maxPower){
-            slideMotor.setPower(-1 * power);
+        else if(power < 0 && power > -1 * maxPower && pos > Constants.SLIDE_MOTOR_MIN_DIST) //backwards and power < maxPower
+        {
+            slideMotor.setPower(power);
         }
-        else{
+        else if(power < -1 * maxPower && pos > Constants.SLIDE_MOTOR_MIN_DIST) //backwards and maxPower
+        {
+            slideMotor.setPower(-1 * maxPower);
+        }
+        else if(power > maxPower && pos < Constants.SLIDE_MOTOR_MAX_DIST) { //forwards and maxPower
+            slideMotor.setPower(maxPower);
+        }
+        else if(power == 0){
             slideMotor.setPower(power);
         }
     }

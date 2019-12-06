@@ -131,33 +131,33 @@ abstract public class MasterAutonomous extends MasterOpMode
 
 
     // Autonomous scoring system method
-    public void runScoringSystemAuto(int targetPos)
-    {
-        int curLiftPos = liftMotor.getCurrentPosition();
-
-        // Set target position and power
-        liftMotor.setTargetPosition(targetPos);
-        liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
-
-        // While outside of tolerance, continue drive liftMotor and parallelServo
-        while (Math.abs(targetPos - curLiftPos) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
-        {
-            curLiftPos = liftMotor.getCurrentPosition();
-
-            // This yields the fraction of 1 rotation that the motor has progressed through (in other
-            // words, the range 0 - 1 corresponds to 0 - 360 degrees).
-            double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
-            // Power the servo such that it remains parallel to the ground.
-            parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * Constants.MOTOR_TO_REV_SERVO_MOVEMENT);
-
-            // Display telemetry data
-            telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
-            telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
-            telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
-            telemetry.update();
-            idle();
-        }
-    }
+//    public void runScoringSystemAuto(int targetPos)
+//    {
+//        int curLiftPos = liftMotor.getCurrentPosition();
+//
+//        // Set target position and power
+//        liftMotor.setTargetPosition(targetPos);
+//        liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+//
+//        // While outside of tolerance, continue drive liftMotor and parallelServo
+//        while (Math.abs(targetPos - curLiftPos) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
+//        {
+//            curLiftPos = liftMotor.getCurrentPosition();
+//
+//            // This yields the fraction of 1 rotation that the motor has progressed through (in other
+//            // words, the range 0 - 1 corresponds to 0 - 360 degrees).
+//            double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
+//            // Power the servo such that it remains parallel to the ground.
+//            parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * Constants.MOTOR_TO_REV_SERVO_MOVEMENT);
+//
+//            // Display telemetry data
+//            telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
+//            telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
+//            telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
+//            telemetry.update();
+//            idle();
+//        }
+//    }
 
     // todo rework aligning with skystone to work with OpenCV skystone detection
     public void vuforiaAlignWithSkyStone() throws InterruptedException

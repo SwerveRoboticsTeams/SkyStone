@@ -39,7 +39,7 @@ public class AutoCompetition extends MasterAutonomous
         navigateUsingEncoders(0, 34, 0.2, true);
 
         // Lower grabber, then grab SkyStone and drive backwards (18 in + 3 in behind tile line)
-        runScoringSystemAuto(0);
+        //runScoringSystemAuto(0);
         toggleGrabber();
         navigateUsingEncoders(0, -22, 0.5, false);
 
@@ -59,10 +59,10 @@ public class AutoCompetition extends MasterAutonomous
             navigateUsingEncoders(0, 39, 0.4, false);    // 38 = 2 * 24 - 16 (robot length) + 6 (extra distance)
 
             // Move lift, drop SkyStone, and retract lift
-            runScoringSystemAuto(Constants.LIFT_PLACE_POS);
+            //runScoringSystemAuto(Constants.LIFT_PLACE_POS);
             pauseWhileUpdating(0.25);
             toggleGrabber();
-            runScoringSystemAuto(Constants.LIFT_GRAB_POS);
+            //runScoringSystemAuto(Constants.LIFT_GRAB_POS);
 
             // Rotate foundation in, release servos, rotate back
             toggleFoundationServos();

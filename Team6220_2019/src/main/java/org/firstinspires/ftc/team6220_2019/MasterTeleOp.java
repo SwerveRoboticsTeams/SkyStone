@@ -96,92 +96,97 @@ abstract public class MasterTeleOp extends MasterOpMode
         {
             runSlideMotor(-1 * leftTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
         }
+        else{
+            runSlideMotor(0, Constants.SLIDE_MOTOR_MAX_POWER);
+        }
     }
 
     // TeleOp scoring system method.  Uses liftMotor to move scoring arm, with parallelServo
     // keeping grabber parallel to the ground.
-    public void driveScoringSystem()
-    {
-        //double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
-        double rightStickY = driver2.getRightStickY();
 
-        // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
-        // Change drive mode if stick is pressed a significant amount and we were in RUN_TO_POSITION
-        if (Math.abs(rightStickY) >= Constants.MINIMUM_JOYSTICK_POWER && isRunToPosMode)
-        {
-            isRunToPosMode = false;
-            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    public void driveScoringSystem()
+//    {
+//        //double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
+//        double rightStickY = driver2.getRightStickY();
+//
+//        // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
+//        // Change drive mode if stick is pressed a significant amount and we were in RUN_TO_POSITION
+//        if (Math.abs(rightStickY) >= Constants.MINIMUM_JOYSTICK_POWER && isRunToPosMode)
+//        {
+//            isRunToPosMode = false;
+//            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//            hasLoweredArm = false;
+//            hasGrabbedStone = false;
+//            hasRotatedArm = false;
+//            hasPlacedStone = false;
+//        }
+//
+//        if (!isRunToPosMode)
+//            liftMotor.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
+//
+//        // This yields the fraction of 1 rotation that the motor has progressed through (in other
+//        // words, the range 0 - 1 corresponds to 0 - 360 degrees).
+//        double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
+//        // Power the servo such that it remains parallel to the ground.
+//        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 1.55/*2*/);   // todo Does 2 need to be 4/3?
+//
+//
+//        // Code for automatic movement of arm-------------------------------------------------------------------
+//        // If driver 2 presses A, return lift to position just high enough to grab stone
+//        if (driver2.isButtonJustPressed(Button.A))
+//        {
+//            isRunToPosMode = true;
+//            liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
+//            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
+//
+//            grabberServo.setPosition(Constants.GRABBER_OPEN);
+//        }
+//
+//        // todo Implement once we have time
+//        /*
+//        if (isRunToPosMode)
+//        {
+//            if (!hasLoweredArm)
+//            {
+//                if (Math.abs(liftMotor.getTargetPosition() - Constants.LIFT_GRAB_POS) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
+//                {
+//                    hasLoweredArm = true;
+//                } else
+//                {
+//                    liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
+//                }
+//            } else if (!hasGrabbedStone)
+//            {
+//                grabberServo.setPosition(Constants.GRABBER_CLOSED);
+//                hasGrabbedStone = true;
+//            } else if (!hasRotatedArm)
+//            {
+//                if (Math.abs(liftMotor.getTargetPosition() - Constants.LIFT_PLACE_POS) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
+//                {
+//                    hasRotatedArm = true;
+//                } else
+//                {
+//                    liftMotor.setTargetPosition(Constants.LIFT_PLACE_POS - Constants.NUM_TICKS_PER_STONE * towerHeight);
+//                }
+//            } else if (!hasPlacedStone)
+//            {
+//                grabberServo.setPosition(Constants.GRABBER_OPEN);
+//                hasPlacedStone = true;
+//            } else
+//            {
+//                towerHeight++;
+//                isRunToPosMode = false;
+//            }
+//        }*/
+//
+//
+//        // Display telemetry data to drivers
+//        telemetry.addData("Driver 2 right stick y: ", rightStickY);
+//        telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
+//        telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
+//        telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
+//    }
 
-            hasLoweredArm = false;
-            hasGrabbedStone = false;
-            hasRotatedArm = false;
-            hasPlacedStone = false;
-        }
-
-        if (!isRunToPosMode)
-            liftMotor.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
-
-        // This yields the fraction of 1 rotation that the motor has progressed through (in other
-        // words, the range 0 - 1 corresponds to 0 - 360 degrees).
-        double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
-        // Power the servo such that it remains parallel to the ground.
-        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 1.55/*2*/);   // todo Does 2 need to be 4/3?
-
-
-        // Code for automatic movement of arm-------------------------------------------------------------------
-        // If driver 2 presses A, return lift to position just high enough to grab stone
-        if (driver2.isButtonJustPressed(Button.A))
-        {
-            isRunToPosMode = true;
-            liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
-
-            grabberServo.setPosition(Constants.GRABBER_OPEN);
-        }
-
-        // todo Implement once we have time
-        /*
-        if (isRunToPosMode)
-        {
-            if (!hasLoweredArm)
-            {
-                if (Math.abs(liftMotor.getTargetPosition() - Constants.LIFT_GRAB_POS) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
-                {
-                    hasLoweredArm = true;
-                } else
-                {
-                    liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
-                }
-            } else if (!hasGrabbedStone)
-            {
-                grabberServo.setPosition(Constants.GRABBER_CLOSED);
-                hasGrabbedStone = true;
-            } else if (!hasRotatedArm)
-            {
-                if (Math.abs(liftMotor.getTargetPosition() - Constants.LIFT_PLACE_POS) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
-                {
-                    hasRotatedArm = true;
-                } else
-                {
-                    liftMotor.setTargetPosition(Constants.LIFT_PLACE_POS - Constants.NUM_TICKS_PER_STONE * towerHeight);
-                }
-            } else if (!hasPlacedStone)
-            {
-                grabberServo.setPosition(Constants.GRABBER_OPEN);
-                hasPlacedStone = true;
-            } else
-            {
-                towerHeight++;
-                isRunToPosMode = false;
-            }
-        }*/
-
-
-        // Display telemetry data to drivers
-        telemetry.addData("Driver 2 right stick y: ", rightStickY);
-        telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
-        telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
-        telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
-    }
 }
