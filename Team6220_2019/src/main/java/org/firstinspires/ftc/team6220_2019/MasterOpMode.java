@@ -40,7 +40,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     DcMotor motorFL, motorFR, motorBL, motorBR;
     DcMotor collectorLeft, collectorRight;
-    DcMotor liftMotor;
+    DcMotor liftMotor, slideMotor;
 
     Servo grabberServo;
     Servo parallelServo;
@@ -111,12 +111,15 @@ abstract public class MasterOpMode extends LinearOpMode
         foundationServoLeft = hardwareMap.servo.get("foundationServoLeft");
         foundationServoRight = hardwareMap.servo.get("foundationServoRight");
 
+        slideMotor = hardwareMap.dcMotor.get("slideMotor");
+
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -124,6 +127,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -131,6 +135,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         grabberServo.setPosition(Constants.GRABBER_OPEN);
         parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT);
@@ -354,6 +359,19 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR.setPower(powerFR);
         motorBL.setPower(powerBL);
         motorBR.setPower(powerBR);
+    }
+
+    // Extends or retracts the horizontal slides. Positive power extends.
+    public void runSlideMotor(double power, double maxPower){
+        if(Math.abs(power) < maxPower){
+            slideMotor.setPower(power);
+        }
+        else if(power < -1 * maxPower){
+            slideMotor.setPower(-1 * power);
+        }
+        else{
+            slideMotor.setPower(power);
+        }
     }
 
     // Tell the robot to turn to a specified angle.  We can also limit the motor power while turning.

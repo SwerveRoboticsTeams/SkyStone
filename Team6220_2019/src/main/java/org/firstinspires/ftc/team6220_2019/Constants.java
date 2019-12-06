@@ -32,6 +32,9 @@ public class Constants
     public static final double COLLECTOR_POWER = 1.0;
     public static final double COLLECTOR_ROTATE_POWER = 0.3;    // todo Adjust
 
+    // Constants to control slide motors
+    public static final double SLIDE_MOTOR_MAX_POWER = 0.25;    // todo once we know this is working, increase to 1.0
+
 
     // Autonomous Drive constants
     public static final float AUTONOMOUS_SCALE_DISTANCE = 24;
