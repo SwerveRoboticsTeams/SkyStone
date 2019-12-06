@@ -23,6 +23,7 @@ public class CompetitionTeleOp extends MasterTeleOp
             sendTelemetry();
             toggleFoundationServos();
             runLift();
+            runJoint();
             runClaw();
             runCapstoneGrabber();
             runIntake();

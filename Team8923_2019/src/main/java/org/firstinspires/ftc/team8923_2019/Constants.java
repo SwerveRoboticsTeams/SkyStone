@@ -18,7 +18,7 @@ public class Constants
 
 
     //lift
-    public static final double LIFT_PWR = 1;
+    public static final double LIFT_PWR = 0.7;
 
     public static final double ROTATION_P = 0.005;
     public static final double ROTATION_I = 0.0;
@@ -28,7 +28,7 @@ public class Constants
     public static final double TRANSLATION_D = 0.0;
     public static final double ANGLE_TOLERANCE_DEG = 5.0;
     public static final double POSITION_TOLERANCE_MM = 20.0;
-    public static final double INTAKE_PWR = .5;
+    public static final double INTAKE_PWR = 1.0;
 
 
 

@@ -79,7 +79,8 @@ abstract class Master extends LinearOpMode
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        // todo this is weird
+        motorBR.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -88,7 +89,8 @@ abstract class Master extends LinearOpMode
 
         motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //servoJoint.setPosition(0);
+
+        servoJoint.setPosition(0);
 
     }
 

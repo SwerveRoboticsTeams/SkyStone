@@ -14,6 +14,25 @@ abstract class MasterTeleOp extends Master
 {
     boolean clawIsOut = false;
 
+    /*
+        gamepad 1 controls
+        a = reverse drive
+        b = forward drive
+        right trigger toggle foundation pullers
+
+        gamepad 2 controls
+        y to capstone
+        d pad up and down to intake
+        left stick up and down for lift
+        a for claw out
+        b for claw in
+
+
+
+
+    */
+
+
     public void driveMecanumTeleOp()
     {
         // Reverse drive if desired
@@ -52,7 +71,7 @@ abstract class MasterTeleOp extends Master
         if (gamepad2.y) {
             servoCapstone.setPosition(0.0);
         }else {
-            servoCapstone.setPosition(0.55);
+            servoCapstone.setPosition(0.47);
         }
 
 
@@ -86,23 +105,32 @@ abstract class MasterTeleOp extends Master
             motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorLift.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
         }else{
-            motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorLift.setTargetPosition(motorLift.getCurrentPosition());
+            motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorLift.setPower(0.5);
+        }
+    }
+
+    public void runJoint(){
+        if(gamepad2.b){
+            servoJoint.setPosition(1);
+            clawIsOut = false;
+        }else if(gamepad2.a){
+            servoJoint.setPosition(0.03);
+            clawIsOut = true;
+
         }
     }
 
     public void runClaw(){
-        if(gamepad2.a){
-            if(clawIsOut){
-                servoJoint.setPosition(1);
-                clawIsOut = false;
-
-            }else {
-                servoJoint.setPosition(0);
-                clawIsOut = true;
-            }
+        if(gamepad2.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
+            servoClaw.setPosition(0.15);
+        }else{
+            servoClaw.setPosition(0.7);
         }
     }
+
+
 
     void sendTelemetry()
     {

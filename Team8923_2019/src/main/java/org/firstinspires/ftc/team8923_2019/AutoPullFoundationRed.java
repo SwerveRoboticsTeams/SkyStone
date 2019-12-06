@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Runable shell for Master Autonomous code
  */
 //@Disabled
-public class PullFoundationRed extends MasterAutonomous
+public class AutoPullFoundationRed extends MasterAutonomous
 {
 
     @Override
@@ -18,7 +18,6 @@ public class PullFoundationRed extends MasterAutonomous
         initAuto();
         telemetry.clear();
         telemetry.update();
-
 
         waitForStart();
         telemetry.clear();
