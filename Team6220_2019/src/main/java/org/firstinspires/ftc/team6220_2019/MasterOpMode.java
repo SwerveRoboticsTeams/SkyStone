@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,20 +24,14 @@ abstract public class MasterOpMode extends LinearOpMode
     // Tells us what drive mode the lift motor is in; by default, we use RUN_USING_ENCODER
     boolean isRunToPosMode = false;
 
-    /**
-     * This is the webcam we are to use. As with other hardware devices such as motors and
-     * servos, this device is identified using the robot configuration tool in the FTC application.
-     */
-    WebcamName webcamName = null;
-
     // Distance (in inches) that we want to start collecting after rotating collector.
     int collectionDistance = 13;
 
-    // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
-    // opMode to be able to use some functionalities in that class.
-
-    SkyStoneDetectionTest skytoneDetector = new SkyStoneDetectionTest();
-    Dogeforia6220 vuf = skytoneDetector.vuforia;
+    // Create instance of Dogeforia to be used for both Vuforia and OpenCV image processing.
+    // We need to pass in this opMode to be able to use some functionalities in that class.
+    Dogeforia6220 vuf;
+    SkystoneDetectionOpenCV OpenCV_detector;
+    WebcamName webcamName;
 
     // Declare hardware devices---------------------------------------
     BNO055IMU imu;
@@ -90,12 +86,9 @@ abstract public class MasterOpMode extends LinearOpMode
         driver1 = new DriverInput(gamepad1);
         driver2 = new DriverInput(gamepad2);
 
+        // Only initialize Vuforia if we specify that we want to.
         if (isUsingVuforia)
-        {
-            webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-            vuf.initVuforia();
-            vuf.activateTargets(); // Also remember to deactivate them if using Vuforia!
-        }
+            initVuforiaAndOpenCV();
 
         // Drive motor initialization--------------------------------------
         motorFL = hardwareMap.dcMotor.get("motorFL");
@@ -171,6 +164,32 @@ abstract public class MasterOpMode extends LinearOpMode
         callback.add(driver1);
         callback.add(driver2);
         //-----------------------------------------------
+    }
+
+
+    // Method to be called to initialize Vuforia and OpenCV via Dogeforia.
+    public void initVuforiaAndOpenCV()
+    {
+        // Initializes standard Vuforia targets and camera stuff.
+        vuf.initVuforia();
+
+        vuf.enableConvertFrameToBitmap();
+
+        // Initialize the OpenCV_detector
+        OpenCV_detector = new SkystoneDetectionOpenCV();
+
+        // fullscreen display:
+        //   app crashes if screen orientation switches from portrait to landscape
+        //   screen goes to sleep, and webcam turns off a few minutes after init, and after play
+        OpenCV_detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
+
+        // Set the OpenCV_detector and enable it.
+        vuf.setDogeCVDetector(OpenCV_detector);
+        vuf.enableDogeCV();
+        // Starts Dogeforia thread.
+        vuf.start();
+
+        vuf.activateTargets(); // Also remember to deactivate them if using Vuforia!
     }
 
 

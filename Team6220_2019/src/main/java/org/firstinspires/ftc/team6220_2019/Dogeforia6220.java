@@ -319,6 +319,7 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl
 
     }
 
+    // todo Confirm—has everything having to do with phone been transitioned to webcam?
     // Use this method to start Vuforia at the beginning of a match.
     public void initVuforia()
     {
@@ -339,8 +340,10 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl
         parameters.cameraName = master.webcamName;
         parameters.useExtendedTracking = false;
 
-        // Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        // todo Is this replacement impelementation for Dogeforia correct?
+        // Instantiate the Vuforia engine with Dogeforia.
+        vuforia = new Dogeforia6220(parameters);
+        //vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
 
         // Initialize image targets----------------------------------------------------------------------------------------------
@@ -457,7 +460,7 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl
 
 
         //
-        // Create a transformation matrix describing where the phone is on the robot.
+        // Create a transformation matrix describing where the camera is on the robot.
         //
         // NOTE !!!!  It's very important that you turn OFF your phone's Auto-Screen-Rotation option.
         // Lock it into Portrait for these numbers to work.
@@ -469,22 +472,6 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl
         // The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
         // pointing to the LEFT side of the Robot.
         // The two examples below assume that the camera is facing forward out the front of the robot.
-
-        // We need to rotate the camera around it's long axis to bring the correct camera forward.
-        if (CAMERA_CHOICE == BACK)
-        {
-            phoneYRotate = -90;
-        } else
-        {
-            phoneYRotate = 90;
-        }
-
-        // Rotate the phone vertical about the X axis if it's in portrait mode
-        if (PHONE_IS_PORTRAIT)
-        {
-            phoneXRotate = 90;
-        }
-
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)

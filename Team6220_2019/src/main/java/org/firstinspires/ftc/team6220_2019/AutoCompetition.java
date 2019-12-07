@@ -26,7 +26,8 @@ public class AutoCompetition extends MasterAutonomous
         // Wait to start the match for 0-10 seconds, depending on setup input.
         pauseWhileUpdating(delayCount);
 
-        // todo Add new auto code!
+        // todo Test new auto code!
+
 
         // Turn off Vuforia tracking
         vuf.deactivateTargets();

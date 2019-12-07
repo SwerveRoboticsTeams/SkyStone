@@ -131,7 +131,7 @@ abstract public class MasterAutonomous extends MasterOpMode
 
 
     // Autonomous scoring system method
-//    public void runScoringSystemAuto(int targetPos)
+//    public void runLiftAuto(int targetPos)
 //    {
 //        int curLiftPos = liftMotor.getCurrentPosition();
 //
