@@ -87,10 +87,10 @@ public class Constants
     public static final double GRABBER_CLOSED = 0.9;
     public static final double PARALLEL_SERVO_INIT = 0.0;
      // Open = stowed, closed = grabbing foundation
-    public static final double FOUNDATION_SERVO_LEFT_OPEN = 0.75;
-    public static final double FOUNDATION_SERVO_LEFT_CLOSED = 0.45;
-    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 0.05;
-    public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0.54;
+    public static final double FOUNDATION_SERVO_LEFT_OPEN = 0;
+    public static final double FOUNDATION_SERVO_LEFT_CLOSED = 1.0;
+    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 1.0;
+    public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0;
 
     // This converts encoder ticks to REV smart servo (in 225 degree mode) positions
     public static final double MOTOR_TO_REV_SERVO_MOVEMENT = 1.55;
