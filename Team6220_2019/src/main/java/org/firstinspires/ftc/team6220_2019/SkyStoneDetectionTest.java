@@ -104,9 +104,9 @@ public class SkyStoneDetectionTest extends LinearOpMode
             m2 = OpenCV_detector.getMean2();
             m3 = OpenCV_detector.getMean3();
 
-            telemetry.addData("Right stone: ", m1);
+            telemetry.addData("Left stone: ", m1);
             telemetry.addData("Middle stone: ", m2);
-            telemetry.addData("Left stone: ", m3);
+            telemetry.addData("Right stone: ", m3);
 
             /*
              *  If the yellow filter value of the right stone is lower than that of the middle or
@@ -119,7 +119,7 @@ public class SkyStoneDetectionTest extends LinearOpMode
              */
             if(m1 < m2 && m1 < m3)
             {
-                telemetry.addData("Right stone is SkyStone", "");
+                telemetry.addData("Left stone is SkyStone", "");
             }
             else if(m2 < m3)
             {
@@ -127,7 +127,7 @@ public class SkyStoneDetectionTest extends LinearOpMode
             }
             else
             {
-                telemetry.addData("Left stone is SkyStone", "");
+                telemetry.addData("Right stone is SkyStone", "");
             }
 
             telemetry.update();
