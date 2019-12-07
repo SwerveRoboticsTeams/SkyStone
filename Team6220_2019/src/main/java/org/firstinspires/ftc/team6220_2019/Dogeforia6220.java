@@ -42,7 +42,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * An implementation of Vuforia intended to be cross-compatible with OpenCV (and DogeCV by extension)
  */
 
-public class Dogeforia6220 extends VuforiaLocalizerImpl {
+public class Dogeforia6220 extends VuforiaLocalizerImpl
+{
     private SkystoneDetectionOpenCV OpenCV_detector;
 
     DrawViewSource displayView;
@@ -143,12 +144,13 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl {
     //------------------------------------------------------------------------------------------------------------
 
 
-
-    public Dogeforia6220(Parameters parameters) {
+    public Dogeforia6220(Parameters parameters)
+    {
         super(parameters);
     }
 
-    public void setDogeCVDetector(SkystoneDetectionOpenCV OpenCV_detector){
+    public void setDogeCVDetector(SkystoneDetectionOpenCV OpenCV_detector)
+    {
         this.OpenCV_detector = OpenCV_detector;
         OpenCV_detector.enable();
         displayView = OpenCV_detector.getRawView();
@@ -156,11 +158,15 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl {
         setFrameQueueCapacity(1);
     }
 
-    public void start(){
-        workerThread = new Thread(new Runnable() {
+    public void start()
+    {
+        workerThread = new Thread(new Runnable()
+        {
             @Override
-            public void run() {
-                while(!workerThread.isInterrupted()){
+            public void run()
+            {
+                while (!workerThread.isInterrupted())
+                {
                     render();
                 }
             }
@@ -169,40 +175,47 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl {
         workerThread.start();
 
         Log.d("DogeCV", workerThread.getState().toString());
-
     }
 
-    public void enableDogeCV(){
-
+    public void enableDogeCV()
+    {
         dogeCVEnabled = true;
     }
 
-    public void disableDogeCV(){
+    public void disableDogeCV()
+    {
         dogeCVEnabled = false;
     }
-    public void enableTrack(){
+
+    public void enableTrack()
+    {
         startTracker();
     }
 
-    public void disableTrack() {
+    public void disableTrack()
+    {
         stopTracker();
     }
-    public void showDebug(){
-        showDebug = true;
 
+    public void showDebug()
+    {
+        showDebug = true;
     }
 
-    public void processFrame(Frame frame){
-        if(frame != null ){
+    public void processFrame(Frame frame)
+    {
+        if (frame != null)
+        {
 
             bitmap = convertFrameToBitmap(frame);
 
             inputMat = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC1);
-            Utils.bitmapToMat(bitmap,inputMat);
+            Utils.bitmapToMat(bitmap, inputMat);
 
             outMat = OpenCV_detector.processFrame(inputMat, null);
 
-            if(!outMat.empty() ){
+            if (!outMat.empty())
+            {
                 // should not need this since outMat is same dim as inputMat
                 //bitmap.setHeight(outMat.height());
                 //bitmap.setWidth(outMat.width());
@@ -225,18 +238,21 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl {
                 int rotatedMatWidth = rotatedMat.width();    // 448
                 double adjustedWidth = rotatedMatWidth * dispHeight / dispWidth;  // 367
 //                outputImage =  Bitmap.createScaledBitmap(rotatedBitmap, (int)adjustedWidth, dispWidth, false);
-                outputImage =  Bitmap.createScaledBitmap(rotatedBitmap, (int)adjustedWidth, dispHeight, false);
+                outputImage = Bitmap.createScaledBitmap(rotatedBitmap, (int) adjustedWidth, dispHeight, false);
 
-                ((Activity)displayView.getContext()).runOnUiThread(new Runnable() {
+                ((Activity) displayView.getContext()).runOnUiThread(new Runnable()
+                {
                     @Override
-                    public void run() {
+                    public void run()
+                    {
                         displayView.onFrame(outputImage);
 //                        displayView.onFrame(rotatedBitmap);
                         displayView.invalidate();
                     }
                 });
 
-            }else{
+            } else
+            {
                 Log.w("DogeCV", "MAT BITMAP MISMATCH OR EMPTY ERROR");
             }
 
@@ -245,24 +261,31 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl {
             outMat.release();
 
 
-        }else{
+        } else
+        {
             Log.d("DogeCV", "No Frame!");
         }
     }
 
-    public void render() {
-       // Log.d("DogeCV", "Rendering Frame");
-       // super.onRenderFrame()
+    public void render()
+    {
+        // Log.d("DogeCV", "Rendering Frame");
+        // super.onRenderFrame()
 
-        if(OpenCV_detector != null && dogeCVEnabled){
+        if (OpenCV_detector != null && dogeCVEnabled)
+        {
 
-            if(!getFrameQueue().isEmpty()){
-                try {
+            if (!getFrameQueue().isEmpty())
+            {
+                try
+                {
                     processFrame(getFrameQueue().take());
-                } catch (InterruptedException e) {
+                } catch (InterruptedException e)
+                {
                     e.printStackTrace();
                 }
-            }else{
+            } else
+            {
                 // the following line floods the log with messages; remove it
                 //Log.w("DogeCV", "Frame is empty. Enabling AparnaCV: " + getFrameQueueCapacity());
             }
@@ -280,11 +303,14 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl {
 
     }
 
-    public void stop(){
+    public void stop()
+    {
         close();
-        ((Activity)displayView.getContext()).runOnUiThread(new Runnable() {
+        ((Activity) displayView.getContext()).runOnUiThread(new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 workerThread.interrupt();
 
                 OpenCV_detector.disable();

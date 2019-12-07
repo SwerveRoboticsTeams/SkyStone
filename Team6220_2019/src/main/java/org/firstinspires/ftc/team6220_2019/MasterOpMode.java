@@ -34,7 +34,7 @@ abstract public class MasterOpMode extends LinearOpMode
     // Create instance of VuforiaResources to be used for image tracking.  We need to pass in this
     // opMode to be able to use some functionalities in that class.
 
-    VuforiaWebCamOpenCV6220 skytoneDetector = new VuforiaWebCamOpenCV6220();
+    SkyStoneDetectionTest skytoneDetector = new SkyStoneDetectionTest();
     Dogeforia6220 vuf = skytoneDetector.vuforia;
 
     // Declare hardware devices---------------------------------------

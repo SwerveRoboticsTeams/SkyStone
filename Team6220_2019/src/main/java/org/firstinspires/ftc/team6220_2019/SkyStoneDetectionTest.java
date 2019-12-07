@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team6220_2019;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -43,8 +44,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  *
  * 2018/09/30 Copied from OpenCvExampleBlueVisionDemo.java to experiment with various parameters.
  */
-
-public class VuforiaWebCamOpenCV6220 extends LinearOpMode{
+@Autonomous(name = "Skystone Detection Test", group = "Test")
+public class SkyStoneDetectionTest extends LinearOpMode
+{
 
     Dogeforia6220 vuforia;
     WebcamName webcamName;
