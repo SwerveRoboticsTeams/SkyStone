@@ -35,7 +35,7 @@ public class Constants
     // Constants to control slide motors
     public static final double SLIDE_MOTOR_MAX_POWER = 0.25;    // todo once we know this is working, increase to 1.0
     public static final double SLIDE_MOTOR_MIN_DIST = 0;
-    public static final double SLIDE_MOTOR_MAX_DIST = 1;
+    public static final double SLIDE_MOTOR_MAX_DIST = 3000;     // todo Adjust
 
     // Autonomous Drive constants
     public static final float AUTONOMOUS_SCALE_DISTANCE = 24;

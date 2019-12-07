@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
@@ -362,26 +363,16 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         double pos = slideMotor.getCurrentPosition();
 
-        if(power > 0 && power < maxPower && pos < Constants.SLIDE_MOTOR_MAX_DIST) //forwards and power < maxPower
-        {
+        // Ensure magnitude of power is not too large.
+        Range.clip(power, -maxPower, maxPower);
+
+        // Constraints:  motor direction, encoder position
+        // If motor is out of operating range and is set to move further from this range,
+        // give it 0 power to prevent the string from breaking.  Otherwise, drive mormally.
+        if ((power < 0 && pos < Constants.SLIDE_MOTOR_MIN_DIST) || (power > 0 && pos > Constants.SLIDE_MOTOR_MAX_DIST))
+            slideMotor.setPower(0);
+        else
             slideMotor.setPower(power);
-        }
-        else if(power < 0 && power > -1 * maxPower && pos > Constants.SLIDE_MOTOR_MIN_DIST) //backwards and power < maxPower
-        {
-            slideMotor.setPower(power);
-        }
-        else if(power < -1 * maxPower && pos > Constants.SLIDE_MOTOR_MIN_DIST) //backwards and maxPower
-        {
-            slideMotor.setPower(-1 * maxPower);
-        }
-        else if(power > maxPower && pos < Constants.SLIDE_MOTOR_MAX_DIST) //forwards and maxPower
-        {
-            slideMotor.setPower(maxPower);
-        }
-        else if(power == 0)
-        {
-            slideMotor.setPower(power);
-        }
     }
 
     // Tell the robot to turn to a specified angle.  We can also limit the motor power while turning.

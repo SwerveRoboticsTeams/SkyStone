@@ -82,7 +82,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         {
             runSlideMotor(rightTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
         }
-        else if(leftTrigger > rightTrigger && leftTrigger > 0) //leftTrigger retracts
+        else if(leftTrigger > rightTrigger && leftTrigger > Constants.MINIMUM_TRIGGER_VALUE) // leftTrigger retracts
         {
             runSlideMotor(-1 * leftTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
         }
