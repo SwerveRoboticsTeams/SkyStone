@@ -25,14 +25,12 @@ public class TeleOpCompetition extends MasterTeleOp
             // Operate robot mechanisms using methods from MasterTeleOp-----------------------------
              // Driver1 methods
             driveMecanumWithJoysticks();
-            extendSlideCollector();
             driveCollector();
              // Driver2 methods
-
-            //driveScoringSystem();
+            //driveLift();
             // Only toggle grabber if Button.RIGHT_BUMPER is just pressed.
-            if(driver2.isButtonJustPressed(Button.RIGHT_BUMPER))
-                toggleGrabber();
+            /*if(driver2.isButtonJustPressed(Button.RIGHT_BUMPER))
+                toggleGrabber();*/
             // Only toggle foundationServos if Button.B is just pressed.
             if(driver2.isButtonJustPressed(Button.B))
                 toggleFoundationServos();

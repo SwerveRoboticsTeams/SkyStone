@@ -29,7 +29,7 @@ public class Constants
 
     public static final double LIFT_POWER_FACTOR = 0.6;
      // Constants to control power of collector motors
-    public static final double COLLECTOR_POWER = 1.0;
+    public static final double COLLECTOR_POWER = 0.85;  // Max power allowed for VEX motors.
     public static final double COLLECTOR_ROTATE_POWER = 0.3;    // todo Adjust
 
     // Constants to control slide motors
@@ -110,5 +110,5 @@ public class Constants
 
     // Ensure that input isn't used when no commands are given
     public static final double MINIMUM_JOYSTICK_POWER = 0.05;
-    public static final double MINIMUM_TRIGGER_VALUE = 0.33;    // todo How large does this value need to be to prevent twitching?
+    public static final double MINIMUM_TRIGGER_VALUE = 0.05;    // todo Adjust
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,14 +40,13 @@ abstract public class MasterOpMode extends LinearOpMode
     BNO055IMU imu;
 
     DcMotor motorFL, motorFR, motorBL, motorBR;
-    DcMotor collectorLeft, collectorRight;
-    //DcMotor liftMotor;
+    CRServo collectorLeft, collectorRight;
+    // todo Add lift motors
+    //DcMotor liftMotor1, liftMotor2, liftMotor3;
     DcMotor slideMotor;
-
-    Servo grabberServo;
-    Servo parallelServo;
-    Servo foundationServoLeft;
-    Servo foundationServoRight;
+    // todo Add grabberServo once grabber is attached
+    //Servo grabberServo;
+    Servo foundationServoLeft, foundationServoRight;
     //----------------------------------------------------------------
 
     // Declare filters.  We currently have PID for turning and encoder navigation.------------------
@@ -102,12 +102,10 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
 
-        collectorLeft = hardwareMap.dcMotor.get("collectorLeft");
-        collectorRight = hardwareMap.dcMotor.get("collectorRight");
+        collectorLeft = hardwareMap.crservo.get("collectorLeft");
+        collectorRight = hardwareMap.crservo.get("collectorRight");
 
         //liftMotor = hardwareMap.dcMotor.get("liftMotor");
-        grabberServo = hardwareMap.servo.get("grabberServo");
-        parallelServo = hardwareMap.servo.get("parallelServo");
 
         foundationServoLeft = hardwareMap.servo.get("foundationServoLeft");
         foundationServoRight = hardwareMap.servo.get("foundationServoRight");
@@ -118,30 +116,25 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        collectorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        collectorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        grabberServo.setPosition(Constants.GRABBER_OPEN);
-        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT);
         foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
         foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
+
+        collectorLeft.setPower(0);
+        collectorRight.setPower(0);
 
         // Initialize lift in RUN_TO_POSITION so that it does not hit stone during collection
         isRunToPosMode = true;
@@ -365,8 +358,10 @@ abstract public class MasterOpMode extends LinearOpMode
     }
 
     // Extends or retracts the horizontal slides. Positive power extends.
-    public void runSlideMotor(double power, double maxPower){
+    public void runSlideMotor(double power, double maxPower)
+    {
         double pos = slideMotor.getCurrentPosition();
+
         if(power > 0 && power < maxPower && pos < Constants.SLIDE_MOTOR_MAX_DIST) //forwards and power < maxPower
         {
             slideMotor.setPower(power);
@@ -379,10 +374,12 @@ abstract public class MasterOpMode extends LinearOpMode
         {
             slideMotor.setPower(-1 * maxPower);
         }
-        else if(power > maxPower && pos < Constants.SLIDE_MOTOR_MAX_DIST) { //forwards and maxPower
+        else if(power > maxPower && pos < Constants.SLIDE_MOTOR_MAX_DIST) //forwards and maxPower
+        {
             slideMotor.setPower(maxPower);
         }
-        else if(power == 0){
+        else if(power == 0)
+        {
             slideMotor.setPower(power);
         }
     }
@@ -437,20 +434,21 @@ abstract public class MasterOpMode extends LinearOpMode
     public void runCollector(boolean isCollectingIn, boolean isRotatingStone)
     {
         // Allows us to change direction of collector
-        double powerSign = 1.0;
+        double powerSign = -1.0;
 
         // Reverse collector if we intend to spit out
         if (!isCollectingIn)
-            powerSign = -1.0;
+            powerSign = 1.0;
 
         if (isRotatingStone)    // We are trying to spin stone for easier collection
         {
             collectorLeft.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
             collectorRight.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
-        } else    // We are collecting normally
+        }
+        else    // We are collecting normally
         {
             collectorLeft.setPower(powerSign * Constants.COLLECTOR_POWER);
-            collectorRight.setPower(powerSign * -Constants.COLLECTOR_POWER);
+            collectorRight.setPower(powerSign * Constants.COLLECTOR_POWER);
         }
     }
 
@@ -474,7 +472,8 @@ abstract public class MasterOpMode extends LinearOpMode
     }
 
 
-    // Toggle position of grabber between open and closed.
+    // todo Uncomment once we have grabber attached.
+    /*// Toggle position of grabber between open and closed.
     public void toggleGrabber()
     {
         if (isGrabberOpen)
@@ -485,7 +484,7 @@ abstract public class MasterOpMode extends LinearOpMode
             grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
         isGrabberOpen = !isGrabberOpen;
-    }
+    }*/
 
 
     // Note:  not in use
