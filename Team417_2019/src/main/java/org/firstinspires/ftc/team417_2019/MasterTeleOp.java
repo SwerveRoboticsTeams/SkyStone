@@ -31,10 +31,10 @@ abstract public class MasterTeleOp extends MasterOpMode
     boolean isYButtonPressed = true;
 
     final double Krev = -1/1210.0;
-    boolean grabbed = false;
-    boolean prevAState = false;
-    boolean aPress = false;
     int targetCorePos = 0;
+
+    Toggle grabber = new Toggle();
+    Toggle puller = new Toggle();
 
     AvgFilter filterJoyStickInput = new AvgFilter();
 
@@ -146,6 +146,22 @@ abstract public class MasterTeleOp extends MasterOpMode
 
     }
 
+    void foundationPullers()
+    {
+
+        if(puller.getToggle(gamepad2.x))
+        {
+            leftFoundationPuller.setPosition(0.65);
+            rightFoundationPuller.setPosition(0.35);
+        }
+        else
+        {
+            leftFoundationPuller.setPosition(1);
+            rightFoundationPuller.setPosition(0);
+        }
+
+    }
+
     void collector()
     {
         // control arm motors with G2 right stick
@@ -162,37 +178,21 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         // Set Automatic Rev servo position
         autoDouble = (double) (arm1.getCurrentPosition() + 150);
-        autoDouble = autoDouble * 0.4 / -738;
-        autoRevPos =  autoDouble + 0.335; // high pos = -1058, low = 0
+        autoDouble *= 0.4 / -1200;
+        autoRevPos =  autoDouble + 0.235; // high pos = -1058, low = 0
         mainWristServo.setPosition(autoRevPos);
 
         // Toggle grabber
-        if(grabbed)
+        if(grabber.getToggle(gamepad2.a))
         {
             // set smallGrabber to closed position
             smallGrabber.setPosition(0.7);
         }
         else
-            {
-                // set smallGrabber to open position
-                smallGrabber.setPosition(0);
-            }
-
-        if(aPress)
         {
-            grabbed = !grabbed;
+            // set smallGrabber to open position
+            smallGrabber.setPosition(0.3);
         }
-
-        if(! prevAState && gamepad2.a)
-        {
-            aPress = true;
-        }
-        else if(aPress)
-        {
-            aPress = false;
-        }
-        prevAState = gamepad2.a;
-
 
 
 // control hanger with G2 left and right bumpers

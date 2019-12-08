@@ -2,7 +2,7 @@ package org.firstinspires.ftc.team417_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="Auto Test Parking", group = "Swerve")
+@Autonomous(name="Auto Foundation", group = "Swerve")
 // @Disabled
 public class AutoFoundation extends MasterAutonomous
 {

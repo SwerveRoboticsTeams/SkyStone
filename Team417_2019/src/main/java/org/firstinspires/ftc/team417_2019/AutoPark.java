@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import java.util.Locale;
 
-@Autonomous(name="Auto Test Parking", group = "Swerve")
+@Autonomous(name="Auto Parking", group = "Swerve")
 // @Disabled
 public class AutoPark extends MasterAutonomous
 {

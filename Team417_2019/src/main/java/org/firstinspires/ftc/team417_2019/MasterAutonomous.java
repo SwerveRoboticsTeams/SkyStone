@@ -479,12 +479,24 @@ abstract public class MasterAutonomous extends MasterOpMode
             // make sure the pivot speed is not to large
             pivotSpeed = Range.clip(pivotSpeed, -0.8, 0.8); // limit max pivot speed
 
-            /* take absolute value of speed such that you can clip it
-               speedAbsFL = Math.abs(speedFL);
-               clip abs(speed) MAX speed minus 0.3 to leave room for pivot factor
-               speedAbsFL = Range.clip(speedAbsFL, minSpeed, maxSpeed);
-               speedFL = speedAbsFL * Math.signum(speedFL);  // set sign of speed
-             */
+            //take absolute value of speed such that you can clip it
+            speedAbsFL = Math.abs(speedFL);
+            speedAbsFR = Math.abs(speedFR);
+            speedAbsBL = Math.abs(speedBL);
+            speedAbsBR = Math.abs(speedBR);
+            //clip abs(speed)
+            speedAbsFL = Range.clip(speedAbsFL, minSpeed, maxSpeed);
+            speedFL = speedAbsFL * Math.signum(speedFL);  // set sign of speed
+
+            speedAbsFR = Range.clip(speedAbsFR, minSpeed, maxSpeed);
+            speedFR = speedAbsFR * Math.signum(speedFR);
+
+            speedAbsBL = Range.clip(speedAbsBL, minSpeed, maxSpeed);
+            speedBL = speedAbsBL * Math.signum(speedBL);
+
+            speedAbsBR = Range.clip(speedAbsBR, minSpeed, maxSpeed);
+            speedBR = speedAbsBR * Math.signum(speedBR);
+
 
 
             // -----------------------Distance Calculation -----------------------------

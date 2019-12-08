@@ -27,6 +27,7 @@ public class TeleOpCompetition extends MasterTeleOp
             mecanumDrive();
             linearSlides();
             collector();
+            foundationPullers();
             updateTelemetry();
         }
     }
