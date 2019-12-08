@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Const;
+import org.firstinspires.ftc.robotcore.internal.android.dx.dex.code.VariableSizeInsn;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.cst.Constant;
 
 
@@ -36,9 +37,9 @@ abstract class MasterTeleOp extends Master
     public void driveMecanumTeleOp()
     {
         // Reverse drive if desired
-        if(gamepad1.a)
-            reverseDrive = true;
         if(gamepad1.b)
+            reverseDrive = true;
+        if(gamepad1.a)
             reverseDrive = false;
 
         if(gamepad1.dpad_down)
@@ -57,12 +58,14 @@ abstract class MasterTeleOp extends Master
 
     public void toggleFoundationServos()
     {
-        if(gamepad1.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
+        if(gamepad1.left_trigger > Constants.MINIMUM_TRIGGER_VALUE){
+            //down
             servoFoundationLeft.setPosition(0.0);
             servoFoundationRight.setPosition(1.0);
         }else{
-            servoFoundationLeft.setPosition(0.7);
-            servoFoundationRight.setPosition(0);
+            //up
+            servoFoundationLeft.setPosition(0.64);
+            servoFoundationRight.setPosition(0.1);
         }
     }
 
@@ -71,7 +74,7 @@ abstract class MasterTeleOp extends Master
         if (gamepad2.y) {
             servoCapstone.setPosition(0.0);
         }else {
-            servoCapstone.setPosition(0.47);
+            servoCapstone.setPosition(0.44);
         }
 
 
@@ -79,16 +82,16 @@ abstract class MasterTeleOp extends Master
 
     public void runIntake()
     {
-        if(gamepad2.dpad_down){
+        if(gamepad1.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
             intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
-            intakeLeft.setPower(Constants.INTAKE_PWR);
-            intakeRight.setPower(Constants.INTAKE_PWR);
-        }else if(gamepad2.dpad_up){
+            intakeLeft.setPower(Variables.INTAKE_PWR);
+            intakeRight.setPower(Variables.INTAKE_PWR);
+        }else if(gamepad1.right_bumper){
             intakeLeft.setDirection(DcMotorSimple.Direction.FORWARD);
             intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
-            intakeLeft.setPower(Constants.INTAKE_PWR);
-            intakeRight.setPower(Constants.INTAKE_PWR);
+            intakeLeft.setPower(Variables.INTAKE_PWR);
+            intakeRight.setPower(Variables.INTAKE_PWR);
         }else{
             intakeLeft.setPower(0);
             intakeRight.setPower(0);
@@ -126,9 +129,22 @@ abstract class MasterTeleOp extends Master
         if(gamepad2.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
             servoClaw.setPosition(0.15);
         }else{
-            servoClaw.setPosition(0.7);
+            servoClaw.setPosition(0.9);
         }
     }
+
+    public void runBlockPusher(){
+        if(gamepad2.right_bumper){
+            servoBlockPusher.setPosition(0.65);
+        }else if (gamepad2.x) {
+            servoBlockPusher.setPosition(1);
+        }else{
+            servoBlockPusher.setPosition(0.2);
+        }
+    }
+
+
+
 
 
 

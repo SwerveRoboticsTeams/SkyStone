@@ -29,6 +29,7 @@ abstract class Master extends LinearOpMode
     Servo servoJoint;
     Servo servoClaw;
 
+    Servo servoBlockPusher;
 
     BNO055IMU imu;
 
@@ -62,7 +63,7 @@ abstract class Master extends LinearOpMode
         servoCapstone = hardwareMap.get(Servo.class, "servoCapstone");
         servoJoint = hardwareMap.get(Servo.class,"servoJoint");
         servoClaw = hardwareMap.get(Servo.class,"servoClaw");
-
+        servoBlockPusher = hardwareMap.get(Servo.class, "servoBlockPusher");
 
         // Set ZeroPowerBehavior
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -79,6 +80,7 @@ abstract class Master extends LinearOpMode
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+
         // todo this is weird
         motorBR.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -90,7 +92,13 @@ abstract class Master extends LinearOpMode
         motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
+        // init positions
         servoJoint.setPosition(0);
+        servoFoundationLeft.setPosition(0.64);
+        servoFoundationRight.setPosition(0.1);
+        servoCapstone.setPosition(0.44);
+        servoClaw.setPosition(0.9);
+
 
     }
 
@@ -114,6 +122,7 @@ abstract class Master extends LinearOpMode
         if(reverseDrive)
             turnPower = -turnPower;
 
+        //todo check if this was coded with the motors set initially to be reversed or not.
         powerFL = y + x - turnPower;
         powerFR = y - x + turnPower;
         powerBL = y - x - turnPower;

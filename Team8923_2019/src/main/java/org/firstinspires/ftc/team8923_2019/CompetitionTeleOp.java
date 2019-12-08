@@ -15,6 +15,7 @@ public class CompetitionTeleOp extends MasterTeleOp
         initHardware();
         waitForStart();
 
+
         while (opModeIsActive())
         {
 
@@ -27,6 +28,8 @@ public class CompetitionTeleOp extends MasterTeleOp
             runClaw();
             runCapstoneGrabber();
             runIntake();
+            runBlockPusher();
+
             idle();
 
         }
