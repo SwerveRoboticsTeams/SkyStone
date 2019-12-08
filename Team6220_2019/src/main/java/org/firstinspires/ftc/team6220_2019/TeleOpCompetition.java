@@ -23,10 +23,11 @@ public class TeleOpCompetition extends MasterTeleOp
 
 
             // Operate robot mechanisms using methods from MasterTeleOp-----------------------------
-             // Driver1 methods
+             // Driver 1 controls
             driveMecanumWithJoysticks();
+            driveSlide();
+            // Driver 2 controls
             driveCollector();
-             // Driver2 methods
             //driveLift();
             // Only toggle grabber if Button.RIGHT_BUMPER is just pressed.
             /*if(driver2.isButtonJustPressed(Button.RIGHT_BUMPER))
@@ -36,7 +37,7 @@ public class TeleOpCompetition extends MasterTeleOp
                 toggleFoundationServos();
             //--------------------------------------------------------------------------------------
 
-            /**
+            /*
              Updates that need to happen each loop
              Note:  eTime is not currently displayed (it interrupts other telemetry), but it may
              be useful later

@@ -15,22 +15,29 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+
 abstract public class MasterOpMode extends LinearOpMode
 {
     // Remembers whether the grabber is open or closed.
     boolean isGrabberOpen = true;
     // Remembers whether the foundation servos are open or closed.
     boolean areFoundationServosOpen = true;
-    // Tells us what drive mode the lift motor is in; by default, we use RUN_USING_ENCODER
-    boolean isRunToPosMode = false;
 
-    // Distance (in inches) that we want to start collecting after rotating collector.
-    int collectionDistance = 13;
+    // Collector and lift run modes----------------------------------------------------------------
+     // Tells us what drive mode the lift motor is in; by default, we use RUN_TO_POSITION for auto.
+    boolean isLiftRunToPosMode = true;
+     // Tells us what drive mode the collector is in; by default, we use RUN_TO_POSITION for auto.
+    boolean isCollectorRunToPosMode = true;
+    //---------------------------------------------------------------------------------------------
+
+    // Distance (in inches) at which we wish to switch from rotating stone to collecting it.
+    int collectionDistance = 26;
 
     // Create instance of Dogeforia to be used for both Vuforia and OpenCV image processing.
     // We need to pass in this opMode to be able to use some functionalities in that class.
     Dogeforia6220 vuf;
-    SkystoneDetectionOpenCV OpenCV_detector;
+    SkystoneDetectionOpenCV skystoneDetector;
     WebcamName webcamName;
 
     // Declare hardware devices---------------------------------------
@@ -116,7 +123,8 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setTargetPosition(Constants.SLIDE_MOTOR_MIN_DIST);   // Init pos'n, necessary for new implementation of RUN_TO_POSITION.
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -130,8 +138,7 @@ abstract public class MasterOpMode extends LinearOpMode
         collectorLeft.setPower(0);
         collectorRight.setPower(0);
 
-        // Initialize lift in RUN_TO_POSITION so that it does not hit stone during collection
-        isRunToPosMode = true;
+
         /*
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -170,26 +177,47 @@ abstract public class MasterOpMode extends LinearOpMode
     // Method to be called to initialize Vuforia and OpenCV via Dogeforia.
     public void initVuforiaAndOpenCV()
     {
-        // Initializes standard Vuforia targets and camera stuff.
-        vuf.initVuforia();
+        // todo Would like to find a way to avoid "chicken and the egg" problem and put this inside initVuforia().
+        // Initializes standard Vuforia targets and camera stuff------------------------------------
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
+         * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
+         */
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
+        parameters.vuforiaLicenseKey = "AQdgAgj/////AAABmZGzg951/0AVjcK/+QiLWG1Z1PfbTwUouhED8hlwM6qrpAncj4xoMYYOUDxF+kreiazigY0q7OMa9XeMyxNlEQvyMFdefVUGSReIxJIXYhFaru/0IzldUlb90OUO3+J4mGvnzrqYMWG1guy00D8EbCTzzl5LAAml+XJQVLbMGrym2ievOij74wabsouyLb2HOab5nxk0FycYqTWGhKmS7/h4Ddd0UtckgnHDjNrMN4jqk0Q9HeTa8rvN3aQpSUToubAmfXe6Jgzdh2zNcxbaNIfVUe/6LXEe23BC5mYkLAFz0WcGZUPs+7oVRQb7ej7jTAJGA6Nvb9QKEa9MOdn0e8edlQfSBRASxfzBU2FIGH8a";;
+        parameters.cameraDirection = BACK;
+        /**
+         * We also indicate which camera on the RC we wish to use.
+         */
+        // Default webcam name
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = webcamName;
+        parameters.useExtendedTracking = false;
+
+        // Instantiate the Vuforia engine with Dogeforia.
+        vuf = new Dogeforia6220(parameters);
         vuf.enableConvertFrameToBitmap();
+        //------------------------------------------------------------------------------------------
 
-        // Initialize the OpenCV_detector
-        OpenCV_detector = new SkystoneDetectionOpenCV();
+        // Initialize the skystoneDetector
+        skystoneDetector = new SkystoneDetectionOpenCV();
 
         // fullscreen display:
         //   app crashes if screen orientation switches from portrait to landscape
         //   screen goes to sleep, and webcam turns off a few minutes after init, and after play
-        OpenCV_detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
+        skystoneDetector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
 
-        // Set the OpenCV_detector and enable it.
-        vuf.setDogeCVDetector(OpenCV_detector);
+        // Set the skystoneDetector and enable it.
+        vuf.setDogeCVDetector(skystoneDetector);
         vuf.enableDogeCV();
         // Starts Dogeforia thread.
         vuf.start();
 
-        vuf.activateTargets(); // Also remember to deactivate them if using Vuforia!
+        //vuf.activateTargets(); // Also remember to deactivate them if using Vuforia!
     }
 
 
@@ -200,10 +228,11 @@ abstract public class MasterOpMode extends LinearOpMode
         double x = drivePower * Math.cos(Math.toRadians(driveAngle));
 
         // Signs for x, y, and w are based on the motor configuration and inherent properties of mecanum drive
-        double powerFL = -x - y + w;
-        double powerFR = -x + y + w;
-        double powerBL = x - y + w;
-        double powerBR = x + y + w;
+        // Note:  Flipped x and y to flip front of robot.
+        double powerFL = x + y + w;
+        double powerFR = x - y + w;
+        double powerBL = -x + y + w;
+        double powerBR = -x - y + w;
 
         // Scale powers-------------------------
         /*
@@ -229,6 +258,7 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL.setPower(powerBL);
         motorBR.setPower(powerBR);
     }
+
 
     // Uses encoders to make the robot drive to a specified relative position.  Also makes use of the
     // imu to keep the robot at a constant heading during navigation.
@@ -267,10 +297,10 @@ abstract public class MasterOpMode extends LinearOpMode
         while (((distanceToTarget > Constants.POSITION_TOLERANCE_IN) || (headingDiff > Constants.ANGLE_TOLERANCE_DEG)) && opModeIsActive())
         {
             // todo Why does sqrt(2) not show up in empirical distance tests?
-            deltaX = initDeltaX - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
-                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / (4 /* Math.sqrt(2)*/);
-            deltaY = initDeltaY - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() +
-                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
+            deltaX = initDeltaX - Constants.IN_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() +
+                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / (4 /* Math.sqrt(2)*/);
+            deltaY = initDeltaY - Constants.IN_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() -
+                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4;
 
             // Calculate how far off robot is from its initial heading
             currentAngle = getAngularOrientationWithOffset();
@@ -305,9 +335,9 @@ abstract public class MasterOpMode extends LinearOpMode
             // If it has been specified, collect while navigating.
             if (isCollecting)
             {
-                // If we have navigated less than collectionDistance, rotate the stone.
+                // If we are within collectionDistance of stone, rotate collector.
                 // Otherwise, collect the stone.
-                if (Math.abs(deltaY) > collectionDistance)
+                if (Math.abs(initDeltaY - deltaY) < collectionDistance)
                     runCollector(true, true);
                 else
                     runCollector(true, false);
@@ -335,47 +365,6 @@ abstract public class MasterOpMode extends LinearOpMode
         }
     }
 
-    // The only difference between autonomousDriveMecanum and driveMecanum is that autonomousDriveMecanum
-    // contains an adjustment for angle to make movement compass-oriented; e.g., 0 would act as 90, driving forward.
-    public void autonomousDriveMecanum(double driveAngle, double drivePower, double w)
-    {
-        // Adjustment to account for different axis reference frames.
-        driveAngle += 90;
-
-        // Convert drive angle and power to x and y components
-        double y = drivePower * Math.sin(Math.toRadians(driveAngle));
-        double x = drivePower * Math.cos(Math.toRadians(driveAngle));
-
-        // Signs for x, y, and w are based on the motor configuration and inherent properties of mecanum drive
-        double powerFL = -x - y + w;
-        double powerFR = -x + y + w;
-        double powerBL = x - y + w;
-        double powerBR = x + y + w;
-
-        // Scale powers-------------------------
-        /*
-         Motor powers might be set above 1 (e.g., x + y = 1 and w = -0.8), so we must scale all of
-         the powers to ensure they are proportional and within the range {-1.0, 1.0}
-        */
-        double powScalar = SequenceUtilities.getLargestMagnitude(new double[]
-                {powerFL, powerFR, powerBL, powerBR});
-        /*
-         However, powScalar should only be applied if it is greater than 1. Otherwise, we could
-         unintentionally increase powers or even divide by 0
-        */
-        if (powScalar > 1)
-        {
-            powerFL /= powScalar;
-            powerFR /= powScalar;
-            powerBL /= powScalar;
-            powerBR /= powScalar;
-        }
-
-        motorFL.setPower(powerFL);
-        motorFR.setPower(powerFR);
-        motorBL.setPower(powerBL);
-        motorBR.setPower(powerBR);
-    }
 
     // Extends or retracts the horizontal slides. Positive power extends.
     public void runSlideMotor(double power, double maxPower)
@@ -387,12 +376,13 @@ abstract public class MasterOpMode extends LinearOpMode
 
         // Constraints:  motor direction, encoder position
         // If motor is out of operating range and is set to move further from this range,
-        // give it 0 power to prevent the string from breaking.  Otherwise, drive mormally.
+        // give it very low power to prevent the string from breaking.  Otherwise, drive mormally.
         if ((power < 0 && pos < Constants.SLIDE_MOTOR_MIN_DIST) || (power > 0 && pos > Constants.SLIDE_MOTOR_MAX_DIST))
-            slideMotor.setPower(0);
+            slideMotor.setPower(Constants.SLIDE_MOTOR_LOW_POWER_FACTOR * power);
         else
             slideMotor.setPower(power);
     }
+
 
     // Tell the robot to turn to a specified angle.  We can also limit the motor power while turning.
     public void turnTo(double targetAngle, double maxPower)
@@ -444,16 +434,16 @@ abstract public class MasterOpMode extends LinearOpMode
     public void runCollector(boolean isCollectingIn, boolean isRotatingStone)
     {
         // Allows us to change direction of collector
-        double powerSign = -1.0;
+        double powerSign = 1.0;
 
         // Reverse collector if we intend to spit out
         if (!isCollectingIn)
-            powerSign = 1.0;
+            powerSign = -1.0;
 
         if (isRotatingStone)    // We are trying to spin stone for easier collection
         {
             collectorLeft.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
-            collectorRight.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
+            collectorRight.setPower(powerSign * -Constants.COLLECTOR_ROTATE_POWER);
         }
         else    // We are collecting normally
         {

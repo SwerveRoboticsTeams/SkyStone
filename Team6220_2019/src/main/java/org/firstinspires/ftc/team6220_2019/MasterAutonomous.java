@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+import com.vuforia.Vec2I;
 
 /**
  * This class includes methods and fields that are useful for generic autonomous OpModes.
@@ -24,8 +25,7 @@ abstract public class MasterAutonomous extends MasterOpMode
 
     // Initialize angles and distances for various differing setup options----------------------
     double stoneShift = 8; // Centers of stones are 8 in apart
-    double centerOffset = 6.5;
-    double robotShift = centerOffset;     // Actual distance the robot moved (will be changed)
+    double robotShift = stoneShift;     // Actual distance the robot moved (will be changed)
 
     // Change initial orientation based on red / blue alliance.  Red is default
     double initAngle_side = 90;
@@ -122,7 +122,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             initAngle_side = -90;
             turnShift = 180;
             robotShiftSign = -1.0;
-            centerAdjustment = 2.0 * centerOffset;
+            centerAdjustment = 2.0 * stoneShift;
         }
 
         telemetry.log().clear();
@@ -159,12 +159,13 @@ abstract public class MasterAutonomous extends MasterOpMode
 //        }
 //    }
 
-    // todo rework aligning with skystone to work with OpenCV skystone detection
-    public void vuforiaAlignWithSkyStone() throws InterruptedException
+    public void alignWithSkyStone() throws InterruptedException
     {
-        vuf.getLocation();
+        // Left, middle, and right SkyStone yellow means
+        double m1 = skystoneDetector.getMean1();
+        double m2 = skystoneDetector.getMean2();
+        double m3 = skystoneDetector.getMean3();
 
-        skytoneDetector.runOpMode();
         /*
          *  If the yellow filter value of the right stone is lower than that of the middle or
          *  left stones, then it has more black and is therefore the SkyStone.
@@ -174,242 +175,22 @@ abstract public class MasterAutonomous extends MasterOpMode
          *
          *  Failing the first two options, the left stone is the SkyStone.
          */
-        if(skytoneDetector.m1 < skytoneDetector.m2 && skytoneDetector.m1 < skytoneDetector.m3)
+        if(m1 < m2 && m1 < m3)
         {
-            skyStonePos = 1;
+            robotShift = -stoneShift;
         }
-        else if(skytoneDetector.m2 < skytoneDetector.m3)
+        else if(m2 < m3)
         {
-            skyStonePos = 2;
+            robotShift = 0;
         }
         else
         {
-            skyStonePos = 3;
+            robotShift = stoneShift;
         }
 
-        if (!vuf.getTargetVisibility())
-        {
-            // Shift toward center stone if we can't ID target
-        } else
-        {
-            // Align with SkyStone
-            vuf.getLocation();
-            // todo This should use vuf.CAMERA_LEFT_DISPLACEMENT (in inches, not MM)
-            double stoneDistance = vuf.translation.get(1) / Constants.MM_PER_INCH;
-            telemetry.addData("stoneDistance: ", stoneDistance);
-            telemetry.update();
-
-            if (stoneDistance > (stoneShift - 2))  // Need to shift right
-                robotShift = stoneShift + 6.5;
-            else if (stoneDistance < (-stoneShift + 2))    // Need to shift left
-                robotShift = -stoneShift + 5.5; // todo Adjust further if necessary
-            // Otherwise, no change in shift is necessary (robotShift = 6.5 by default)
-        }
-
+        // todo Need position edits
         // Translate robot
         navigateUsingEncoders(robotShift, 0, 0.3, false);
-    }
-
-
-    // todo Test and adjust method
-    // This method can be used with the skystone navigation target.  It allows a robot to navigate
-    // to the front of the target and follow it if it moves.
-    /**
-     * UNTESTED - - - UNTESTED - - - UNTESTED
-     * NOTE: DO NOT USE THIS METHOD IN COMPETITION. THIS IS A TEST METHOD ONLY.
-     * With a skystone defined as (0, 0, 0) absolutely, this method is designed to make the robot drive towards
-     * the skystone at all times. It should follow a skystone if moved.
-     */
-    public void vuforiaFollowObject()
-    {
-        // Updates rotation and translation vectors
-        vuf.getLocation();
-
-
-        double distanceToStone = 100;
-
-        if (!vuf.getTargetVisibility())
-        {
-            driveMecanum(0, 0, 0.10);
-        } else
-        {
-            if (distanceToStone > Constants.POSITION_TOLERANCE_IN)
-            {
-                // x, y, z defines the location of the center of the robot relative to the skystone (in inches).
-                // todo Need to test whether distance - 8 works correctly.
-                double x = vuf.translation.get(0) / Constants.MM_PER_INCH + 8;
-                double y = vuf.translation.get(1) / Constants.MM_PER_INCH;
-                double z = vuf.translation.get(2) / Constants.MM_PER_INCH;
-                telemetry.addData("x value: ", x);
-                telemetry.addData("y value: ", y);
-                telemetry.addData("z value: ", z);
-                // w is the rotation of the robot relative to the skystone in degrees.
-                double currentAngle = vuf.rotation.firstAngle;
-
-                distanceToStone = calculateDistance(x, y);
-                // todo - signs should be properly accounted for.
-                // Transform position and heading diffs to linear and rotation powers using filters----
-                translationFilter.roll(distanceToStone);
-                double drivePower = translationFilter.getFilteredValue();
-                rotationFilter.roll(currentAngle);
-                double rotationPower = rotationFilter.getFilteredValue();
-
-                double angle = (Math.atan(y / x) * 180 / Math.PI);
-                if (x > 0)
-                {
-                    angle += 180;
-                }
-                angle = normalizeAngle(angle);
-
-                // Drive robot.  Need to add 90 degrees to account for phone orientation relative to robot.
-                autonomousDriveMecanum(angle + 90, drivePower * 0.05, 0/*rotationPower*/);
-            } else
-                stopDriveMotors();
-        }
-    }
-
-
-    // todo Implement (global coordinates)
-    /**
-     * UNTESTED - - - UNTESTED - - - UNTESTED
-     * DO NOT CALL THIS METHOD TO DRIVE TO THE BRIDGE IN THE MIDDLE OF AUTONOMOUS. DESPITE THE
-     * SIMILARITY WITH driveToBridge, THIS METHOD DOES NOT MAKE THE ROBOT SLOW DOWN WHEN
-     * APPROACHING THE BRIDGE.
-     * This method is designed to be called at the end of autonomous to drive the robot to the
-     * center line. It consists of three stages.
-     * 1. If the robot is far enough in the +x direction (near the foundations or buildzone), the
-     * robot will translate in the -x direction to avoid any chance of collision with the
-     * foundation.
-     * 2. If the robot is to the left or right of the middle bridge, translate up or down to the
-     * team bridge.
-     * 3. Finally, drive to a predetermined point under the team bridge.
-     */
-    public void driveCenterLineEndAutonomous()
-    {
-        vuf.getLocation();
-        // (x, y, z) is the location of the robot on the field.
-        float x = vuf.translation.get(0);
-        float y = vuf.translation.get(1);
-        float z = vuf.translation.get(2);
-
-        // Conditional to check for step one. 24 is an arbitrary number that may need adjusting.
-        if (x > 24)
-        {
-            autonomousDriveMecanum(180 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-        }
-        // Conditional to check for step two. 36 is a partially arbitrary number that may need adjusting.
-        else if (Math.abs(y) < 36)
-        {
-            // Drive up if we are the blue team, and drive down if we are the red team.
-            if (isRedAlliance)
-            {
-                autonomousDriveMecanum(-90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-            } else
-            {
-                autonomousDriveMecanum(90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-            }
-        }
-        // If neither of the first two steps are true, then the third step is executed.
-        else
-        {
-            // This variable controls the y-coordinate of where we want our robot to park.
-            float yCoordinate = 48; //MUST BE POSITIVE!!! THE ROBOT WILL PARK ON THE WRONG SIDE IF NEGATIVE!!!
-            // Flip if we are the red team.
-            if (isRedAlliance)
-            {
-                yCoordinate *= -1;
-            }
-            float distance = distancePower((float) Math.sqrt(x * x + (y - yCoordinate) * (y - yCoordinate)));
-            float angle = (float) (Math.atan(y / x) * 180 / Math.PI);
-
-            if (x > 0)
-            {
-                angle += 180;
-            }
-            angle = (float) normalizeAngle(angle);
-
-            autonomousDriveMecanum(angle - vuf.rotation.firstAngle, distancePower(distance), 0);
-        }
-    }
-
-
-    // todo Implement (global coordinates)
-    /**
-     * UNTESTED - - - UNTESTED - - - UNTESTED
-     * DO NOT USE THIS METHOD AT THE END OF AUTONOMOUS. DESPITE THE SIMILARITY TO
-     * driveCenterLineEndAutonomous, IT IS NOT DESIGNED TO MAKE THE ROBOT PARK NICELY.
-     * This method is designed to be called during autonomous to drive the robot through the
-     * center bridges in either direction. It consists of three stages.
-     * 1. If the robot is far enough in the +x direction (near the foundations or buildzone), the
-     * robot will translate in the -x direction to avoid any chance of collision with the
-     * foundation. This step will be skipped if the robot is on the depot side.
-     * 2. Translate up or down as necessary to align with the desired bridge.
-     * 3. Finally, drive through the bridge.
-     * Note: This method is only intended to drive to the bridge. This method will not drive the
-     * robot away from the bridge; use a different method for that purpose.
-     *
-     * @param bridge is positive if we want to drive through our team bridge. Otherwise (zero or
-     *               negative, we want to drive through the center bridge.
-     */
-    public void driveToBridge(int bridge)
-    {
-        vuf.getLocation();
-        // (x, y, z) is the location of the robot on the field.
-        float x = vuf.translation.get(0);
-        float y = vuf.translation.get(1);
-        float z = vuf.translation.get(2);
-
-        int foundationTolerance = 24;
-        int teamBridgeTolerance = 36;
-        int centerTolerance = 24;
-
-        // Conditional to check for step one. foundationTolerance is an arbitrary number that may need adjusting.
-        if (x > foundationTolerance)
-        {
-            autonomousDriveMecanum(180 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-        }
-        // Conditional to check for step two. teamBridgeTolerance and centerTolerance are partially arbitrary
-        // numbers that may need adjusting.
-        else if ((Math.abs(y) < teamBridgeTolerance && bridge > 0) || (Math.abs(y) > centerTolerance && bridge <= 0))
-        {
-            // Check if we want to go to our team bridge.
-            if (bridge > 0)
-            {
-                // Drive up if we are the blue team, and drive down if we are the red team.
-                if (isRedAlliance)
-                {
-                    autonomousDriveMecanum(-90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-                } else
-                {
-                    autonomousDriveMecanum(90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-                }
-            }
-            // Otherwise, go to center bridge.
-            else
-            {
-                if (y > centerTolerance)
-                {
-                    autonomousDriveMecanum(-90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-                } else if (y < -centerTolerance)
-                {
-                    autonomousDriveMecanum(90 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-                }
-            }
-        }
-        // If neither of the first two steps are true, then the third step is executed.
-        else
-        {
-            // If we are left of the bridge, drive right.
-            if (x < 0)
-            {
-                autonomousDriveMecanum(-vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-            }
-            // Else, drive left.
-            else
-            {
-                autonomousDriveMecanum(180 - vuf.rotation.firstAngle, Constants.AUTONOMOUS_SCALE_DISTANCE, 0);
-            }
-        }
     }
 
 
@@ -483,11 +264,12 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Approximate x and y position using encoders.
             else if (!vuf.getTargetVisibility() && !justLostTargets)
             {
+                // todo Sign flips correct for new front of robot?
                 // Update positions using last Vuforia pos + distance measured by encoders (utilizes fact that encoders have been reset to 0).
-                xPos = lastX + (float) (Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
-                        motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / (4 /*Math.sqrt(2)*/));
-                yPos = lastY + (float) (Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() +
-                        motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4);
+                xPos = lastX + (float) (Constants.IN_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() +
+                        motorBL.getCurrentPosition() - motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / (4 /*Math.sqrt(2)*/));
+                yPos = lastY + (float) (Constants.IN_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() -
+                        motorBL.getCurrentPosition() + motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4);
             }
             // Update global position and angle coordinates.
             else

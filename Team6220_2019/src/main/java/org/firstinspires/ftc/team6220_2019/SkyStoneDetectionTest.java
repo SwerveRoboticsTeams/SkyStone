@@ -50,7 +50,7 @@ public class SkyStoneDetectionTest extends LinearOpMode
 
     Dogeforia6220 vuforia;
     WebcamName webcamName;
-    // DogeCV OpenCV_detector
+    // DogeCV skystoneDetector
     SkystoneDetectionOpenCV OpenCV_detector;
 
     public double m1, m2, m3;
@@ -75,7 +75,7 @@ public class SkyStoneDetectionTest extends LinearOpMode
         vuforia = new Dogeforia6220(parameters);
         vuforia.enableConvertFrameToBitmap();
 
-        // Initialize the OpenCV_detector
+        // Initialize the skystoneDetector
         OpenCV_detector = new SkystoneDetectionOpenCV();
 
         // fullscreen display:
@@ -83,7 +83,7 @@ public class SkyStoneDetectionTest extends LinearOpMode
         //   screen goes to sleep, and webcam turns off a few minutes after init, and after play
         OpenCV_detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
 
-        // Set the OpenCV_detector and enable it.
+        // Set the skystoneDetector and enable it.
         vuforia.setDogeCVDetector(OpenCV_detector);
         vuforia.enableDogeCV();
         vuforia.start();

@@ -67,36 +67,73 @@ abstract public class MasterTeleOp extends MasterOpMode
         telemetry.addData("drivePower: ", drivePower);
         telemetry.addData("rotationPower: ", rotationPower);
         telemetry.addData("Left stick x: ", driver1.getLeftStickX());
+        telemetry.addData("Left stick y: ", driver1.getLeftStickY());
         telemetry.addData("Right stick x: ", driver1.getRightStickX());
+        telemetry.addData("Right stick y: ", driver1.getRightStickY());
     }
 
 
-    // todo Make sure this works
-    // TeleOp method for driving collector.
-    public void driveCollector()
+    // Code for driving horizontal linear slide.  Controlled by driver 1.
+    public void driveSlide()
     {
-        // Drive linear slide-----------------------------------------------------------------------
         double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
 
-        if(rightTrigger >= leftTrigger && rightTrigger > Constants.MINIMUM_TRIGGER_VALUE) // rightTrigger extends
+        // Code if we are in RUN_USING_ENCODERS.
+        // Transition to RUN_USING_ENCODERS if we press triggers and collector was previously in RUN_TO_POSITION.
+        if ((leftTrigger >= Constants.MINIMUM_TRIGGER_VALUE || rightTrigger >= Constants.MINIMUM_TRIGGER_VALUE) && isCollectorRunToPosMode)
         {
-            runSlideMotor(rightTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
+            isCollectorRunToPosMode = false;
+            slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-        else if(leftTrigger > rightTrigger && leftTrigger > Constants.MINIMUM_TRIGGER_VALUE) // leftTrigger retracts
+        // Run with triggers.
+        else if (!isCollectorRunToPosMode)
         {
-            runSlideMotor(-1 * leftTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
+            if(rightTrigger >= leftTrigger && rightTrigger > Constants.MINIMUM_TRIGGER_VALUE) // rightTrigger extends
+            {
+                runSlideMotor(rightTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
+            }
+            else if(leftTrigger > rightTrigger && leftTrigger > Constants.MINIMUM_TRIGGER_VALUE) // leftTrigger retracts
+            {
+                runSlideMotor(-1 * leftTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
+            }
+            else
+            {
+                runSlideMotor(0, Constants.SLIDE_MOTOR_MAX_POWER);
+            }
         }
-        else
-        {
-            runSlideMotor(0, Constants.SLIDE_MOTOR_MAX_POWER);
-        }
-        //------------------------------------------------------------------------------------------
 
+
+        // Code if we are in RUN_TO_POSITION.
+        // Transition to RUN_TO_POSITION if either Y or A is pressed.
+        if (driver1.isButtonJustPressed(Button.Y))
+        {
+            isCollectorRunToPosMode = true;
+            slideMotor.setTargetPosition(Constants.SLIDE_MOTOR_MAX_DIST);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setPower(Constants.SLIDE_MOTOR_MAX_POWER);
+        }
+        else if (driver1.isButtonJustPressed(Button.A))
+        {
+            isCollectorRunToPosMode = true;
+            slideMotor.setTargetPosition(Constants.SLIDE_MOTOR_MIN_DIST);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setPower(Constants.SLIDE_MOTOR_MAX_POWER);
+        }
+    }
+
+
+    // TeleOp method for driving collector.  Controlled by driver 2.
+    public void driveCollector()
+    {
         // Drive collector motors-------------------------------------------------------------------
-        if (driver1.isButtonPressed(Button.B))    // Spit out stone
+        if (driver2.isButtonPressed(Button.DPAD_UP))    // Spit out stone
             runCollector(false, false);
-        else if (driver1.isButtonPressed(Button.A))     // Collect stone
+        else if (driver2.isButtonPressed(Button.DPAD_DOWN))     // Collect stone
             runCollector(true, false);
+        else if (driver2.isButtonPressed(Button.DPAD_LEFT))     // Rotate stone left
+            runCollector(false, true);
+        else if (driver2.isButtonPressed(Button.DPAD_RIGHT))     // Rotate stone right
+            runCollector(true, true);
         else    // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed, the motors don't continue running
         {
             collectorLeft.setPower(0);
@@ -111,14 +148,12 @@ abstract public class MasterTeleOp extends MasterOpMode
     // keeping grabber parallel to the ground.
     public void driveLift()
     {
-        //double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
         double rightStickY = driver2.getRightStickY();
 
-        // Linear slides / raising mechanism should be idle if neither or both triggers are pressed
         // Change drive mode if stick is pressed a significant amount and we were in RUN_TO_POSITION
-        if (Math.abs(rightStickY) >= Constants.MINIMUM_JOYSTICK_POWER && isRunToPosMode)
+        if (Math.abs(rightStickY) >= Constants.MINIMUM_JOYSTICK_POWER && isLiftRunToPosMode)
         {
-            isRunToPosMode = false;
+            isLiftRunToPosMode = false;
             liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             hasLoweredArm = false;
@@ -127,7 +162,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             hasPlacedStone = false;
         }
 
-        if (!isRunToPosMode)
+        if (!isLiftRunToPosMode)
             liftMotor.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
 
         // This yields the fraction of 1 rotation that the motor has progressed through (in other
@@ -141,7 +176,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         // If driver 2 presses A, return lift to position just high enough to grab stone
         if (driver2.isButtonJustPressed(Button.A))
         {
-            isRunToPosMode = true;
+            isLiftRunToPosMode = true;
             liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
             liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
@@ -150,7 +185,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
 
         // todo Implement once we have time
-        if (isRunToPosMode)
+        if (isLiftRunToPosMode)
         {
             if (!hasLoweredArm)
             {
@@ -181,7 +216,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             } else
             {
                 towerHeight++;
-                isRunToPosMode = false;
+                isLiftRunToPosMode = false;
             }
         }
 
