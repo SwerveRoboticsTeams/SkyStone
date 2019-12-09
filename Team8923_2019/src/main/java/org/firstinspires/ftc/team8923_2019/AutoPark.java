@@ -3,12 +3,12 @@ package org.firstinspires.ftc.team8923_2019;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name="Park Depot Red", group = "Swerve")
+@Autonomous(name="Park", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
  */
 //@Disabled
-public class AutoParkDepotRed extends MasterAutonomous
+public class AutoPark extends MasterAutonomous
 {
 
     @Override
@@ -18,7 +18,6 @@ public class AutoParkDepotRed extends MasterAutonomous
         initAuto();
         telemetry.clear();
         telemetry.update();
-        double refereneAngle = imu.getAngularOrientation().secondAngle;
 
 
         waitForStart();
@@ -27,12 +26,7 @@ public class AutoParkDepotRed extends MasterAutonomous
 
         while (opModeIsActive())
         {
-            // forward
-            moveAuto(0, -750, .5, .1, 3);
-            // turnLeft
-            imuPivot(refereneAngle,-90,.3, .015, 3);
-            // forward
-            moveAuto(0, 700, .5, .1, 3);
+            moveAuto(0, 25.4*3, .5, .1, 3);
             break;
         }
 

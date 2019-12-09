@@ -25,22 +25,19 @@ public class AutoPullFoundationRed extends MasterAutonomous
 
         while (opModeIsActive())
         {
-            moveAuto(0, -40, .4, .1, 3);
-            moveAuto(-425, 0, .2, .1, 3);
-            moveAuto(0, 175, .6, .1, 3);
-            moveAuto(0, -750, .4, .1, 3);
-            moveAuto(0, -200, .2, .1, 3);
+            moveAuto(0, -40, .5, .1, 3);
+            moveAuto(-300, 0, 1, .1, 3);
+            moveAuto(0, 100, 1, .1, 3);
+            moveAuto(0, -750, 1, .1, 3);
+            moveAuto(0, -125, .4, .1, 3);
             sleep(200);
             grabbersDown();
             sleep(500);
-            moveAuto(0, 1150, .2, .1, 3);
+            moveAuto(0, 1150, .4, .1, 3);
             grabbersUp();
-            sleep(300);
-            moveAuto(0,200,1.0,.1,3);
-            moveAuto(900, 0, .4, .1, 3);
-            moveAuto(0, -100, .4, .1, 3);
-            moveAuto(600, 0, .4, .1, 3);
-
+            sleep(200);
+            moveAuto(0,15,1,.1,3);
+            moveAuto(1800, 0, .8, .1, 3);
 
 
             break;

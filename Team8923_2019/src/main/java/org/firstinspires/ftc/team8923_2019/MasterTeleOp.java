@@ -64,7 +64,7 @@ abstract class MasterTeleOp extends Master
             servoFoundationRight.setPosition(1.0);
         }else{
             //up
-            servoFoundationLeft.setPosition(0.64);
+            servoFoundationLeft.setPosition(0.72);
             servoFoundationRight.setPosition(0.1);
         }
     }

@@ -23,11 +23,11 @@ public class Constants
     public static final double ROTATION_P = 0.005;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
-    public static final double TRANSLATION_P = 0.001;
+    public static final double TRANSLATION_P = 0.0004;
     public static final double TRANSLATION_I = 0.0;
     public static final double TRANSLATION_D = 0.0;
     public static final double ANGLE_TOLERANCE_DEG = 5.0;
-    public static final double POSITION_TOLERANCE_MM = 20.0;
+    public static final double POSITION_TOLERANCE_MM = 4*25.4;
 
 
 
