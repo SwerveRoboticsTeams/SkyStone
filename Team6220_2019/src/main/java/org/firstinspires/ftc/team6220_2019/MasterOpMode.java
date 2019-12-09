@@ -94,8 +94,8 @@ abstract public class MasterOpMode extends LinearOpMode
         driver2 = new DriverInput(gamepad2);
 
         // Only initialize Vuforia if we specify that we want to.
-        if (isUsingVuforia)
-            initVuforiaAndOpenCV();
+        /*if (isUsingVuforia)
+            initVuforiaAndOpenCV();*/
 
         // Drive motor initialization--------------------------------------
         motorFL = hardwareMap.dcMotor.get("motorFL");

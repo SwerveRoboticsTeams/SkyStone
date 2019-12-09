@@ -27,18 +27,28 @@ public class AutoCompetition extends MasterAutonomous
         // Wait to start the match for 0-10 seconds, depending on setup input.
         pauseWhileUpdating(delayCount);
 
-        // Drive forward and grab foundation.
-        navigateUsingEncoders(0, -39, 0.4, false);
-        toggleFoundationServos();
-        pauseWhileUpdating(1.0);
+        navigateUsingEncoders(-robotShiftSign * 14, 0, 0.4, false);
 
-        // Drive backward and let go of foundation.
-        navigateUsingEncoders(0, 39, 0.4, false);
-        toggleFoundationServos();
+        if(scoreFoundation)
+        {
+            // Drive forward and grab foundation.
+            navigateUsingEncoders(0, -39, 0.4, false);
+            toggleFoundationServos();
+
+            pauseWhileUpdating(1.0);
+
+            // Drive backward and let go of foundation.
+            navigateUsingEncoders(0, 42, 0.4, false);
+            toggleFoundationServos();
+        }
 
         // Park under alliance Skybridge.
         navigateUsingEncoders(robotShiftSign * 54, 0, 0.8, false);
 
+        if (!parkClose)
+        {
+            navigateUsingEncoders(0, -24, 0.6, false);
+        }
 
         /*
         // Find SkyStone image target and translate appropriate distance toward image target
@@ -103,6 +113,6 @@ public class AutoCompetition extends MasterAutonomous
         // Turn off Vuforia tracking.
         //vuf.deactivateTargets();
         // Turn off OpenCV.
-        skystoneDetector.disable();
+        //skystoneDetector.disable();
     }
 }
