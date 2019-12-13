@@ -37,7 +37,7 @@ abstract class Master extends LinearOpMode
     private static final double WHEEL_DIAMETER = 4 * 25.4; // 4 inch diameter
     private static final double MM_PER_REVOLUTION = Math.PI * WHEEL_DIAMETER;
     static final double MM_PER_TICK = MM_PER_REVOLUTION / TICKS_PER_WHEEL_REVOLUTION;
-    static final double COUNTS_PER_MM = TICKS_PER_WHEEL_REVOLUTION / MM_PER_REVOLUTION;
+    final double COUNTS_PER_MM = TICKS_PER_WHEEL_REVOLUTION / MM_PER_REVOLUTION;
 
     public void initHardware()
     {

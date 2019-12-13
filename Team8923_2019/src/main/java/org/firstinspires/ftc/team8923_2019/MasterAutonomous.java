@@ -19,10 +19,24 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     PIDFilter translationFilter;
     PIDFilter rotationFilter;
 
+    double Kmove = 1.0f/1200.0f;
+
+    int newTargetFL;
+    int newTargetFR;
+    int newTargetBL;
+    int newTargetBR;
+
     double speedFL;
     double speedFR;
     double speedBL;
     double speedBR;
+
+    int errorFL;
+    int errorFR;
+    int errorBL;
+    int errorBR;
+
+    int TOL = 100;
 
     // Used to calculate distance traveled between loops
     int lastEncoderFL = 0;
@@ -182,7 +196,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     }
 
 
-    void moveAuto(double initDeltaX, double initDeltaY, double maxSpeed, double minSpeed, double timeout) throws InterruptedException
+    void imuMoveAuto(double initDeltaX, double initDeltaY, double maxSpeed, double minSpeed, double timeout) throws InterruptedException
     {
 
 
@@ -325,6 +339,48 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         }
 
 
+
+        stopDriving();
+    }
+
+    public void moveAuto(double x, double y, double speed, double minSpeed, double timeout) throws InterruptedException
+    {
+        newTargetFL = motorFL.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) + (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+        newTargetFR = motorFR.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) - (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+        newTargetBL = motorBL.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) - (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+        newTargetBR = motorBR.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) + (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
+        runtime.reset();
+        do
+        {
+            errorFL = newTargetFL - motorFL.getCurrentPosition();
+            speedFL = Math.abs(errorFL * Kmove);
+            speedFL = Range.clip(speedFL, minSpeed, speed);
+            speedFL = speedFL * Math.signum(errorFL);
+
+            errorFR = newTargetFR - motorFR.getCurrentPosition();
+            speedFR = Math.abs(errorFR * Kmove);
+            speedFR = Range.clip(speedFR, minSpeed, speed);
+            speedFR = speedFR * Math.signum(errorFR);
+
+            errorBL = newTargetBL - motorBL.getCurrentPosition();
+            speedBL = Math.abs(errorBL * Kmove);
+            speedBL = Range.clip(speedBL, minSpeed, speed);
+            speedBL = speedBL * Math.signum(errorBL);
+
+            errorBR = newTargetBR - motorBR.getCurrentPosition();
+            speedBR = Math.abs(errorBR * Kmove);
+            speedBR = Range.clip(speedBR, minSpeed, speed);
+            speedBR = speedBR * Math.signum(errorBR);
+
+            motorFL.setPower(speedFL);
+            motorFR.setPower(speedFR);
+            motorBL.setPower(speedBL);
+            motorBR.setPower(speedBR);
+            idle();
+        }
+        while (opModeIsActive() &&
+                (runtime.seconds() < timeout) &&
+                (Math.abs(errorFL) > TOL || Math.abs(errorFR) > TOL || Math.abs(errorBL) > TOL || Math.abs(errorBR) > TOL));
 
         stopDriving();
     }
