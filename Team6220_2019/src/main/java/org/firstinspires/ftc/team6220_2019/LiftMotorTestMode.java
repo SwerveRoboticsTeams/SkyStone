@@ -7,7 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class LiftMotorTestMode extends LinearOpMode {
+abstract public class LiftMotorTestMode extends LinearOpMode
+{
     DcMotor liftMotor0, liftMotor1, liftMotor2;
 
     DriverInput driver;
@@ -15,7 +16,8 @@ abstract public class LiftMotorTestMode extends LinearOpMode {
 
     ElapsedTime timer = new ElapsedTime();
 
-    public void initialize(){
+    public void initialize()
+    {
         driver = new DriverInput(gamepad1);
 
         callback = new ArrayList<>();
