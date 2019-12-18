@@ -12,7 +12,7 @@ abstract public class MasterTeleOp extends MasterOpMode
     double autoRevPos = 0.0;
     double autoDouble = 0.0;
 
-    final double ADAGIO_POWER = 0.3;
+    final double ADAGIO_POWER = 0.45;
 
     boolean isReverseMode = false;
     boolean isLegatoMode = false;
@@ -42,8 +42,8 @@ abstract public class MasterTeleOp extends MasterOpMode
     void mecanumDrive()
     {
         // hold right bumper for adagio legato mode
-        if (gamepad1.right_trigger>0) isLegatoMode = true;
-        else isLegatoMode = false;
+        if (gamepad1.right_trigger>0) isLegatoMode = false;
+        else isLegatoMode = true;
         // hold left bumper for reverse mode
         if (gamepad1.left_trigger>0) isReverseMode = true;
         else isReverseMode = false;
@@ -57,7 +57,7 @@ abstract public class MasterTeleOp extends MasterOpMode
             if (gamepad1.dpad_right) x = 0.2;
             if (gamepad1.dpad_down) y = -0.2;
             if (gamepad1.dpad_up) y = 0.2;
-            pivotPower = Range.clip(gamepad1.left_stick_x, -0.2, 0.2);
+            pivotPower = Range.clip(gamepad1.left_stick_x, -0.4, 0.4);
 
             if (isReverseMode) // if both legato and reverse mode
             {
