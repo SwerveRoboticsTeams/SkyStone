@@ -280,7 +280,7 @@ abstract public class MasterOpMode extends LinearOpMode
         double distanceToTarget = calculateDistance(deltaX, deltaY);
 
         currentAngle = getAngularOrientationWithOffset();
-        double headingDiff = normalizeRotationTarget(initHeading, currentAngle);
+        double headingDiff = normalizeAngle(initHeading - currentAngle);
         //---------------------------------------------
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -304,7 +304,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
             // Calculate how far off robot is from its initial heading
             currentAngle = getAngularOrientationWithOffset();
-            headingDiff = normalizeRotationTarget(initHeading, currentAngle);
+            headingDiff = normalizeAngle(initHeading - currentAngle);
 
             // Recalculate drive angle and distance remaining every loop
             distanceToTarget = calculateDistance(deltaX, deltaY);
@@ -389,7 +389,7 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         double turningPower;
         currentAngle = getAngularOrientationWithOffset();
-        double angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
+        double angleDiff = normalizeAngle(targetAngle - currentAngle);
 
         // Robot only stops turning when it is within angle tolerance
         while (Math.abs(angleDiff) >= Constants.ANGLE_TOLERANCE_DEG && opModeIsActive())
@@ -397,7 +397,7 @@ abstract public class MasterOpMode extends LinearOpMode
             currentAngle = getAngularOrientationWithOffset();
 
             // Give robot raw value for turning power
-            angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
+            angleDiff = normalizeAngle(targetAngle - currentAngle);
 
             // Send raw turning power through PID filter to adjust range and minimize oscillation
             rotationFilter.roll(angleDiff);
@@ -494,16 +494,8 @@ abstract public class MasterOpMode extends LinearOpMode
         startingOrientation = newValue;
     }
 
-    // Prevents angle differences from being outside the range -180 to 180 degrees
-    public double normalizeRotationTarget(double finalAngle, double initialAngle)
-    {
-        double diff = finalAngle - initialAngle;
 
-        return normalizeAngle(diff);
-    }
-
-
-    // Prevents a single angle from being outside the range -180 to 180 degrees
+    // Prevents an angle from being outside the range -180 to 180 degrees
     // Note:  Although it seems like it would, mod n doesn't work for this method.
     public double normalizeAngle(double rawAngle)
     {

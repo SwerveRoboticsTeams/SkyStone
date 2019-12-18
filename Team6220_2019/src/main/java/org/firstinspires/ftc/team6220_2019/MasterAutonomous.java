@@ -2,7 +2,6 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
-import com.vuforia.Vec2I;
 
 /**
  * This class includes methods and fields that are useful for generic autonomous OpModes.
@@ -231,7 +230,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         // Calculate distance from robot to target.
         float distance = (float) calculateDistance(x - xPos, y - yPos);
         // Calculate angle between robot and target.
-        double angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
+        double angleDiff = normalizeAngle(targetAngle - currentAngle);
 
 
         // Update location-----------------------------------------------------------------------------------
@@ -281,7 +280,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Get global orientation using IMU.
             currentAngle = getAngularOrientationWithOffset();
             distance = (float) calculateDistance(x - xPos, y - yPos);
-            angleDiff = normalizeRotationTarget(targetAngle, currentAngle);
+            angleDiff = normalizeAngle(targetAngle - currentAngle);
             //-----------------------------------------------------------------------------------------------
 
 
