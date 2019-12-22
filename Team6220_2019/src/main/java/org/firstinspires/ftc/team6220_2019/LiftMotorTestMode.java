@@ -9,7 +9,7 @@ import java.util.List;
 
 abstract public class LiftMotorTestMode extends LinearOpMode
 {
-    DcMotor liftMotor0, liftMotor1, liftMotor2;
+    DcMotor liftMotor0, liftMotor1;
 
     DriverInput driver;
     List<ConcurrentOperation> callback;
@@ -24,15 +24,12 @@ abstract public class LiftMotorTestMode extends LinearOpMode
 
         liftMotor0 = hardwareMap.dcMotor.get("liftMotor0");
         liftMotor1 = hardwareMap.dcMotor.get("liftMotor1");
-        liftMotor2 = hardwareMap.dcMotor.get("liftMotor2");
 
         liftMotor0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         liftMotor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         callback.add(driver);
     }

@@ -27,18 +27,15 @@ public class LiftMotorTest extends LiftMotorTestMode
             if (driver.isButtonPressed(Button.DPAD_UP))
             {
                 liftMotor0.setPower(-speedUp);
-                liftMotor1.setPower(-speedUp);
-                liftMotor2.setPower(speedUp);
+                liftMotor1.setPower(speedUp);
             } else if (driver.isButtonPressed(Button.DPAD_DOWN))
             {
                 liftMotor0.setPower(speedDown);
-                liftMotor1.setPower(speedDown);
-                liftMotor2.setPower(-speedDown);
+                liftMotor1.setPower(-speedDown);
             } else
             {
                 liftMotor0.setPower(0);
                 liftMotor1.setPower(0);
-                liftMotor2.setPower(0);
             }
             if (driver.isButtonJustPressed(Button.A))
             {
