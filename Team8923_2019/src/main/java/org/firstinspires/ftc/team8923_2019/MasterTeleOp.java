@@ -60,16 +60,16 @@ abstract class MasterTeleOp extends Master
     {
         if(gamepad1.left_trigger > Constants.MINIMUM_TRIGGER_VALUE){
             //down
-            servoFoundationLeft.setPosition(0.0);
-            servoFoundationRight.setPosition(1.0);
+            servoFoundationLeft.setPosition(Constants.LEFT_FOUNDATION_SERVO_POSITION_DOWN);
+            servoFoundationRight.setPosition(Constants.RIGHT_FOUNDATION_SERVO_POSITION_DOWN);
         }else{
             //up
-            servoFoundationLeft.setPosition(0.72);
-            servoFoundationRight.setPosition(0.1);
+            servoFoundationLeft.setPosition(Constants.LEFT_FOUNDATION_SERVO_POSITION_UP);
+            servoFoundationRight.setPosition(Constants.RIGHT_FOUNDATION_SERVO_POSITION_UP);
         }
     }
 
-    public void runCapstoneGrabber()
+    public void runCapstonePlacer()
     {
         if (gamepad2.y) {
             servoCapstone.setPosition(0.0);

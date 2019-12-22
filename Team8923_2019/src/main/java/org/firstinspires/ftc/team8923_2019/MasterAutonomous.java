@@ -198,7 +198,11 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
     void imuMoveAuto(double initDeltaX, double initDeltaY, double maxSpeed, double minSpeed, double timeout) throws InterruptedException
     {
+        // Runs in inches
 
+        // Conversion to mm
+        initDeltaX*=25.4;
+        initDeltaY*=25.4;
 
         // Setting initial heading and robot angle to raw imu value
         final double initHeading =  normalizeAngle(imu.getAngularOrientation().firstAngle);
@@ -247,7 +251,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
         // Check to see if robot has arrived at destination within angle and position tolerances
         // todo Check conditional
-        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) || (runtime.seconds() < timeout)) && !isStopRequested())
+        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) /*|| (runtime.seconds() < timeout)*/) /*&& !isStopRequested()*/)
         {
 
             telemetry.update();
@@ -324,15 +328,19 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
            // telemetry.addData("driveAngle", driveAngle-90);
            // telemetry.addData("drivePower", drivePower);
            // telemetry.addData("rotationPower", rotationPower);
-            telemetry.addData("distance left", distanceToTarget);
-            telemetry.addData("deltaX", deltaX);
-            telemetry.addData("deltaY", deltaY);
-            telemetry.addData("distanceFilter",translationFilter.getFilteredValue());
-            telemetry.addData("rotationFilter",rotationFilter.getFilteredValue());
-            telemetry.addData("FL", motorFL.getCurrentPosition());
-            telemetry.addData("FR", motorFR.getCurrentPosition());
-            telemetry.addData("BL", motorBL.getCurrentPosition());
-            telemetry.addData("BR", motorBR.getCurrentPosition());
+//            telemetry.addData("distance left", distanceToTarget);
+//            telemetry.addData("deltaX", deltaX);
+//            telemetry.addData("deltaY", deltaY);
+//            telemetry.addData("distanceFilter",translationFilter.getFilteredValue());
+//            telemetry.addData("rotationFilter",rotationFilter.getFilteredValue());
+//            telemetry.addData("FL", motorFL.getCurrentPosition());
+//            telemetry.addData("FR", motorFR.getCurrentPosition());
+//            telemetry.addData("BL", motorBL.getCurrentPosition());
+//            telemetry.addData("BR", motorBR.getCurrentPosition());
+
+            telemetry.addData("heading diff", headingDiff);
+            telemetry.addData("distanceToTarget", distanceToTarget);
+
             telemetry.update();
 
             idle();

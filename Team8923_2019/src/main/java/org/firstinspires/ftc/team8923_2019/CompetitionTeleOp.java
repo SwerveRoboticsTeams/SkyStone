@@ -26,9 +26,9 @@ public class CompetitionTeleOp extends MasterTeleOp
             runLift();
             runJoint();
             runClaw();
-            runCapstoneGrabber();
+            runCapstonePlacer();
             runIntake();
-            runBlockPusher();
+            //runBlockPusher();
 
             idle();
 
