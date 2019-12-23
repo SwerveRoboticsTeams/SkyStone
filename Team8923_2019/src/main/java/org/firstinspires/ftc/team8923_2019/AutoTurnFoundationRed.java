@@ -3,18 +3,17 @@ package org.firstinspires.ftc.team8923_2019;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name="Pull Foundation Red", group = "Swerve")
+@Autonomous(name="Turn Foundation Red", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
  */
 //@Disabled
-public class AutoPullFoundationRed extends MasterAutonomous
+public class AutoTurnFoundationRed extends MasterAutonomous
 {
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        //configureAutonomous();
         initAuto();
         telemetry.clear();
         telemetry.update();
@@ -30,11 +29,13 @@ public class AutoPullFoundationRed extends MasterAutonomous
             imuMoveAuto(0 ,23 ,1,.2,3);
             grabbersDown();
             sleep(250);
-            imuMoveAuto(0,-32,1,.2,3);
+            imuPivot(imu.getAngularOrientation().firstAngle,-30,.5,1,1);
+            imuMoveAuto(0 ,-23 ,1,.2,3);
+            imuPivot(imu.getAngularOrientation().firstAngle,-60,.5,1,1);
+            imuMoveAuto(0 ,14 ,1,.2,3);
             grabbersUp();
             sleep(250);
-            imuMoveAuto(-55,0,1,.2,3);
-
+            imuMoveAuto(-19 ,-48 ,1,.2,3);
             break;
         }
 

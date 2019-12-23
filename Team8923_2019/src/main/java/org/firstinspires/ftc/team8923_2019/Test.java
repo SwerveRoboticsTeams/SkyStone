@@ -28,9 +28,8 @@ public class Test extends MasterAutonomous
         while (opModeIsActive())
         {
             reverseDrive = false;
-            imuMoveAuto(40,0,1,.2,3);
-            imuMoveAuto(-10,0,1,.2,3);
-            imuMoveAuto(-30,0,1,.2,3);
+
+            imuMoveAuto(8,8,1,.2,3);
             break;
             // turn power counter clock
         }

@@ -44,6 +44,8 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     int lastEncoderBL = 0;
     int lastEncoderBR = 0;
 
+    boolean autoReverseDrive = false;
+
 
     Alliance alliance = Alliance.BLUE;
     StartLocations startLocation = StartLocations.DEPOT_SIDE;
@@ -203,6 +205,11 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         // Conversion to mm
         initDeltaX*=25.4;
         initDeltaY*=25.4;
+
+        if (autoReverseDrive){
+            initDeltaX *= -1;
+            initDeltaY *= -1;
+        }
 
         // Setting initial heading and robot angle to raw imu value
         final double initHeading =  normalizeAngle(imu.getAngularOrientation().firstAngle);
@@ -395,15 +402,15 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
     public void grabbersDown()
     {
-        servoFoundationLeft.setPosition(0.0);
-        servoFoundationRight.setPosition(1.0);
+        servoFoundationLeft.setPosition(Constants.LEFT_FOUNDATION_SERVO_POSITION_DOWN);
+        servoFoundationRight.setPosition(Constants.RIGHT_FOUNDATION_SERVO_POSITION_DOWN);
 
     }
 
     void grabbersUp()
     {
-        servoFoundationLeft.setPosition(0.72);
-        servoFoundationRight.setPosition(0.1);
+        servoFoundationLeft.setPosition(Constants.LEFT_FOUNDATION_SERVO_POSITION_UP);
+        servoFoundationRight.setPosition(Constants.RIGHT_FOUNDATION_SERVO_POSITION_UP);
     }
 
     void sendTelemetry()
