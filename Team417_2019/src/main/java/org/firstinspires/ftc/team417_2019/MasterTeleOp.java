@@ -177,8 +177,11 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
 
         // Set Automatic Rev servo position
-        autoDouble = (double) (arm1.getCurrentPosition() + 150);
+        // took a bunch of positions for arm + wrist so part of linear equation
+        autoDouble = (double) (arm1.getCurrentPosition() + 100);
+        // the slope of the equation
         autoDouble *= 0.4 / -1200;
+        // when the arm is 0 we want the wrist to be 0.25
         autoRevPos =  autoDouble + 0.235; // high pos = -1058, low = 0
         mainWristServo.setPosition(autoRevPos);
 
@@ -186,12 +189,12 @@ abstract public class MasterTeleOp extends MasterOpMode
         if(grabber.getToggle(gamepad2.a))
         {
             // set smallGrabber to closed position
-            smallGrabber.setPosition(0.7);
+            smallGrabber.setPosition(1);
         }
         else
         {
             // set smallGrabber to open position
-            smallGrabber.setPosition(0.3);
+            smallGrabber.setPosition(0);
         }
 
 

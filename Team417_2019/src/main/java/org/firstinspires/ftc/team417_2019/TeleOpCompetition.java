@@ -29,6 +29,14 @@ public class TeleOpCompetition extends MasterTeleOp
             collector();
             foundationPullers();
             updateTelemetry();
+
+            if (gamepad1.a) {
+                telemetry.addData("core2", core2.getCurrentPosition());
+                telemetry.addData("Main Wrist", mainWristServo.getPosition());
+                telemetry.addData("Arm 1", arm1.getCurrentPosition());
+                updateTelemetry();
+
+            }
         }
     }
 }
