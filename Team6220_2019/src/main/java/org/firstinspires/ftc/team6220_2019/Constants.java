@@ -29,7 +29,7 @@ public class Constants
 
     public static final double LIFT_POWER_FACTOR = 0.6;
      // Constants to control power of collector motors
-    public static final double COLLECTOR_POWER = 0.85;  // Max power allowed for VEX motors.
+    public static final double COLLECTOR_POWER = 0.2;
     public static final double COLLECTOR_ROTATE_POWER = 0.3;    // todo Adjust
 
     // Constants to control slide motors
@@ -84,7 +84,7 @@ public class Constants
 
 
     // Servo positions--------------------------------
-     // For the grabber, 1 is closed, 0 is open
+     // For the grabber, 1 is closed, 0 is open. todo adjust grabber constants for new grabber
     public static final double GRABBER_OPEN = 0.65;
     public static final double GRABBER_CLOSED = 0.9;
     public static final double PARALLEL_SERVO_INIT = 0.0;
@@ -93,6 +93,12 @@ public class Constants
     public static final double FOUNDATION_SERVO_LEFT_CLOSED = 1.0;
     public static final double FOUNDATION_SERVO_RIGHT_OPEN = 1.0;
     public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0;
+
+    //todo adjust grabberArm constants
+    public static final double GRABBER_ARM_SERVO_LEFT_EXTEND = 1.0;
+    public static final double GRABBER_ARM_SERVO_LEFT_RETRACT = 0.0;
+    public static final double GRABBER_ARM_SERVO_RIGHT_EXTEND = 0.0;
+    public static final double GRABBER_ARM_SERVO_RIGHT_RETRACT = 1.0;
 
     // This converts encoder ticks to REV smart servo (in 225 degree mode) positions
     public static final double MOTOR_TO_REV_SERVO_MOVEMENT = 1.55;
@@ -103,7 +109,6 @@ public class Constants
     public static final double LIFT_MOTOR_TICKS = 2.0 * 1680.0;
     public static final int LIFT_GRAB_POS = 55;
     public static final int LIFT_PLACE_POS = 2000;
-    public static final int NUM_TICKS_PER_STONE = 250; //THIS IS AN APPROXIMATION. todo Adjust
     //-------------------------------------------------
 
     // Other encoder constants
