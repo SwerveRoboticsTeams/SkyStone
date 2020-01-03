@@ -428,11 +428,11 @@ abstract public class MasterOpMode extends LinearOpMode
         if (isRotatingStone)    // We are trying to spin stone for easier collection
         {
             collectorLeft.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
-            collectorRight.setPower(powerSign * -Constants.COLLECTOR_ROTATE_POWER);
+            collectorRight.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
         }
         else    // We are collecting normally
         {
-            collectorLeft.setPower(powerSign * Constants.COLLECTOR_POWER);
+            collectorLeft.setPower(powerSign * -Constants.COLLECTOR_POWER);
             collectorRight.setPower(powerSign * Constants.COLLECTOR_POWER);
         }
     }

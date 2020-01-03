@@ -101,8 +101,8 @@ public class AutoCompetition extends MasterAutonomous
             //toggleGrabber();
 
             navigateUsingEncoders(0, -4, 0.4, false);
-            collectorLeftServo.setPower(0);
-            collectorRightServo.setPower(0);
+            collectorLeft.setPower(0);
+            collectorRight.setPower(0);
             navigateUsingEncoders(0, 4, 0.4, false);
 
             navigateUsingEncoders(-robotShiftSign * 24, 0, 0.5, false);

@@ -66,10 +66,10 @@ abstract public class MasterTeleOp extends MasterOpMode
         telemetry.addData("angle: ", angle);
         telemetry.addData("drivePower: ", drivePower);
         telemetry.addData("rotationPower: ", rotationPower);
-        telemetry.addData("Left stick x: ", driver1.getLeftStickX());
+        /*telemetry.addData("Left stick x: ", driver1.getLeftStickX());
         telemetry.addData("Left stick y: ", driver1.getLeftStickY());
         telemetry.addData("Right stick x: ", driver1.getRightStickX());
-        telemetry.addData("Right stick y: ", driver1.getRightStickY());
+        telemetry.addData("Right stick y: ", driver1.getRightStickY());*/
     }
 
 
@@ -94,7 +94,7 @@ abstract public class MasterTeleOp extends MasterOpMode
     }
 
 
-    // todo Needs to be adjusted from arm to linear slide code.
+    // todo Needs RUN_TO_POSITION mode and automatic distances fixed.
     // TeleOp scoring system method.  Uses liftMotor to move scoring arm, with parallelServo
     // keeping grabber parallel to the ground.
     public void driveLift()
@@ -113,19 +113,21 @@ abstract public class MasterTeleOp extends MasterOpMode
             hasPlacedStone = false;
         }
 
-        if (!isLiftRunToPosMode) {
-            liftMotor1.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
-            liftMotor2.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
+        if (!isLiftRunToPosMode)
+        {
+            // todo Make sure that reversing these signs was correct.
+            liftMotor1.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
+            liftMotor2.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
         }
 
         // Code for automatic movement of arm-------------------------------------------------------------------
         // If driver 2 presses B, grabber closes.
-        if (driver2.isButtonJustPressed(Button.B)){
+        if (driver2.isButtonJustPressed(Button.B))
             grabberServo.setPosition(Constants.GRABBER_CLOSED);
-        }
 
         // If driver 2 presses Y, arm extends.
-        if (driver2.isButtonJustPressed(Button.Y)){
+        if (driver2.isButtonJustPressed(Button.Y))
+        {
             grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_EXTEND);
             grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_EXTEND);
         }
@@ -138,9 +140,10 @@ abstract public class MasterTeleOp extends MasterOpMode
             liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftMotor1.setPower(Constants.LIFT_POWER_FACTOR);
             liftMotor1.setTargetPosition(Constants.LIFT_GRAB_POS);
+            // todo Need to change this—can't use RUN_TO_POSITION on LM2 when only LM1 has an encoder.
             liftMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftMotor2.setPower(Constants.LIFT_POWER_FACTOR);
-            liftMotor2.setTargetPosition(Constants.LIFT_GRAB_POS);
+            liftMotor2.setTargetPosition(-Constants.LIFT_GRAB_POS);
 
             grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
             grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
