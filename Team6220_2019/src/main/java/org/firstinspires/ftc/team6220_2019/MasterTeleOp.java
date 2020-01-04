@@ -42,11 +42,11 @@ abstract public class MasterTeleOp extends MasterOpMode
 
 
         // Stick inputs must be changed from x and y to angle, drive power, and rotation power---
-        double angle = Math.toDegrees(driver1.getRightStickAngle());
+        double angle = Math.toDegrees(driver1.getLeftStickAngle());
 
-        double drivePower = tFactor * stickCurve.getOuput(driver1.getRightStickMagnitude());
+        double drivePower = tFactor * stickCurve.getOuput(driver1.getLeftStickMagnitude());
 
-        double rotationPower = rFactor * stickCurve.getOuput(driver1.getLeftStickX());
+        double rotationPower = rFactor * stickCurve.getOuput(driver1.getRightStickX());
         //----------------------------------------------------------------------------------------
 
 
@@ -66,59 +66,10 @@ abstract public class MasterTeleOp extends MasterOpMode
         telemetry.addData("angle: ", angle);
         telemetry.addData("drivePower: ", drivePower);
         telemetry.addData("rotationPower: ", rotationPower);
-        telemetry.addData("Left stick x: ", driver1.getLeftStickX());
+        /*telemetry.addData("Left stick x: ", driver1.getLeftStickX());
         telemetry.addData("Left stick y: ", driver1.getLeftStickY());
         telemetry.addData("Right stick x: ", driver1.getRightStickX());
-        telemetry.addData("Right stick y: ", driver1.getRightStickY());
-    }
-
-
-    // Code for driving horizontal linear slide.  Controlled by driver 1.
-    public void driveSlide()
-    {
-        double leftTrigger = driver1.getLeftTriggerValue(), rightTrigger = driver1.getRightTriggerValue();
-
-        // Code if we are in RUN_USING_ENCODERS.
-        // Transition to RUN_USING_ENCODERS if we press triggers and collector was previously in RUN_TO_POSITION.
-        if ((leftTrigger >= Constants.MINIMUM_TRIGGER_VALUE || rightTrigger >= Constants.MINIMUM_TRIGGER_VALUE) && isCollectorRunToPosMode)
-        {
-            isCollectorRunToPosMode = false;
-            slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        // Run with triggers.
-        else if (!isCollectorRunToPosMode)
-        {
-            if(rightTrigger >= leftTrigger && rightTrigger > Constants.MINIMUM_TRIGGER_VALUE) // rightTrigger extends
-            {
-                runSlideMotor(rightTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
-            }
-            else if(leftTrigger > rightTrigger && leftTrigger > Constants.MINIMUM_TRIGGER_VALUE) // leftTrigger retracts
-            {
-                runSlideMotor(-1 * leftTrigger, Constants.SLIDE_MOTOR_MAX_POWER);
-            }
-            else
-            {
-                runSlideMotor(0, Constants.SLIDE_MOTOR_MAX_POWER);
-            }
-        }
-
-
-        // Code if we are in RUN_TO_POSITION.
-        // Transition to RUN_TO_POSITION if either Y or A is pressed.
-        if (driver1.isButtonJustPressed(Button.Y))
-        {
-            isCollectorRunToPosMode = true;
-            slideMotor.setTargetPosition(Constants.SLIDE_MOTOR_MAX_DIST);
-            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setPower(Constants.SLIDE_MOTOR_MAX_POWER);
-        }
-        else if (driver1.isButtonJustPressed(Button.A))
-        {
-            isCollectorRunToPosMode = true;
-            slideMotor.setTargetPosition(Constants.SLIDE_MOTOR_MIN_DIST);
-            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setPower(Constants.SLIDE_MOTOR_MAX_POWER);
-        }
+        telemetry.addData("Right stick y: ", driver1.getRightStickY());*/
     }
 
 
@@ -126,13 +77,13 @@ abstract public class MasterTeleOp extends MasterOpMode
     public void driveCollector()
     {
         // Drive collector motors-------------------------------------------------------------------
-        if (driver2.isButtonPressed(Button.DPAD_UP))    // Spit out stone
+        if (driver1.isButtonPressed(Button.DPAD_UP))    // Spit out stone
             runCollector(false, false);
-        else if (driver2.isButtonPressed(Button.DPAD_DOWN))     // Collect stone
+        else if (driver1.isButtonPressed(Button.DPAD_DOWN))     // Collect stone
             runCollector(true, false);
-        else if (driver2.isButtonPressed(Button.DPAD_LEFT))     // Rotate stone left
+        else if (driver1.isButtonPressed(Button.DPAD_LEFT))     // Rotate stone left
             runCollector(false, true);
-        else if (driver2.isButtonPressed(Button.DPAD_RIGHT))     // Rotate stone right
+        else if (driver1.isButtonPressed(Button.DPAD_RIGHT))     // Rotate stone right
             runCollector(true, true);
         else    // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed, the motors don't continue running
         {
@@ -143,7 +94,7 @@ abstract public class MasterTeleOp extends MasterOpMode
     }
 
 
-    /*// todo Needs to be adjusted from arm to linear slide code.
+    // todo Needs RUN_TO_POSITION mode and automatic distances fixed.
     // TeleOp scoring system method.  Uses liftMotor to move scoring arm, with parallelServo
     // keeping grabber parallel to the ground.
     public void driveLift()
@@ -154,8 +105,8 @@ abstract public class MasterTeleOp extends MasterOpMode
         if (Math.abs(rightStickY) >= Constants.MINIMUM_JOYSTICK_POWER && isLiftRunToPosMode)
         {
             isLiftRunToPosMode = false;
-            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+            liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hasLoweredArm = false;
             hasGrabbedStone = false;
             hasRotatedArm = false;
@@ -163,28 +114,46 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
 
         if (!isLiftRunToPosMode)
-            liftMotor.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
-
-        // This yields the fraction of 1 rotation that the motor has progressed through (in other
-        // words, the range 0 - 1 corresponds to 0 - 360 degrees).
-        double deltaMotorPos = liftMotor.getCurrentPosition() / Constants.LIFT_MOTOR_TICKS;
-        // Power the servo such that it remains parallel to the ground.
-        parallelServo.setPosition(Constants.PARALLEL_SERVO_INIT + deltaMotorPos * 1.55*//*2*//*);   // todo Does 2 need to be 4/3?
-
+        {
+            // todo Make sure that reversing these signs was correct.
+            liftMotor1.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
+            liftMotor2.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
+        }
 
         // Code for automatic movement of arm-------------------------------------------------------------------
+        // If driver 2 presses B, grabber closes.
+        if (driver2.isButtonJustPressed(Button.B))
+            grabberServo.setPosition(Constants.GRABBER_CLOSED);
+
+        // If driver 2 presses Y, arm extends.
+        if (driver2.isButtonJustPressed(Button.Y))
+        {
+            grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_EXTEND);
+            grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_EXTEND);
+        }
+
         // If driver 2 presses A, return lift to position just high enough to grab stone
         if (driver2.isButtonJustPressed(Button.A))
         {
             isLiftRunToPosMode = true;
-            liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
 
+            liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftMotor1.setPower(Constants.LIFT_POWER_FACTOR);
+            liftMotor1.setTargetPosition(Constants.LIFT_GRAB_POS);
+            // todo Need to change this—can't use RUN_TO_POSITION on LM2 when only LM1 has an encoder.
+            liftMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftMotor2.setPower(Constants.LIFT_POWER_FACTOR);
+            liftMotor2.setTargetPosition(-Constants.LIFT_GRAB_POS);
+
+            grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
+            grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
             grabberServo.setPosition(Constants.GRABBER_OPEN);
+            isGrabberOpen = true;
         }
 
+
         // todo Implement once we have time
+        /*
         if (isLiftRunToPosMode)
         {
             if (!hasLoweredArm)
@@ -219,12 +188,12 @@ abstract public class MasterTeleOp extends MasterOpMode
                 isLiftRunToPosMode = false;
             }
         }
+        */
 
 
         // Display telemetry data to drivers
         telemetry.addData("Driver 2 right stick y: ", rightStickY);
-        telemetry.addData("Parallel servo position: ", parallelServo.getPosition());
         telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
-        telemetry.addData("Lift motor position: ", liftMotor.getCurrentPosition());
-    }*/
+        telemetry.addData("Lift motor position: ", liftMotor1.getCurrentPosition());
+    }
 }

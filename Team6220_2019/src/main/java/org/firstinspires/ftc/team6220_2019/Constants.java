@@ -15,7 +15,6 @@ public class Constants
     // Robot specifications
     public static final float WHEEL_DIAMETER_IN = 4;    // 4 inch diameter wheel
     public static final double SPROCKET_RATIO = 16.0 / 16.0;            // Driven to driving sprocket teeth
-    public static final double GRAB_ARM_LENGTH = 13.5;                // Grabber arm is 13.5 inches long
     // todo Confirm this is correct
     public static final double IN_PER_ANDYMARK_TICK = (Math.PI * WHEEL_DIAMETER_IN) / (0.5 * AM_40_TICKS_PER_ROTATION * SPROCKET_RATIO);
 
@@ -29,15 +28,16 @@ public class Constants
 
     public static final double LIFT_POWER_FACTOR = 0.6;
      // Constants to control power of collector motors
-    public static final double COLLECTOR_POWER = 0.85;  // Max power allowed for VEX motors.
-    public static final double COLLECTOR_ROTATE_POWER = 0.3;    // todo Adjust
+    public static final double COLLECTOR_POWER = 0.5;
+    public static final double COLLECTOR_ROTATE_POWER = 0.5;    // todo Adjust
 
     // Constants to control slide motors
-    public static final double SLIDE_MOTOR_MAX_POWER = 0.8;    // todo once we know this is working, increase to 1.0
+    // todo Edit these names and change values to use for lift.
+    public static final double SLIDE_MOTOR_MAX_POWER = 0.8;
     public static final double SLIDE_MOTOR_LOW_POWER_FACTOR = 0.2;
     public static final int SLIDE_MOTOR_MIN_DIST = 0;
     public static final int SLIDE_MOTOR_MAX_DIST = 3000;
-    public static final int SLIDE_EXTENDED = 1300;     // todo Adjust
+    public static final int SLIDE_EXTENDED = 1300;
 
     // Autonomous Drive constants
     public static final float AUTONOMOUS_SCALE_DISTANCE = 24;
@@ -84,15 +84,20 @@ public class Constants
 
 
     // Servo positions--------------------------------
-     // For the grabber, 1 is closed, 0 is open
+     // For the grabber, 1 is closed, 0 is open. todo adjust grabber constants for new grabber
     public static final double GRABBER_OPEN = 0.65;
     public static final double GRABBER_CLOSED = 0.9;
-    public static final double PARALLEL_SERVO_INIT = 0.0;
      // Open = stowed, closed = grabbing foundation
-    public static final double FOUNDATION_SERVO_LEFT_OPEN = 0;
+    public static final double FOUNDATION_SERVO_LEFT_OPEN = 0.5;
     public static final double FOUNDATION_SERVO_LEFT_CLOSED = 1.0;
-    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 1.0;
+    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 0.5;
     public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0;
+
+    //todo adjust grabberArm constants
+    public static final double GRABBER_ARM_SERVO_LEFT_EXTEND = 0.0;
+    public static final double GRABBER_ARM_SERVO_LEFT_RETRACT = 1.0;
+    public static final double GRABBER_ARM_SERVO_RIGHT_EXTEND = 1.0;
+    public static final double GRABBER_ARM_SERVO_RIGHT_RETRACT = 0.0;
 
     // This converts encoder ticks to REV smart servo (in 225 degree mode) positions
     public static final double MOTOR_TO_REV_SERVO_MOVEMENT = 1.55;
@@ -101,9 +106,8 @@ public class Constants
 
     // Encoder positions-------------------------------
     public static final double LIFT_MOTOR_TICKS = 2.0 * 1680.0;
-    public static final int LIFT_GRAB_POS = 55;
-    public static final int LIFT_PLACE_POS = 2000;
-    public static final int NUM_TICKS_PER_STONE = 250; //THIS IS AN APPROXIMATION. todo Adjust
+    public static final int LIFT_GRAB_POS = 55; // todo Needs to be changed for new lift
+    public static final int LIFT_PLACE_POS = 2000; // todo Needs to be changed for new lift
     //-------------------------------------------------
 
     // Other encoder constants

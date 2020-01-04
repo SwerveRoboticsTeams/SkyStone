@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -44,12 +45,10 @@ abstract public class MasterOpMode extends LinearOpMode
     BNO055IMU imu;
 
     DcMotor motorFL, motorFR, motorBL, motorBR;
-    CRServo collectorLeft, collectorRight;
-    // todo Add lift motors
-    //DcMotor liftMotor1, liftMotor2, liftMotor3;
-    DcMotor slideMotor;
-    // todo Add grabberServo once grabber is attached
-    //Servo grabberServo;
+    DcMotor liftMotor1, liftMotor2;
+    DcMotor collectorLeft, collectorRight;
+
+    Servo grabberServo, grabberArmLeft, grabberArmRight;
     Servo foundationServoLeft, foundationServoRight;
     //----------------------------------------------------------------
 
@@ -103,49 +102,53 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
 
-        collectorLeft = hardwareMap.crservo.get("collectorLeft");
-        collectorRight = hardwareMap.crservo.get("collectorRight");
+        liftMotor1 = hardwareMap.dcMotor.get("liftMotor1");
+        liftMotor2 = hardwareMap.dcMotor.get("liftMotor2");
 
-        //liftMotor = hardwareMap.dcMotor.get("liftMotor");
+        collectorLeft = hardwareMap.dcMotor.get("collectorLeft");
+        collectorRight = hardwareMap.dcMotor.get("collectorRight");
 
+        grabberServo = hardwareMap.servo.get("grabberServo");
+        grabberArmLeft = hardwareMap.servo.get("grabberArmLeft");
+        grabberArmRight = hardwareMap.servo.get("grabberArmRight");
         foundationServoLeft = hardwareMap.servo.get("foundationServoLeft");
         foundationServoRight = hardwareMap.servo.get("foundationServoRight");
-
-        slideMotor = hardwareMap.dcMotor.get("slideMotor");
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setTargetPosition(Constants.SLIDE_MOTOR_MIN_DIST);   // Init pos'n, necessary for new implementation of RUN_TO_POSITION.
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
         foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
 
-        collectorLeft.setPower(0);
-        collectorRight.setPower(0);
+        grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
+        grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
 
-
-        /*
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor.setTargetPosition(Constants.LIFT_GRAB_POS);
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor.setPower(Constants.LIFT_POWER_FACTOR);
-         */
+        grabberServo.setPosition(Constants.GRABBER_OPEN);
 
 
         stopDriveMotors();
@@ -366,24 +369,6 @@ abstract public class MasterOpMode extends LinearOpMode
     }
 
 
-    // Extends or retracts the horizontal slides. Positive power extends.
-    public void runSlideMotor(double power, double maxPower)
-    {
-        double pos = slideMotor.getCurrentPosition();
-
-        // Ensure magnitude of power is not too large.
-        Range.clip(power, -maxPower, maxPower);
-
-        // Constraints:  motor direction, encoder position
-        // If motor is out of operating range and is set to move further from this range,
-        // give it very low power to prevent the string from breaking.  Otherwise, drive mormally.
-        if ((power < 0 && pos < Constants.SLIDE_MOTOR_MIN_DIST) || (power > 0 && pos > Constants.SLIDE_MOTOR_MAX_DIST))
-            slideMotor.setPower(Constants.SLIDE_MOTOR_LOW_POWER_FACTOR * power);
-        else
-            slideMotor.setPower(power);
-    }
-
-
     // Tell the robot to turn to a specified angle.  We can also limit the motor power while turning.
     public void turnTo(double targetAngle, double maxPower)
     {
@@ -443,11 +428,11 @@ abstract public class MasterOpMode extends LinearOpMode
         if (isRotatingStone)    // We are trying to spin stone for easier collection
         {
             collectorLeft.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
-            collectorRight.setPower(powerSign * -Constants.COLLECTOR_ROTATE_POWER);
+            collectorRight.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
         }
         else    // We are collecting normally
         {
-            collectorLeft.setPower(powerSign * Constants.COLLECTOR_POWER);
+            collectorLeft.setPower(powerSign * -Constants.COLLECTOR_POWER);
             collectorRight.setPower(powerSign * Constants.COLLECTOR_POWER);
         }
     }
@@ -472,8 +457,7 @@ abstract public class MasterOpMode extends LinearOpMode
     }
 
 
-    // todo Uncomment once we have grabber attached.
-    /*// Toggle position of grabber between open and closed.
+    // Toggle position of grabber between open and closed.
     public void toggleGrabber()
     {
         if (isGrabberOpen)
@@ -484,7 +468,7 @@ abstract public class MasterOpMode extends LinearOpMode
             grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
         isGrabberOpen = !isGrabberOpen;
-    }*/
+    }
 
 
     // Note:  not in use

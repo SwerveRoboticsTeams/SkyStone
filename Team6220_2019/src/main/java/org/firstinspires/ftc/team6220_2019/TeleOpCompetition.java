@@ -20,20 +20,17 @@ public class TeleOpCompetition extends MasterTeleOp
             // Finds the time elapsed each loop
             double eTime = timer.seconds() - lTime;
             lTime = timer.seconds();
-
-
+            
             // Operate robot mechanisms using methods from MasterTeleOp-----------------------------
              // Driver 1 controls
             driveMecanumWithJoysticks();
-            driveSlide();
-            // Driver 2 controls
             driveCollector();
-            //driveLift();
-            // Only toggle grabber if Button.RIGHT_BUMPER is just pressed.
-            /*if(driver2.isButtonJustPressed(Button.RIGHT_BUMPER))
-                toggleGrabber();*/
+
+            // Driver 2 controls
+            driveLift();
             // Only toggle foundationServos if Button.B is just pressed.
-            if(driver2.isButtonJustPressed(Button.B))
+            if(driver2.isButtonJustPressed(Button.B)
+                    || driver2.isButtonJustPressed(Button.B))
                 toggleFoundationServos();
             //--------------------------------------------------------------------------------------
 
