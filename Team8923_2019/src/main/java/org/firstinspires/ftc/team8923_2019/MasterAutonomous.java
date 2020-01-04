@@ -190,7 +190,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         headingOffset = imu.getAngularOrientation().firstAngle - robotAngle;
 
         grabbersUp();
-        servoBlockPusher.setPosition(1);
+
         telemetry.clear();
         telemetry.update();
         telemetry.addLine("Initialized. Ready to start!");

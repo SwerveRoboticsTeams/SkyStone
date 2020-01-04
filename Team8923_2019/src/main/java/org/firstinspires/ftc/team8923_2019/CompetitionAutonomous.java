@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.team8923_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 @Autonomous(name="CompetitionAuto", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
  */
-//@Disabled
+@Disabled
 public class CompetitionAutonomous extends MasterAutonomous
 {
 

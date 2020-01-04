@@ -14,6 +14,7 @@ abstract class MasterTeleOp extends Master
 
 {
     boolean clawIsOut = false;
+    boolean capstoneIsUp = true;
 
     /*
         gamepad 1 controls
@@ -72,9 +73,15 @@ abstract class MasterTeleOp extends Master
     public void runCapstonePlacer()
     {
         if (gamepad2.y) {
-            servoCapstone.setPosition(0.0);
-        }else {
-            servoCapstone.setPosition(0.44);
+            if(capstoneIsUp){
+                servoCapstone.setPosition(0.0);
+                capstoneIsUp = false;
+            }else{
+                servoCapstone.setPosition(0.44);
+                capstoneIsUp = true;
+            }
+
+
         }
 
 
@@ -82,16 +89,16 @@ abstract class MasterTeleOp extends Master
 
     public void runIntake()
     {
-        if(gamepad1.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
+        if(gamepad1.right_bumper){
             intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
             intakeLeft.setPower(Variables.INTAKE_PWR);
             intakeRight.setPower(Variables.INTAKE_PWR);
-        }else if(gamepad1.right_bumper){
+        }else if(gamepad1.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
             intakeLeft.setDirection(DcMotorSimple.Direction.FORWARD);
             intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
-            intakeLeft.setPower(Variables.INTAKE_PWR);
-            intakeRight.setPower(Variables.INTAKE_PWR);
+            intakeLeft.setPower(Variables.INTAKE_PWR * gamepad1.right_trigger);
+            intakeRight.setPower(Variables.INTAKE_PWR * gamepad1.right_trigger);
         }else{
             intakeLeft.setPower(0);
             intakeRight.setPower(0);
@@ -103,14 +110,27 @@ abstract class MasterTeleOp extends Master
     {
         if(gamepad2.left_stick_y > Constants.MINIMUM_JOYSTICK_PWR){
             motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorLift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorLift.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
+            motorLift2.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
+
+            //motorLift.setTargetPosition(motorLift.getCurrentPosition());
+
         }else if(gamepad2.left_stick_y < -Constants.MINIMUM_JOYSTICK_PWR){
             motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorLift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorLift.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
+            motorLift2.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
+
+            //motorLift.setTargetPosition(motorLift.getCurrentPosition());
+
         }else{
-            motorLift.setTargetPosition(motorLift.getCurrentPosition());
-            motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorLift.setPower(0.5);
+            motorLift2.setPower(0);
+            //motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            //double pwr = motorLift.getPower();
+            motorLift.setPower(0);
+
         }
     }
 
@@ -133,15 +153,7 @@ abstract class MasterTeleOp extends Master
         }
     }
 
-    public void runBlockPusher(){
-        if(gamepad2.right_bumper){
-            servoBlockPusher.setPosition(0.65);
-        }else if (gamepad2.x) {
-            servoBlockPusher.setPosition(1);
-        }else{
-            servoBlockPusher.setPosition(0.2);
-        }
-    }
+
 
 
 

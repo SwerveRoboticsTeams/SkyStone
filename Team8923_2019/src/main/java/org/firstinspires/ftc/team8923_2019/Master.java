@@ -21,6 +21,7 @@ abstract class Master extends LinearOpMode
     DcMotor intakeRight;
 
     DcMotor motorLift;
+    DcMotor motorLift2;
 
     Servo servoFoundationLeft;
     Servo servoFoundationRight;
@@ -29,7 +30,7 @@ abstract class Master extends LinearOpMode
     Servo servoJoint;
     Servo servoClaw;
 
-    Servo servoBlockPusher;
+
 
 
     BNO055IMU imu;
@@ -58,13 +59,13 @@ abstract class Master extends LinearOpMode
         intakeRight = hardwareMap.get(DcMotor.class, "intakeRight");
 
         motorLift = hardwareMap.get(DcMotor.class, "motorLift");
+        motorLift2 = hardwareMap.get(DcMotor.class, "motorLift2");
 
         servoFoundationLeft = hardwareMap.get(Servo.class,"servoFoundationLeft");
         servoFoundationRight = hardwareMap.get(Servo.class,"servoFoundationRight");
         servoCapstone = hardwareMap.get(Servo.class, "servoCapstone");
         servoJoint = hardwareMap.get(Servo.class,"servoJoint");
         servoClaw = hardwareMap.get(Servo.class,"servoClaw");
-        servoBlockPusher = hardwareMap.get(Servo.class, "servoBlockPusher");
 
         // Set ZeroPowerBehavior
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -76,14 +77,14 @@ abstract class Master extends LinearOpMode
         intakeRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motorLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set Reversed Motors
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        // todo this is weird
         motorBR.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorLift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -91,6 +92,7 @@ abstract class Master extends LinearOpMode
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         // init positions
@@ -99,6 +101,7 @@ abstract class Master extends LinearOpMode
         servoFoundationRight.setPosition(0.1);
         servoCapstone.setPosition(0.44);
         servoClaw.setPosition(0.9);
+        //motorLift.setTargetPosition(motorLift.getCurrentPosition());
 
 
     }

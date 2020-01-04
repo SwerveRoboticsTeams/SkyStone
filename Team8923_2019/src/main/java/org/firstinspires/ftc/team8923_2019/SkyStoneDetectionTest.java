@@ -89,7 +89,7 @@ public class SkyStoneDetectionTest extends LinearOpMode
 
             /*
              *  If the yellow filter value of the right stone is lower than that of the middle or
-             *  left stones, then it has more black and is therefore the SkyStone.
+             *  lef t stones, then it has more black and is therefore the SkyStone.
              *
              *  Otherwise, if the yellow value of the middle stone is less than that of the left
              *  stone, the middle stone is the SkyStone.

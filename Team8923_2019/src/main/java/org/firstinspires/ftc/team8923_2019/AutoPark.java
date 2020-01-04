@@ -26,7 +26,7 @@ public class AutoPark extends MasterAutonomous
 
         while (opModeIsActive())
         {
-            moveAuto(0, 25.4*3, .5, .1, 3);
+            imuMoveAuto(0, 3, .5, .1, 3);
             break;
         }
 

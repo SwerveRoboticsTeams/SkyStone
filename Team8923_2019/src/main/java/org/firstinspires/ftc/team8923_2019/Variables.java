@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Variables
 {
-    public static double INTAKE_PWR = .7;
+    public static double INTAKE_PWR = 1;
 
 
 
