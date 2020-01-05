@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.team6220_2019;
-/*
+package org.firstinspires.ftc.team6220_2019.ResourceClasses;
+
+/**
     Identifiers for boolean controls on controller
  */
+
 public enum Button
 {
     A, B, X, Y,

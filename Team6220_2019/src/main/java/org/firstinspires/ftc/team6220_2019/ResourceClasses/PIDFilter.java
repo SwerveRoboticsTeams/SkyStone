@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.ResourceClasses;
 
- /*
+ /**
     Proportional-Integral-Derivative Filter
     Calculates an input difference, it's first integral, and first derivative.
     Generally used to produce efficient, non-oscillating motion in a one dimensional system.

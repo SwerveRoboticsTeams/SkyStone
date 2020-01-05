@@ -2,7 +2,7 @@
  * WARNING: THIS CLASS IS NOW OBSOLETE. ALL CODE RELATING TO VUFORIA IS FOUND IN Dogeforia6220!
  */
 
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.ImageRecognition;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.team6220_2019.MasterOpMode;
 
 import java.util.ArrayList;
 import java.util.List;

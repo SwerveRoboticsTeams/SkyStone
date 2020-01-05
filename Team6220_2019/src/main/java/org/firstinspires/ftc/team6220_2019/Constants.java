@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team6220_2019;
 
-/*
+/**
      Used to store important constants for easy access in other classes.
 */
 

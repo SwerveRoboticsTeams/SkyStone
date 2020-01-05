@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.Button;
+
 @TeleOp(name = "TeleOp Competition")
 public class TeleOpCompetition extends MasterTeleOp
 {

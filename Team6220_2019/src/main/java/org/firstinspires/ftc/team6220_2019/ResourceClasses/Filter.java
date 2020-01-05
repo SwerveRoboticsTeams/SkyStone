@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.ResourceClasses;
 
-/*
+/**
     This is implemented by any control filter classes.
 */
 

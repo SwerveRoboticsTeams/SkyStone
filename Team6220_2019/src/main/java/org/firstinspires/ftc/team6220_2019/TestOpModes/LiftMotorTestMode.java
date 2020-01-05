@@ -1,8 +1,11 @@
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.TestOpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.ConcurrentOperation;
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.DriverInput;
 
 import java.util.ArrayList;
 import java.util.List;

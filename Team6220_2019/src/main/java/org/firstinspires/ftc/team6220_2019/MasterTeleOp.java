@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.Button;
+
 abstract public class MasterTeleOp extends MasterOpMode
 {
     // Start robot in slow mode (per Slater)

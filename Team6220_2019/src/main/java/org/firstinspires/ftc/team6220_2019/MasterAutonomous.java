@@ -3,6 +3,8 @@ package org.firstinspires.ftc.team6220_2019;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.Button;
+
 /**
  * This class includes methods and fields that are useful for generic autonomous OpModes.
  */

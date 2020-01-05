@@ -3,7 +3,7 @@
 // Removed Vuforia tracking because it's not used
 // Need Vuforia to access the webcam
 
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.ImageRecognition;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -12,7 +12,6 @@ import android.util.Log;
 import com.vuforia.Frame;
 
 import org.corningrobotics.enderbots.endercv.DrawViewSource;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -21,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaLocalizerImpl;
+import org.firstinspires.ftc.team6220_2019.MasterOpMode;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -28,7 +28,6 @@ import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -64,8 +63,9 @@ public class Dogeforia6220 extends VuforiaLocalizerImpl
     // them to be accessible to classes using this resource class.
     private VuforiaTrackables targetsSkyStone;
 
-    VectorF translation = new VectorF(0, 0, 0);                                                                          //**Use this to navigate
-    Orientation rotation = new Orientation();                                                                                     //**Use this to navigate
+    // Need to be accessible outside of package!
+    public VectorF translation = new VectorF(0, 0, 0);                                                                          //**Use this to navigate
+    public Orientation rotation = new Orientation();                                                                                     //**Use this to navigate
 
     // For convenience, gather together all the trackable objects in one easily-iterable collection */
     List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();

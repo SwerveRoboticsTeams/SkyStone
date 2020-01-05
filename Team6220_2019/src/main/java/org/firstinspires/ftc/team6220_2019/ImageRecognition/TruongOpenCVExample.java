@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.ImageRecognition;
 
 import org.corningrobotics.enderbots.endercv.OpenCVPipeline;
 import org.opencv.core.Core;

@@ -2,16 +2,20 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.team6220_2019.ImageRecognition.Dogeforia6220;
+import org.firstinspires.ftc.team6220_2019.ImageRecognition.SkystoneDetectionOpenCV;
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.ConcurrentOperation;
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.DriverInput;
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.PIDFilter;
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.Polynomial;
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.SequenceUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +41,10 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Create instance of Dogeforia to be used for both Vuforia and OpenCV image processing.
     // We need to pass in this opMode to be able to use some functionalities in that class.
-    Dogeforia6220 vuf;
-    SkystoneDetectionOpenCV skystoneDetector;
-    WebcamName webcamName;
+    // Also:  Need to be public to be viewed in other packages!
+    public Dogeforia6220 vuf;
+    public SkystoneDetectionOpenCV skystoneDetector;
+    public WebcamName webcamName;
 
     // Declare hardware devices---------------------------------------
     BNO055IMU imu;
@@ -59,15 +64,18 @@ abstract public class MasterOpMode extends LinearOpMode
     // Stores orientation of robot
     double currentAngle = 0.0;
 
+    // Need to be accessible outside of package!
     // Create drivers
-    DriverInput driver1;
-    DriverInput driver2;
+    public DriverInput driver1;
+    public DriverInput driver2;
 
     // Create a list of tasks to accomplish in order
-    List<ConcurrentOperation> callback = new ArrayList<>();
+    // Needs to be accessible outside of package!
+    public List<ConcurrentOperation> callback = new ArrayList<>();
 
-    ElapsedTime timer = new ElapsedTime();
-    double lTime = 0;
+    // Need to be accessible outside of package!
+    public ElapsedTime timer = new ElapsedTime();
+    public double lTime = 0;
 
     // Allows us to use global rotation coordinates by specifying starting orientation.
     double startingOrientation;
@@ -473,7 +481,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Note:  not in use
     // Other opmodes must go through this method to prevent others from unnecessarily changing startingOrientation
-    void setRobotStartingOrientation(double newValue)
+    public void setRobotStartingOrientation(double newValue)
     {
         startingOrientation = newValue;
     }
@@ -493,7 +501,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
 
     // Takes into account startingOrientation to utilize global orientation
-    double getAngularOrientationWithOffset()
+    public double getAngularOrientationWithOffset()
     {
         double correctedHeading = normalizeAngle(imu.getAngularOrientation().firstAngle + startingOrientation);
 
@@ -502,7 +510,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
 
     // Finds distance between 2 points
-    double calculateDistance(double dx, double dy)
+    public double calculateDistance(double dx, double dy)
     {
         double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
@@ -523,7 +531,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // Note:  time parameter is in seconds
     // Waits for a specified time while giving each hardware system the ability to function simultaneously
-    void pauseWhileUpdating(double time)
+    public void pauseWhileUpdating(double time)
     {
         lTime = timer.seconds();
 
@@ -542,7 +550,7 @@ abstract public class MasterOpMode extends LinearOpMode
     }
 
 
-    void stopDriveMotors()
+    public void stopDriveMotors()
     {
         motorFL.setPower(0);
         motorFR.setPower(0);

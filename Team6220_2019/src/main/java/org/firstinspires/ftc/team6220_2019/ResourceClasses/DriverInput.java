@@ -1,13 +1,16 @@
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.ResourceClasses;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.team6220_2019.Constants;
+
 import java.util.Arrays;
 
-/*
+/**
     Encapsulates gamepads for easy interpretation of driver input
 */
+
 public class DriverInput implements ConcurrentOperation
 {
     private Gamepad controller;

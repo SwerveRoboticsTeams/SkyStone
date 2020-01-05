@@ -1,9 +1,12 @@
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.TestOpModes;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.Button;
+import org.firstinspires.ftc.team6220_2019.ResourceClasses.DriverInput;
+import org.firstinspires.ftc.team6220_2019.MasterOpMode;
 
 @TeleOp(name = "Motor Test")
 public class MotorTest extends MasterOpMode

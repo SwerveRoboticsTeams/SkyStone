@@ -1,4 +1,10 @@
-package org.firstinspires.ftc.team6220_2019;
+package org.firstinspires.ftc.team6220_2019.Odometry;
+
+import org.firstinspires.ftc.team6220_2019.MasterOpMode;
+
+/**
+ * This class includes important constants and methods for odometry navigation (currently in progress).
+ */
 
 public abstract class OdometryNavigation extends MasterOpMode
 {
