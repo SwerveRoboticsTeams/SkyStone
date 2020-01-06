@@ -75,6 +75,7 @@ abstract public class MasterTeleOp extends MasterOpMode
     }
 
 
+    // todo Do we want to change dpad controls to A / Y ?
     // TeleOp method for driving collector.  Controlled by driver 2.
     public void driveCollector()
     {
@@ -108,7 +109,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         {
             isLiftRunToPosMode = false;
             liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             hasLoweredArm = false;
             hasGrabbedStone = false;
             hasRotatedArm = false;
@@ -117,12 +118,21 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         if (!isLiftRunToPosMode)
         {
-            // todo Make sure that reversing these signs was correct.
-            liftMotor1.setPower(rightStickY * Constants.LIFT_POWER_FACTOR);
+            liftMotor1.setPower(rightStickY * Constants.LIFT_POWER_FACTOR); // todo Can LIFT_POWER_FACTOR be greater?
             liftMotor2.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
         }
 
-        // Code for automatic movement of arm-------------------------------------------------------------------
+        // If driver 2 presses B, toggle grabber.
+        if (driver2.isButtonJustPressed(Button.B))
+            toggleGrabber();
+
+        // If driver 2 presses Y, toggle grabber arm.
+        if (driver2.isButtonJustPressed(Button.Y))
+            toggleGrabberArm();
+
+        // todo Implement once manual mode works
+        /*
+        // Code for automatic movement of lift-------------------------------------------------------------------
         // If driver 2 presses B, grabber closes.
         if (driver2.isButtonJustPressed(Button.B))
             grabberServo.setPosition(Constants.GRABBER_CLOSED);
@@ -154,8 +164,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
 
 
-        // todo Implement once we have time
-        /*
+
         if (isLiftRunToPosMode)
         {
             if (!hasLoweredArm)

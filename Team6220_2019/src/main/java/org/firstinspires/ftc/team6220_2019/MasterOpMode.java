@@ -26,6 +26,8 @@ abstract public class MasterOpMode extends LinearOpMode
 {
     // Remembers whether the grabber is open or closed.
     boolean isGrabberOpen = true;
+    // Remembers whether the grabber arm is extended or retracted.
+    boolean isGrabberArmRetracted = false;
     // Remembers whether the foundation servos are open or closed.
     boolean areFoundationServosOpen = true;
 
@@ -135,11 +137,11 @@ abstract public class MasterOpMode extends LinearOpMode
         collectorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collectorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        // 1st lift motor runs using encoder, but 2nd one does not.
         liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -476,6 +478,22 @@ abstract public class MasterOpMode extends LinearOpMode
             grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
         isGrabberOpen = !isGrabberOpen;
+    }
+
+
+    // Toggle position of grabber arm between inside robot and placing position.
+    public void toggleGrabberArm()
+    {
+        if (isGrabberArmRetracted)
+        {
+            grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_EXTEND);
+            grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_EXTEND);
+        } else
+        {
+            grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
+            grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
+        }
+        isGrabberArmRetracted = !isGrabberArmRetracted;
     }
 
 
