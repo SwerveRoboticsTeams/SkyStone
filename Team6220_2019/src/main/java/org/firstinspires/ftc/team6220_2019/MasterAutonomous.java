@@ -16,6 +16,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     int delayCount = 0;
     // The number of SkyStones we want to score; can take a value from 0 - 2
     int numSkyStones = 1;
+    // todo Not used?
     // The position of the SkyStone; initialized by vuforiaAlignWithSkystone()
     int skyStonePos;
     // Whether we want to score the foundation or not
@@ -24,6 +25,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     boolean parkClose = true;
     //------------------------------------------------------------------------------------------
 
+    // todo Changes needed for these to work in new auto?
     // Initialize angles and distances for various differing setup options----------------------
     double stoneShift = 8; // Centers of stones are 8 in apart
     double robotShift = stoneShift;     // Actual distance the robot moved (will be changed)
@@ -36,7 +38,6 @@ abstract public class MasterAutonomous extends MasterOpMode
     double robotShiftSign = 1.0;
     // Account for center being shifted in opposite directions on red / blue alliance
     double centerAdjustment = 0;
-
     //------------------------------------------------------------------------------------------
 
 
