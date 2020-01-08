@@ -45,19 +45,29 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * 2018/09/30 Copied from OpenCvExampleBlueVisionDemo.java to experiment with various parameters.
  */
 @Autonomous(name = "Skystone Detection Test", group = "Test")
-public class SkyStoneDetectionTest extends LinearOpMode
+public class SkyStoneDetectionTest extends MasterAutonomous
 {
-
-    //Dogeforia6220 vuforia;
-//    WebcamName webcamName;
-    // DogeCV skystoneDetector
     SkystoneDetectionOpenCV OpenCV_detector;
 
     public double m1, m2, m3;
+    Stone skystonePlacement = Stone.MIDDLE;
+    enum Stone {
+        RIGHT,MIDDLE,LEFT
+    }
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        initAuto();
+        telemetry.clear();
+        telemetry.update();
+
+        waitForStart();
+        telemetry.clear();
+
+        autoReverseDrive = true;
+
+
         // Initialize the skystoneDetector
         OpenCV_detector = new SkystoneDetectionOpenCV();
 
@@ -79,6 +89,8 @@ public class SkyStoneDetectionTest extends LinearOpMode
         // run after user presses 'PLAY'
         while (opModeIsActive())
         {
+           imuMoveAuto(10,7,1,.2,3);
+           wait(200);
             m1 = OpenCV_detector.getMean1();
             m2 = OpenCV_detector.getMean2();
             m3 = OpenCV_detector.getMean3();
@@ -99,17 +111,38 @@ public class SkyStoneDetectionTest extends LinearOpMode
             if(m1 < m2 && m1 < m3)
             {
                 telemetry.addData("Left stone is SkyStone", "");
+                skystonePlacement = Stone.LEFT;
+
             }
             else if(m2 < m3)
             {
                 telemetry.addData("Middle stone is SkyStone", "");
+                skystonePlacement = Stone.MIDDLE;
             }
             else
             {
                 telemetry.addData("Right stone is SkyStone", "");
+                skystonePlacement = Stone.RIGHT;
             }
 
             telemetry.update();
+
+        }
+
+    }
+
+    private void collectSkystone(Stone direction) throws InterruptedException {
+
+        switch (direction){
+            case LEFT:
+                break;
+            case MIDDLE:
+                break;
+            case RIGHT:
+                imuMoveAuto(26.5,2,1,.2,3);
+                break;
+
+
         }
 
     }
