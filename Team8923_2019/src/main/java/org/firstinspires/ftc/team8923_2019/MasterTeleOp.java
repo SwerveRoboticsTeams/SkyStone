@@ -28,10 +28,6 @@ abstract class MasterTeleOp extends Master
         left stick up and down for lift
         a for claw out
         b for claw in
-
-
-
-
     */
 
 
@@ -73,17 +69,11 @@ abstract class MasterTeleOp extends Master
     public void runCapstonePlacer()
     {
         if (gamepad2.y) {
-            if(capstoneIsUp){
-                servoCapstone.setPosition(0.0);
-                capstoneIsUp = false;
-            }else{
-                servoCapstone.setPosition(0.44);
-                capstoneIsUp = true;
-            }
+            servoCapstone.setPosition(0.0);
 
-
+        }else if (gamepad2.x){
+            servoCapstone.setPosition(.44);
         }
-
 
     }
 
@@ -108,7 +98,7 @@ abstract class MasterTeleOp extends Master
 
     public void runLift()
     {
-        if(gamepad2.left_stick_y > Constants.MINIMUM_JOYSTICK_PWR){
+        if(gamepad2.left_stick_y < -Constants.MINIMUM_JOYSTICK_PWR){
             motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorLift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorLift.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
@@ -116,7 +106,7 @@ abstract class MasterTeleOp extends Master
 
             //motorLift.setTargetPosition(motorLift.getCurrentPosition());
 
-        }else if(gamepad2.left_stick_y < -Constants.MINIMUM_JOYSTICK_PWR){
+        }else if(gamepad2.left_stick_y > Constants.MINIMUM_JOYSTICK_PWR){
             motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorLift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorLift.setPower(gamepad2.left_stick_y * Constants.LIFT_PWR);
@@ -147,18 +137,11 @@ abstract class MasterTeleOp extends Master
 
     public void runClaw(){
         if(gamepad2.right_trigger > Constants.MINIMUM_TRIGGER_VALUE){
-            servoClaw.setPosition(0.15);
+            servoClaw.setPosition(0);
         }else{
-            servoClaw.setPosition(0.9);
+            servoClaw.setPosition(0.35);
         }
     }
-
-
-
-
-
-
-
 
     void sendTelemetry()
     {
@@ -173,7 +156,6 @@ abstract class MasterTeleOp extends Master
 
         telemetry.update();
     }
-
 
     // Helper Functions
     private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)
