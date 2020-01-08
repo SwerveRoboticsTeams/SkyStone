@@ -27,15 +27,16 @@ abstract public class MasterOpMode extends LinearOpMode
     // Remembers whether the grabber is open or closed.
     boolean isGrabberOpen = true;
     // Remembers whether the grabber arm is extended or retracted.
-    boolean isGrabberArmRetracted = false;
+    boolean isGrabberArmRetracted = true;
     // Remembers whether the foundation servos are open or closed.
     boolean areFoundationServosOpen = true;
+    // Determines whether the bottom hardstop for the lift motors is active.
+    boolean isBottomHardStopOn = true;
 
     // Collector and lift run modes----------------------------------------------------------------
      // Tells us what drive mode the lift motor is in; by default, we use RUN_TO_POSITION for auto.
     boolean isLiftRunToPosMode = true;
-     // Tells us what drive mode the collector is in; by default, we use RUN_TO_POSITION for auto.
-    boolean isCollectorRunToPosMode = true;
+
     //---------------------------------------------------------------------------------------------
 
     // Distance (in inches) at which we wish to switch from rotating stone to collecting it.
@@ -152,8 +153,8 @@ abstract public class MasterOpMode extends LinearOpMode
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
-        foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
+        foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_UP);
+        foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_UP);
 
         grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
         grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
@@ -453,12 +454,12 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         if (areFoundationServosOpen)
         {
-            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_CLOSED);
-            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_CLOSED);
+            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_DOWN);
+            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_DOWN);
         } else
         {
-            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_OPEN);
-            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_OPEN);
+            foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_UP);
+            foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_UP);
         }
         areFoundationServosOpen = !areFoundationServosOpen;
 
@@ -472,10 +473,10 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         if (isGrabberOpen)
         {
-            grabberServo.setPosition(Constants.GRABBER_CLOSED);
+            grabberServo.setPosition(Constants.GRABBER_OPEN);
         } else
         {
-            grabberServo.setPosition(Constants.GRABBER_OPEN);
+            grabberServo.setPosition(Constants.GRABBER_CLOSED);
         }
         isGrabberOpen = !isGrabberOpen;
     }
@@ -494,6 +495,21 @@ abstract public class MasterOpMode extends LinearOpMode
             grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
         }
         isGrabberArmRetracted = !isGrabberArmRetracted;
+    }
+
+    // Drives the lift motors. If encoder position is 0, do not drive backwards.
+    public void driveLift(double power)
+    {
+        if(!(((power < 0 && liftMotor1.getCurrentPosition() <= 0) && isBottomHardStopOn)
+                || (power > 0 && liftMotor1.getCurrentPosition() >= Constants.LIFT_MOTOR_MAX_HEIGHT)))
+        {
+            liftMotor1.setPower(-power * Constants.LIFT_POWER_FACTOR); //todo Can LIFT_POWER_FACTOR be greater?
+            liftMotor2.setPower(power * Constants.LIFT_POWER_FACTOR);
+        }
+        else{
+            liftMotor1.setPower(0);
+            liftMotor2.setPower(0);
+        }
     }
 
 

@@ -26,10 +26,14 @@ public class Constants
     public static final double MAX_NAV_ROT_POWER = 0.3;
     public static final double AUTO_SEARCH_TURN_POWER = 0.2;
 
-    public static final double LIFT_POWER_FACTOR = 0.6;
+    public static final double LIFT_POWER_FACTOR = 0.6;     // todo This could be increased!
+
+    // Constant that acts as a software hardstop for lift motor.
+    public static final double LIFT_MOTOR_MAX_HEIGHT = 4200; //In encoder ticks for Andymark 20
      // Constants to control power of collector motors
     public static final double COLLECTOR_POWER = 0.5;
     public static final double COLLECTOR_ROTATE_POWER = 0.5;    // todo Adjust
+    public static final double COLLECTOR_MIN_TRIGGER_VALUE = 0.05;     // Deadzone
 
     // Constants to control slide motors
     // todo Edit these names and change values to use for lift.
@@ -84,23 +88,20 @@ public class Constants
 
 
     // Servo positions--------------------------------
-     // For the grabber, 1 is closed, 0 is open. todo adjust grabber constants for new grabber
-    public static final double GRABBER_OPEN = 0.65;
-    public static final double GRABBER_CLOSED = 0.9;
+     // For the grabber, 1 is closed, 0 is open. todo adjust grabber constants
+    public static final double GRABBER_CLOSED = 0.4;
+    public static final double GRABBER_OPEN = 0.9;
      // Open = stowed, closed = grabbing foundation
-    public static final double FOUNDATION_SERVO_LEFT_OPEN = 0.5;
-    public static final double FOUNDATION_SERVO_LEFT_CLOSED = 1.0;
-    public static final double FOUNDATION_SERVO_RIGHT_OPEN = 0.5;
-    public static final double FOUNDATION_SERVO_RIGHT_CLOSED = 0;
+    public static final double FOUNDATION_SERVO_LEFT_UP = 0.88;
+    public static final double FOUNDATION_SERVO_LEFT_DOWN = 0.2;    // todo Small adjustments for down positions
+    public static final double FOUNDATION_SERVO_RIGHT_UP = 0.15;
+    public static final double FOUNDATION_SERVO_RIGHT_DOWN = 0.75;
 
     //todo adjust grabberArm constants
     public static final double GRABBER_ARM_SERVO_LEFT_EXTEND = 0.0;
     public static final double GRABBER_ARM_SERVO_LEFT_RETRACT = 1.0;
     public static final double GRABBER_ARM_SERVO_RIGHT_EXTEND = 1.0;
     public static final double GRABBER_ARM_SERVO_RIGHT_RETRACT = 0.0;
-
-    // This converts encoder ticks to REV smart servo (in 225 degree mode) positions
-    public static final double MOTOR_TO_REV_SERVO_MOVEMENT = 1.55;
     //-------------------------------------------------
 
 

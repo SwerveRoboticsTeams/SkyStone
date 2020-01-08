@@ -44,11 +44,19 @@ abstract public class MasterTeleOp extends MasterOpMode
 
 
         // Stick inputs must be changed from x and y to angle, drive power, and rotation power---
-        double angle = Math.toDegrees(driver1.getLeftStickAngle());
+        double angle = Math.toDegrees(driver1.getRightStickAngle());
+        double rotationPower = rFactor * stickCurve.getOuput(driver1.getLeftStickX());
+        double drivePower = tFactor * stickCurve.getOuput(driver1.getRightStickMagnitude());
 
-        double drivePower = tFactor * stickCurve.getOuput(driver1.getLeftStickMagnitude());
+        if (driver1.getRightStickMagnitude() < Constants.MINIMUM_DRIVE_POWER)
+        {
+            drivePower = 0;
+        }
+        if (driver1.getLeftStickMagnitude() < Constants.MINIMUM_DRIVE_POWER)
+        {
+            rotationPower = 0;
+        }
 
-        double rotationPower = rFactor * stickCurve.getOuput(driver1.getRightStickX());
         //----------------------------------------------------------------------------------------
 
 
@@ -60,9 +68,9 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         // Drive in direction based on whether driveDirectionShift is true
         if (!driveReversed)
-            driveMecanum(angle, drivePower, rotationPower);
+            driveMecanum(angle, drivePower, -rotationPower);
         else
-            driveMecanum(angle + 180, drivePower, rotationPower);
+            driveMecanum(angle + 180, drivePower, -rotationPower);
 
         // Add telemetry data for drivers
         telemetry.addData("angle: ", angle);
@@ -80,9 +88,9 @@ abstract public class MasterTeleOp extends MasterOpMode
     public void driveCollector()
     {
         // Drive collector motors-------------------------------------------------------------------
-        if (driver1.isButtonPressed(Button.DPAD_UP))    // Spit out stone
+        if (driver1.getRightTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)    // Collect stone
             runCollector(false, false);
-        else if (driver1.isButtonPressed(Button.DPAD_DOWN))     // Collect stone
+        else if (driver1.getLeftTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)     // Spit out stone
             runCollector(true, false);
         else if (driver1.isButtonPressed(Button.DPAD_LEFT))     // Rotate stone left
             runCollector(false, true);
@@ -102,24 +110,29 @@ abstract public class MasterTeleOp extends MasterOpMode
     // keeping grabber parallel to the ground.
     public void driveLift()
     {
-        double rightStickY = driver2.getRightStickY();
-
-        // Change drive mode if stick is pressed a significant amount and we were in RUN_TO_POSITION
-        if (Math.abs(rightStickY) >= Constants.MINIMUM_JOYSTICK_POWER && isLiftRunToPosMode)
+        if (isLiftRunToPosMode) // Stupid implementation as control is no longer done by stick. Should change this.
         {
             isLiftRunToPosMode = false;
             liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            hasLoweredArm = false;
-            hasGrabbedStone = false;
-            hasRotatedArm = false;
-            hasPlacedStone = false;
+//            hasLoweredArm = false;
+//            hasGrabbedStone = false;
+//            hasRotatedArm = false;
+//            hasPlacedStone = false;
         }
 
         if (!isLiftRunToPosMode)
         {
-            liftMotor1.setPower(rightStickY * Constants.LIFT_POWER_FACTOR); // todo Can LIFT_POWER_FACTOR be greater?
-            liftMotor2.setPower(-rightStickY * Constants.LIFT_POWER_FACTOR);
+            if (driver2.isButtonPressed(Button.LEFT_BUMPER))
+            {
+                driveLift(-1);
+            } else if (driver2.isButtonPressed(Button.RIGHT_BUMPER))
+            {
+                driveLift(1);
+            } else
+            {
+                driveLift(0);
+            }
         }
 
         // If driver 2 presses B, toggle grabber.
@@ -130,12 +143,17 @@ abstract public class MasterTeleOp extends MasterOpMode
         if (driver2.isButtonJustPressed(Button.Y))
             toggleGrabberArm();
 
+        // If driver 2 presses both sticks, toggle isBottomHardStopOn.
+        if ((driver2.isButtonPressed(Button.LEFT_STICK_PRESS) && driver2.isButtonJustPressed(Button.RIGHT_STICK_PRESS))
+                || (driver2.isButtonJustPressed(Button.LEFT_STICK_PRESS) && driver2.isButtonPressed(Button.RIGHT_STICK_PRESS)))
+            isBottomHardStopOn = !isBottomHardStopOn;
+
         // todo Implement once manual mode works
         /*
         // Code for automatic movement of lift-------------------------------------------------------------------
         // If driver 2 presses B, grabber closes.
         if (driver2.isButtonJustPressed(Button.B))
-            grabberServo.setPosition(Constants.GRABBER_CLOSED);
+            grabberServo.setPosition(Constants.GRABBER_OPEN);
 
         // If driver 2 presses Y, arm extends.
         if (driver2.isButtonJustPressed(Button.Y))
@@ -159,7 +177,7 @@ abstract public class MasterTeleOp extends MasterOpMode
 
             grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
             grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
-            grabberServo.setPosition(Constants.GRABBER_OPEN);
+            grabberServo.setPosition(Constants.GRABBER_CLOSED);
             isGrabberOpen = true;
         }
 
@@ -178,7 +196,7 @@ abstract public class MasterTeleOp extends MasterOpMode
                 }
             } else if (!hasGrabbedStone)
             {
-                grabberServo.setPosition(Constants.GRABBER_CLOSED);
+                grabberServo.setPosition(Constants.GRABBER_OPEN);
                 hasGrabbedStone = true;
             } else if (!hasRotatedArm)
             {
@@ -191,7 +209,7 @@ abstract public class MasterTeleOp extends MasterOpMode
                 }
             } else if (!hasPlacedStone)
             {
-                grabberServo.setPosition(Constants.GRABBER_OPEN);
+                grabberServo.setPosition(Constants.GRABBER_CLOSED);
                 hasPlacedStone = true;
             } else
             {
@@ -203,8 +221,8 @@ abstract public class MasterTeleOp extends MasterOpMode
 
 
         // Display telemetry data to drivers
-        telemetry.addData("Driver 2 right stick y: ", rightStickY);
         telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
         telemetry.addData("Lift motor position: ", liftMotor1.getCurrentPosition());
+        telemetry.addData("IsBottomHardStopOn: ", isBottomHardStopOn);
     }
 }

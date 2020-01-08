@@ -30,9 +30,8 @@ public class TeleOpCompetition extends MasterTeleOp
 
             // Driver 2 controls
             driveLift();
-            // Only toggle foundationServos if Button.B is just pressed.
-            if(driver2.isButtonJustPressed(Button.B)
-                    || driver2.isButtonJustPressed(Button.B))
+            // Only toggle foundationServos if Button.A is just pressed.
+            if(driver2.isButtonJustPressed(Button.A))
                 toggleFoundationServos();
             //--------------------------------------------------------------------------------------
 
