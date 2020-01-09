@@ -42,8 +42,8 @@ abstract public class MasterTeleOp extends MasterOpMode
     void mecanumDrive()
     {
         // hold right bumper for adagio legato mode
-        if (gamepad1.right_trigger>0) isLegatoMode = false;
-        else isLegatoMode = true;
+        if (gamepad1.right_trigger>0) isLegatoMode = true;
+        else isLegatoMode = false;
         // hold left bumper for reverse mode
         if (gamepad1.left_trigger>0) isReverseMode = true;
         else isReverseMode = false;
@@ -51,8 +51,8 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         if (isLegatoMode) // Legato Mode
         {
-            y = -Range.clip(-gamepad1.right_stick_y, -ADAGIO_POWER, ADAGIO_POWER); // Y axis is negative when up
-            x = -Range.clip(gamepad1.right_stick_x, -ADAGIO_POWER, ADAGIO_POWER);
+            y = gamepad1.right_stick_y * ADAGIO_POWER; // Y axis is negative when up
+            x = -gamepad1.right_stick_x * ADAGIO_POWER;
             if (gamepad1.dpad_left) x = -0.2;
             if (gamepad1.dpad_right) x = 0.2;
             if (gamepad1.dpad_down) y = -0.2;
@@ -61,8 +61,8 @@ abstract public class MasterTeleOp extends MasterOpMode
 
             if (isReverseMode) // if both legato and reverse mode
             {
-                y = Range.clip(-gamepad1.right_stick_y, -ADAGIO_POWER, ADAGIO_POWER); // Y axis is negative when up
-                x = Range.clip(gamepad1.right_stick_x, -ADAGIO_POWER, ADAGIO_POWER);
+                y *= -1; // Y axis is negative when up
+                x *= -1;
                 if (gamepad1.dpad_left) x = -0.3;
                 if (gamepad1.dpad_right) x = 0.3;
                 if (gamepad1.dpad_down) y = -0.3;
@@ -72,13 +72,13 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
         else if (isReverseMode)
         {
-            y = Range.clip(-gamepad1.right_stick_y, -ADAGIO_POWER, ADAGIO_POWER); // Y axis is negative when up
-            x = Range.clip(gamepad1.right_stick_x, -ADAGIO_POWER, ADAGIO_POWER);
+            y = -gamepad1.right_stick_y; // Y axis is negative when up
+            x = gamepad1.right_stick_x;
             if (gamepad1.dpad_left) x = -0.75;
             if (gamepad1.dpad_right) x = 0.75;
             if (gamepad1.dpad_down) y = -0.75;
             if (gamepad1.dpad_up) y = 0.75;
-            pivotPower = Range.clip(gamepad1.left_stick_x, -0.3, 0.3);
+            pivotPower = gamepad1.left_stick_x * 0.3;
         }
         else // Staccato Mode
         {
@@ -149,7 +149,7 @@ abstract public class MasterTeleOp extends MasterOpMode
     void foundationPullers()
     {
 
-        if(puller.getToggle(gamepad2.x))
+        if(puller.getToggle(gamepad1.a))
         {
             leftFoundationPuller.setPosition(0.65);
             rightFoundationPuller.setPosition(0.35);
@@ -180,7 +180,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         // took a bunch of positions for arm + wrist so part of linear equation
         autoDouble = (double) (arm1.getCurrentPosition() + 100);
         // the slope of the equation
-        autoDouble *= 0.4 / -1200;
+        autoDouble *= -0.00033; //0.4 / -1200
         // when the arm is 0 we want the wrist to be 0.25
         autoRevPos =  autoDouble + 0.235; // high pos = -1058, low = 0
         mainWristServo.setPosition(autoRevPos);
@@ -194,7 +194,7 @@ abstract public class MasterTeleOp extends MasterOpMode
         else
         {
             // set smallGrabber to open position
-            smallGrabber.setPosition(0);
+            smallGrabber.setPosition(0.5);
         }
 
 

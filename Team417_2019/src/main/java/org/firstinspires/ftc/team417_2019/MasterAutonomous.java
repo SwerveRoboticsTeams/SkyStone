@@ -361,27 +361,27 @@ abstract public class MasterAutonomous extends MasterOpMode
             // scale the distance speed so it slows as it approaches the distance you want it to move to
             speedFL = Kmove * errorFL;
             // insert speed clipping
-            speedFL = Range.clip(speedFL, -.5, .5);
+            speedFL = Range.clip(speedFL, -maxSpeed, maxSpeed);
 
 
             errorFR = newTargetFR - motorFR.getCurrentPosition();
             speedFR = Kmove * errorFR;
             // insert speed clipping
-            speedFR = Range.clip(speedFR, -.5, .5);
+            speedFR = Range.clip(speedFR, -maxSpeed, maxSpeed);
 
 
             errorBL = newTargetBL - motorBL.getCurrentPosition();
             speedBL = Kmove * errorBL;
             speedAbsBL = Math.abs(speedBL);
             // insert speed clipping
-            speedBL = Range.clip(speedBL, -.5, .5);
+            speedBL = Range.clip(speedBL, -maxSpeed, maxSpeed);
 
 
             errorBR = newTargetBR - motorBR.getCurrentPosition();
             speedBR = Kmove * errorBR;
             speedAbsBR = Math.abs(speedBR);
             // insert speed clipping
-            speedBR = Range.clip(speedBR, -.5, .5);
+            speedBR = Range.clip(speedBR, -maxSpeed, maxSpeed);
 
             //speedBR -= pivotSpeed;
 
