@@ -96,7 +96,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Adjust number of SkyStones scored from 0 to 2
             if (driver1.isButtonJustPressed(Button.DPAD_RIGHT) && numSkyStones < 2)    // Increase number of SkyStones (2 max)
                 numSkyStones++;
-            else if (driver1.isButtonJustPressed(Button.DPAD_RIGHT) && numSkyStones > 0)    // Increase number of SkyStones (2 max)
+            else if (driver1.isButtonJustPressed(Button.DPAD_LEFT) && numSkyStones > 0)    // Increase number of SkyStones (2 max)
                 numSkyStones--;
 
             // Switch between park close and park far
