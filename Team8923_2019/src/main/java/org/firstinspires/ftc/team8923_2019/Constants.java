@@ -28,13 +28,14 @@ public class Constants
     public static final double TRANSLATION_I = 0.0;
     public static final double TRANSLATION_D = 0.0;
     public static final double ANGLE_TOLERANCE_DEG = 5.0;
-    public static final double POSITION_TOLERANCE_MM = 1*25.4;
+    public static final double POSITION_TOLERANCE_MM = 0.5*25.4;
 
     // Foundation servos
     public static final double LEFT_FOUNDATION_SERVO_POSITION_UP    = 0.3;
     public static final double LEFT_FOUNDATION_SERVO_POSITION_DOWN  = 0.0;
     public static final double RIGHT_FOUNDATION_SERVO_POSITION_UP   = 0.7;
     public static final double RIGHT_FOUNDATION_SERVO_POSITION_DOWN = 1.0;
+
 }
 
 

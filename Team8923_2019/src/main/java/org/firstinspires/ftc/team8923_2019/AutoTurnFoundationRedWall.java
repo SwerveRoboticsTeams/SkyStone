@@ -3,12 +3,12 @@ package org.firstinspires.ftc.team8923_2019;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name="Turn Foundation Red", group = "Swerve")
+@Autonomous(name="Turn Foundation Red Wall", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
  */
 //@Disabled
-public class AutoTurnFoundationRed extends MasterAutonomous
+public class AutoTurnFoundationRedWall extends MasterAutonomous
 {
 
     @Override
@@ -34,8 +34,9 @@ public class AutoTurnFoundationRed extends MasterAutonomous
             imuPivot(imu.getAngularOrientation().firstAngle,-60,.5,1,1);
             imuMoveAuto(0 ,14 ,1,.2,3);
             grabbersUp();
-            sleep(250);
-            imuMoveAuto(-19 ,-48 ,1,.2,3);
+            sleep(2000);
+            imuMoveAuto(19 ,0 ,1,.2,3);
+            imuMoveAuto(0,-44,1,.2,3);
             break;
         }
 

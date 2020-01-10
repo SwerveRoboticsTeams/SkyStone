@@ -15,7 +15,7 @@ public class Test extends MasterAutonomous
     public void runOpMode() throws InterruptedException
     {
         //configureAutonomous();
-        initAuto();
+        initHardware();
         telemetry.clear();
         telemetry.update();
 
@@ -29,8 +29,8 @@ public class Test extends MasterAutonomous
         {
             autoReverseDrive = true;
 
-            imuMoveAuto(10,7,1,.2,3);
-            break;
+            servoFoundationRight.setPosition(1.0);
+
             // turn power counter clock
         }
 

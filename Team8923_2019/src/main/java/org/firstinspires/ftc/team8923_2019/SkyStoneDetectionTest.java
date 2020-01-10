@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team8923_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.corningrobotics.enderbots.endercv.ActivityViewDisplay;
 
 import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
@@ -55,6 +57,8 @@ public class SkyStoneDetectionTest extends MasterAutonomous
         RIGHT,MIDDLE,LEFT
     }
 
+    boolean isDetectingSkystone = true;
+
     @Override
     public void runOpMode() throws InterruptedException
     {
@@ -89,11 +93,9 @@ public class SkyStoneDetectionTest extends MasterAutonomous
         // run after user presses 'PLAY'
         while (opModeIsActive())
         {
-           imuMoveAuto(10,7,1,.2,3);
-           wait(200);
-            m1 = OpenCV_detector.getMean1();
-            m2 = OpenCV_detector.getMean2();
-            m3 = OpenCV_detector.getMean3();
+           imuMoveAuto(12,7,1,.2,3);
+           sleep(400);
+
 
             telemetry.addData("Left stone: ", m1);
             telemetry.addData("Middle stone: ", m2);
@@ -108,24 +110,38 @@ public class SkyStoneDetectionTest extends MasterAutonomous
              *
              *  Failing the first two options, the left stone is the SkyStone.
              */
-            if(m1 < m2 && m1 < m3)
-            {
-                telemetry.addData("Left stone is SkyStone", "");
-                skystonePlacement = Stone.LEFT;
+            while(isDetectingSkystone){
+                m1 = OpenCV_detector.getMean1();
+                m2 = OpenCV_detector.getMean2();
+                m3 = OpenCV_detector.getMean3();
 
+                if(m1 < m2 && m1 < m3)
+                {
+                    telemetry.addData("Left stone is SkyStone", "");
+                    skystonePlacement = Stone.LEFT;
+                    isDetectingSkystone = false;
+
+                }
+                else if(m2 < m3 && m2 < m1)
+                {
+                    telemetry.addData("Middle stone is SkyStone", "");
+                    skystonePlacement = Stone.MIDDLE;
+                    isDetectingSkystone = false;
+                }
+                else if(m3 < m1 && m3 < m2)
+                {
+                    telemetry.addData("Right stone is SkyStone", "");
+                    skystonePlacement = Stone.RIGHT;
+                    isDetectingSkystone = false;
+                }
             }
-            else if(m2 < m3)
-            {
-                telemetry.addData("Middle stone is SkyStone", "");
-                skystonePlacement = Stone.MIDDLE;
-            }
-            else
-            {
-                telemetry.addData("Right stone is SkyStone", "");
-                skystonePlacement = Stone.RIGHT;
-            }
+
 
             telemetry.update();
+
+            collectSkystone(skystonePlacement);
+            break;
+
 
         }
 
@@ -139,12 +155,48 @@ public class SkyStoneDetectionTest extends MasterAutonomous
             case MIDDLE:
                 break;
             case RIGHT:
-                imuMoveAuto(26.5,2,1,.2,3);
+                imuMoveAuto(30.5,3.5,1,.4,3);
+                moveBackAndIntake();
+                imuPivot(imu.getAngularOrientation().firstAngle,30,.3,1,1);
+                imuMoveAuto(0,30,1,.4,3);
+                imuPivot(imu.getAngularOrientation().firstAngle,-30,.3,1,1);
+                imuMoveAuto(0,63,1,.4,3);
                 break;
 
 
         }
 
+    }
+
+    private void moveBackAndIntake() throws InterruptedException{
+
+        runIntake();
+        //sleep(100);
+        imuMoveAuto(0,-6,1,.1,3);
+        sleep(600);
+        turnOffIntake();
+        clawDown();
+
+    }
+
+    private void runIntake() throws InterruptedException{
+        intakeLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeLeft.setPower(Variables.INTAKE_PWR);
+        intakeRight.setPower(Variables.INTAKE_PWR);
+    }
+
+    private void turnOffIntake() throws InterruptedException{
+        intakeLeft.setPower(0);
+        intakeRight.setPower(0);
+    }
+
+    private void clawDown() throws InterruptedException{
+        servoClaw.setPosition(0);
+    }
+
+    private void clawUp() throws InterruptedException{
+        servoClaw.setPosition(0.35);
     }
 
 }

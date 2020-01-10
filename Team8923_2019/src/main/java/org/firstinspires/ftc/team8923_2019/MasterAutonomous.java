@@ -191,6 +191,8 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
         grabbersUp();
 
+
+
         telemetry.clear();
         telemetry.update();
         telemetry.addLine("Initialized. Ready to start!");

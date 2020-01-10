@@ -14,7 +14,7 @@ public class AutoPark extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        configureAutonomous();
+        //configureAutonomous();
         initAuto();
         telemetry.clear();
         telemetry.update();
