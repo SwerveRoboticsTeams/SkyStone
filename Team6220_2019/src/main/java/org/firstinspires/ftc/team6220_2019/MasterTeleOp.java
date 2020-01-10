@@ -2,10 +2,10 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.team6220_2019.ResourceClasses.Button;
 
-abstract public class MasterTeleOp extends MasterOpMode
-{
+abstract public class MasterTeleOp extends MasterOpMode {
     // Start robot in slow mode (per Slater)
     boolean slowMode = false;
     // Allows us to switch front of robot.
@@ -23,18 +23,14 @@ abstract public class MasterTeleOp extends MasterOpMode
     double rFactor = Constants.R_FACTOR;
 
 
-    public void driveMecanumWithJoysticks()
-    {
+    public void driveMecanumWithJoysticks() {
         // Note: factors are different for translation and rotation
         // Slow mode functionality.  1st driver presses right bumper to toggle slow mode
-        if (driver1.isButtonJustPressed(Button.RIGHT_BUMPER))
-        {
-            if (!slowMode)
-            {
+        if (driver1.isButtonJustPressed(Button.RIGHT_BUMPER)) {
+            if (!slowMode) {
                 tFactor = Constants.SLOW_MODE_T_FACTOR;
                 rFactor = Constants.SLOW_MODE_R_FACTOR;
-            } else
-            {
+            } else {
                 tFactor = Constants.T_FACTOR;
                 rFactor = Constants.R_FACTOR;
             }
@@ -48,12 +44,10 @@ abstract public class MasterTeleOp extends MasterOpMode
         double rotationPower = rFactor * stickCurve.getOuput(driver1.getLeftStickX());
         double drivePower = tFactor * stickCurve.getOuput(driver1.getRightStickMagnitude());
 
-        if (driver1.getRightStickMagnitude() < Constants.MINIMUM_DRIVE_POWER)
-        {
+        if (driver1.getRightStickMagnitude() < Constants.MINIMUM_DRIVE_POWER) {
             drivePower = 0;
         }
-        if (driver1.getLeftStickMagnitude() < Constants.MINIMUM_DRIVE_POWER)
-        {
+        if (driver1.getLeftStickMagnitude() < Constants.MINIMUM_DRIVE_POWER) {
             rotationPower = 0;
         }
 
@@ -85,8 +79,7 @@ abstract public class MasterTeleOp extends MasterOpMode
 
     // todo Do we want to change dpad controls to A / Y ?
     // TeleOp method for driving collector.  Controlled by driver 2.
-    public void driveCollector()
-    {
+    public void driveCollector() {
         // Drive collector motors-------------------------------------------------------------------
         if (driver1.getRightTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)    // Collect stone
             runCollector(false, false);
@@ -108,31 +101,28 @@ abstract public class MasterTeleOp extends MasterOpMode
     // todo Needs RUN_TO_POSITION mode and automatic distances fixed.
     // TeleOp scoring system method.  Uses liftMotor to move scoring arm, with parallelServo
     // keeping grabber parallel to the ground.
-    public void driveLift()
-    {
-        if (isLiftRunToPosMode) // Stupid implementation as control is no longer done by stick. Should change this.
-        {
-            isLiftRunToPosMode = false;
-            liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    public void driveLift() {
+
 //            hasLoweredArm = false;
 //            hasGrabbedStone = false;
 //            hasRotatedArm = false;
 //            hasPlacedStone = false;
-        }
 
-        if (!isLiftRunToPosMode)
-        {
-            if (driver2.isButtonPressed(Button.LEFT_BUMPER))
-            {
-                driveLift(-1);
-            } else if (driver2.isButtonPressed(Button.RIGHT_BUMPER))
-            {
-                driveLift(1);
-            } else
-            {
+
+        if (driver2.isButtonPressed(Button.LEFT_BUMPER)) {
+            driveLift(-1);
+        } else if (driver2.isButtonPressed(Button.RIGHT_BUMPER)) {
+            driveLift(1);
+        } else if (driver2.getRightTriggerValue() > 0.5) { //0.5 is arbitrary; should be in Constants class
+            if (Math.abs(liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_POSITION) <= 10) {
                 driveLift(0);
+            } else if (liftMotor1.getCurrentPosition() > Constants.LIFT_MOTOR_POSITION) {
+                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_POSITION) / 100));
+            } else if (liftMotor1.getCurrentPosition() < Constants.LIFT_MOTOR_POSITION) {
+                driveLift(Math.min(1, (Constants.LIFT_MOTOR_POSITION - liftMotor1.getCurrentPosition()) / 100));
             }
+        } else {
+            driveLift(0);
         }
 
         // If driver 2 presses B, toggle grabber.
@@ -222,7 +212,7 @@ abstract public class MasterTeleOp extends MasterOpMode
 
         // Display telemetry data to drivers
         telemetry.addData("Grabber servo position: ", grabberServo.getPosition());
-        telemetry.addData("Lift motor position: ", liftMotor1.getCurrentPosition());
+        telemetry.addData("Lift motor1 position: ", liftMotor1.getCurrentPosition());
         telemetry.addData("IsBottomHardStopOn: ", isBottomHardStopOn);
     }
 }

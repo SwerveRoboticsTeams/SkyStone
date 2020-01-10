@@ -27,86 +27,27 @@ public class AutoCompetition extends MasterAutonomous
         // Wait to start the match for 0-10 seconds, depending on setup input.
         pauseWhileUpdating(delayCount);
 
-        navigateUsingEncoders(-robotShiftSign * 14, 0, 0.4, false);
+        /* Outline of autonomous (written from perspective of red team)
+        Be able to start at two positions. One with x = -36in, one with x = 24in.
 
-        if(scoreFoundation)
-        {
-            // Drive forward and grab foundation.
-            navigateUsingEncoders(0, -39, 0.4, false);
-            toggleFoundationServos();
+        If alliance partner is doing autonomous, translate left two feet.
 
-            pauseWhileUpdating(1.0);
+        Else, translate forward by 12in. Pause briefly to determine which stone is skystone.
+        Rotate robot 180 degrees. --FROM NOW ON, ALL INSTRUCTIONS GIVEN WITH NEW ORIENTATION--
+        Align robot by translating left/right for skystone. Translate forward around two feet to collect
+        skystone. Ensure that the position of the arm is ready to collect stone.
 
-            // Drive backward and let go of foundation.
-            navigateUsingEncoders(0, 42, 0.4, false);
-            toggleFoundationServos();
-        }
+        Once collected, grabber should close. Translate backwards to one of two positions, depending on
+        whether we are using inside lane or outside lane (depends on where alliance robot is). Translate right until
+        center of robot is around 24in from right edge.
 
-        // Park under alliance Skybridge.
-        navigateUsingEncoders(robotShiftSign * 54, 0, 0.8, false);
+        Translate forward an appropriate amount (depending on which lane used), then lower foundation servos.
+        Drive backwards until the back of the robot is against the wall. Extend arm, drop grabber.
 
-        if (!parkClose)
-        {
-            navigateUsingEncoders(0, -24, 0.6, false);
-        }
-
-        /*
-        // Find SkyStone image target and translate appropriate distance toward image target
-        alignWithSkyStone();
-
-        // Drop slide, drive forward, and collect SkyStone
-        slideMotor.setTargetPosition(Constants.SLIDE_EXTENDED);
-        slideMotor.setPower(0.5 * Constants.SLIDE_MOTOR_MAX_POWER);
-        pauseWhileUpdating(1.0);
-        navigateUsingEncoders(0, 38, 0.4, true);
-
-        // Lower grabber, then grab SkyStone and drive backwards (18 in + 3 in behind tile line)
-        //runScoringSystemAuto(0);
-        //toggleGrabber();
-        navigateUsingEncoders(0, -22, 0.5, false);
-
-        if (scoreFoundation)
-        {
-            // Turn, navigate to center of foundation (+3.5 tiles), and turn again so foundationServos face
-            // the foundation
-            turnTo(0, 0.7);
-            navigateUsingEncoders(0, 88 - robotShiftSign * robotShift - centerAdjustment, 0.7, false);
-            turnTo(-90 + turnShift, 0.7);   // Account for turn shift if blue alliance (+180)
-
-            // Drive up to foundation (forward 3 in + 6 in extra for good measure), activate foundationServos,
-            // and pull foundation into building site
-            navigateUsingEncoders(0, -10, 0.3, false);
-            toggleFoundationServos();
-            pauseWhileUpdating(0.5);
-            navigateUsingEncoders(0, 39, 0.4, false);    // 38 = 2 * 24 - 16 (robot length) + 6 (extra distance)
-
-            // Move lift, drop SkyStone, and retract lift
-            //runScoringSystemAuto(Constants.LIFT_PLACE_POS);
-            pauseWhileUpdating(0.25);
-            //toggleGrabber();
-            //runScoringSystemAuto(Constants.LIFT_GRAB_POS);
-
-            // Rotate foundation in, release servos, rotate back
-            toggleFoundationServos();
-
-            // Navigate two tiles to park on line
-            navigateUsingEncoders(robotShiftSign * 56, 0, 0.8, false);
-        }
-        else
-        {
-            // If not scoring foundation, simply park far
-            // todo Need to properly account for park far option
-            navigateUsingEncoders(robotShiftSign * 60, 0, 0.4, false);
-            runCollector(false, false);
-            //toggleGrabber();
-
-            navigateUsingEncoders(0, -4, 0.4, false);
-            collectorLeft.setPower(0);
-            collectorRight.setPower(0);
-            navigateUsingEncoders(0, 4, 0.4, false);
-
-            navigateUsingEncoders(-robotShiftSign * 24, 0, 0.5, false);
-        }*/
+        Translate left to get out of the corner (possibly engaging collector motors to counteract the
+        inevitable friction), then translate to the designated parking spot (depends on where
+        alliance partner is). 
+         */
 
 
         // todo Currently don't need trackables; will probably rely on odometry rather than Vuforia.

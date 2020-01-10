@@ -30,8 +30,10 @@ public class Constants
 
     // Constant that acts as a software hardstop for lift motor.
     public static final double LIFT_MOTOR_MAX_HEIGHT = 4200; //In encoder ticks for Andymark 20
+    // Constant that sets a goal position for liftMotor1 in encoder ticks.
+    public static final int LIFT_MOTOR_POSITION = 450;
      // Constants to control power of collector motors
-    public static final double COLLECTOR_POWER = 0.5;
+    public static final double COLLECTOR_POWER = 0.45;
     public static final double COLLECTOR_ROTATE_POWER = 0.5;    // todo Adjust
     public static final double COLLECTOR_MIN_TRIGGER_VALUE = 0.05;     // Deadzone
 
@@ -93,9 +95,9 @@ public class Constants
     public static final double GRABBER_OPEN = 0.9;
      // Open = stowed, closed = grabbing foundation
     public static final double FOUNDATION_SERVO_LEFT_UP = 0.88;
-    public static final double FOUNDATION_SERVO_LEFT_DOWN = 0.2;    // todo Small adjustments for down positions
-    public static final double FOUNDATION_SERVO_RIGHT_UP = 0.15;
-    public static final double FOUNDATION_SERVO_RIGHT_DOWN = 0.75;
+    public static final double FOUNDATION_SERVO_LEFT_DOWN = 0.1;    // todo Small adjustments for down positions
+    public static final double FOUNDATION_SERVO_RIGHT_UP = 0.2;
+    public static final double FOUNDATION_SERVO_RIGHT_DOWN = 0.98;
 
     //todo adjust grabberArm constants
     public static final double GRABBER_ARM_SERVO_LEFT_EXTEND = 0.0;
