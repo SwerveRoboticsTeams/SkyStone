@@ -1,24 +1,25 @@
 package org.firstinspires.ftc.team8923_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Disabled
-@Autonomous(name="Test", group = "Swerve")
+
+@Autonomous(name="Park Backwards", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
  */
-public class Test extends MasterAutonomous
+//@Disabled
+public class AutoParkBackwards extends MasterAutonomous
 {
 
     @Override
     public void runOpMode() throws InterruptedException
     {
         //configureAutonomous();
-        initHardware();
+
+        initAuto();
+        autoReverseDrive = true;
         telemetry.clear();
         telemetry.update();
-
 
 
         waitForStart();
@@ -27,11 +28,9 @@ public class Test extends MasterAutonomous
 
         while (opModeIsActive())
         {
-            autoReverseDrive = true;
+            imuMoveAuto(0, 9, .5, .1, 3);
 
-            servoFoundationRight.setPosition(1.0);
-
-            // turn power counter clock
+            break;
         }
 
     }

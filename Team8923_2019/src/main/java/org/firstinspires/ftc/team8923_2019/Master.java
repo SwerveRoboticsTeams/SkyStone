@@ -31,8 +31,6 @@ abstract class Master extends LinearOpMode
     Servo servoClaw;
 
 
-
-
     BNO055IMU imu;
 
     double powerFL;

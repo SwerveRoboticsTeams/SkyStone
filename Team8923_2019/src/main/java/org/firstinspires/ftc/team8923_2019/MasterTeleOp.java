@@ -158,6 +158,9 @@ abstract class MasterTeleOp extends Master
     }
 
     // Helper Functions
+
+
+
     private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)
     {
         double valueDifference = maxInput - minInput;

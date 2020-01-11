@@ -58,7 +58,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     boolean doneSettingUp = false;
 
     int delays = 0;
-    //int numDelays = 0;
+    int numOfSecondsDelay = 0;
     int delayTime = 0;
 
     // these values equal to one over the value (in mm for drive power and degrees for turn power)
@@ -155,6 +155,31 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         }
     }
 
+    void enterDelay()
+    {
+        boolean isDoneSettingUp = false;
+
+        while(isDoneSettingUp == false)
+        {
+            if(gamepad1.dpad_up) numOfSecondsDelay++;
+            else if(gamepad1.dpad_down && numOfSecondsDelay != 0) numOfSecondsDelay--;
+            else if(gamepad1.start) isDoneSettingUp = true;
+
+            while (!buttonsAreReleased(gamepad1))
+            {
+                telemetry.update();
+                idle();
+            }
+
+            telemetry.addLine("d-pad up/down");
+            telemetry.addData("Number of Seconds", numOfSecondsDelay);
+            telemetry.update();
+        }
+
+
+    }
+
+
     void initAuto()
     {
         telemetry.addData("Init State", "Init Started");
@@ -244,35 +269,17 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-//        newTargetFL = motorFL.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) + (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
-//        newTargetFR = motorFR.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) - (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
-//        newTargetBL = motorBL.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) - (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
-//        newTargetBR = motorBR.getCurrentPosition() + (int) Math.round(Constants.COUNTS_PER_MM * y) + (int) Math.round(Constants.COUNTS_PER_MM * x * 1.15);
-//
-//        if(reverseDrive == true){
-//            newTargetFL = -newTargetFL;
-//            newTargetFR = -newTargetFR;
-//            newTargetBL = -newTargetBL;
-//            newTargetBR = -newTargetBR;
-//        }
-
-
         runtime.reset();
 
-        // Check to see if robot has arrived at destination within angle and position tolerances
-        // todo Check conditional
-        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) /*|| (runtime.seconds() < timeout)*/) /*&& !isStopRequested()*/)
-        {
 
+        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) ) )
+        {
             telemetry.update();
-            // todo Check if this actually returns the delta x and y in mm
-            // Calculate difference in X and Y based on average encoder counts of motors
+
             deltaX = initDeltaX - (Constants.MM_PER_TICK - .117) * ((motorFL.getCurrentPosition() -
                     motorBL.getCurrentPosition() - motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4);
             deltaY = initDeltaY - Constants.MM_PER_TICK * ((motorFL.getCurrentPosition() +
                     motorBL.getCurrentPosition() + motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4);
-
-
 
             // Recalculates how far off robot is form its initial heading
             robotAngle = imu.getAngularOrientation().firstAngle;
@@ -299,63 +306,12 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
                 drivePower = Math.signum(drivePower) * maxSpeed;
             }
 
-
-
-//            newTargetFL += correction;
-//            errorFL = newTargetFL - motorFL.getCurrentPosition();
-//            speedFL = Math.abs(errorFL * Kmove);
-//            speedFL = Range.clip(speedFL, minSpeed, speed);
-//            speedFL = speedFL * Math.signum(errorFL);
-//
-//            newTargetFR -= correction;
-//            errorFR = newTargetFR - motorFR.getCurrentPosition();
-//            speedFR = Math.abs(errorFR * Kmove);
-//            speedFR = Range.clip(speedFR, minSpeed, speed);
-//            speedFR = speedFR * Math.signum(errorFR);
-//
-//            newTargetBL += correction;
-//            errorBL = newTargetBL - motorBL.getCurrentPosition();
-//            speedBL = Math.abs(errorBL * Kmove);
-//            speedBL = Range.clip(speedBL, minSpeed, speed);
-//            speedBL = speedBL * Math.signum(errorBL);
-//
-//            newTargetBR -= correction;
-//            errorBR = newTargetBR - motorBR.getCurrentPosition();
-//            speedBR = Math.abs(errorBR * Kmove);
-//            speedBR = Range.clip(speedBR, minSpeed, speed);
-//            speedBR = speedBR * Math.signum(errorBR);
-
-
             reverseDrive = true;
             driveMecanum(driveAngle - 90, drivePower, rotationPower);
 
-//            motorFL.setPower(speedFL);
-//            motorFR.setPower(speedFR);
-//            motorBL.setPower(speedBL);
-//            motorBR.setPower(speedBR);
-
-
-           // telemetry.addData("driveAngle", driveAngle-90);
-           // telemetry.addData("drivePower", drivePower);
-           // telemetry.addData("rotationPower", rotationPower);
-//            telemetry.addData("distance left", distanceToTarget);
-//            telemetry.addData("deltaX", deltaX);
-//            telemetry.addData("deltaY", deltaY);
-//            telemetry.addData("distanceFilter",translationFilter.getFilteredValue());
-//            telemetry.addData("rotationFilter",rotationFilter.getFilteredValue());
-//            telemetry.addData("FL", motorFL.getCurrentPosition());
-//            telemetry.addData("FR", motorFR.getCurrentPosition());
-//            telemetry.addData("BL", motorBL.getCurrentPosition());
-//            telemetry.addData("BR", motorBR.getCurrentPosition());
-
-            telemetry.addData("heading diff", headingDiff);
-            telemetry.addData("distanceToTarget", distanceToTarget);
-
-            telemetry.update();
 
             idle();
         }
-
 
 
         stopDriving();
@@ -433,8 +389,6 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
         telemetry.update();
     }
-
-
 
     void imuPivot(double referenceAngle, double targetAngle, double MaxSpeed, double kAngle, double timeout)
     {
