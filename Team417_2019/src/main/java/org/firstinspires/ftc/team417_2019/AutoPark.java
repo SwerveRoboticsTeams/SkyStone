@@ -56,10 +56,11 @@ public class AutoPark extends MasterAutonomous
         sleep((long)time);
 
         // movement in mm control with robot
-        move(xMove,0, 0.2, 0.8, 3.0);
-        sleep(100);
-        move(0,yMove,0.2,0.8,3.0);
-
+        //move(xMove,0, 0.2, 0.8, 3.0);
+        //sleep(100);
+        //move(0,yMove,0.2,0.8,3.0);
+        //moveMaintainHeading(0,-10000,0,0.5,0.8,3.0);
+        moveMaintainHeading(500,0,0,0.5,0.8,3.0);
     }
 }
 

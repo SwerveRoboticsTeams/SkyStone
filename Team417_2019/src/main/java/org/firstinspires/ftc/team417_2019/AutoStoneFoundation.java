@@ -105,7 +105,7 @@ public class AutoStoneFoundation extends MasterAutonomous {
          */
 
         // move towards foundation
-        moveMaintainHeading(300 * allianceSide, 50, 0, 0.7, 0.9, 3.0);
+        moveMaintainHeading(150 * allianceSide, 50, 0, 0.7, 0.9, 3.0);
         pause(500);
         moveMaintainHeading(0, -550, 0, 0.7, 0.9, 3.0);
 
@@ -134,7 +134,7 @@ public class AutoStoneFoundation extends MasterAutonomous {
         arm1.setPower(0);
         arm2.setPower(0);
         core2.setPower(-0.9);
-        moveMaintainHeading(-1100 * allianceSide, 100, 0, 0.7, 0.9, 3.0);
+        moveMaintainHeading(-1100 * allianceSide, 150, 0, 0.7, 0.9, 3.0);
         // lower arm to position 0
         //moveMaintainHeading(0, 0, -85 * allianceSide, 0.7, 0.9, 3.0);
         /*

@@ -57,8 +57,8 @@ public class AutoFoundation extends MasterAutonomous
         moveMaintainHeading(0, 650, 0, 0.7, 0.9, 3.0);
         leftFoundationPuller.setPosition(1);
         rightFoundationPuller.setPosition(0);
-        moveMaintainHeading(-650 * allianceSide, 0, 0, 0.5, 0.8, 3.0);
-        moveMaintainHeading(0, -475 + 40* (allianceSide-1), 0, 0.7, 0.9, 3.0);
+        moveMaintainHeading(-750 * allianceSide, 0, 0, 0.5, 0.8, 3.0);
+        //moveMaintainHeading(0, -475 + 40* (allianceSide-1), 0, 0.7, 0.9, 3.0);
         moveMaintainHeading(0, 0, -85 * allianceSide, 0.7, 0.9, 3.0);
         core2.setPower(0.9);
         pause(1250);
