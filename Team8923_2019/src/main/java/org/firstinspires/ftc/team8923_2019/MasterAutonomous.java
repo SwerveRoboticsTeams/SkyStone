@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team8923_2019;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -665,5 +666,38 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         }
 
         return rawAngle;
+    }
+
+    // Get Skystone functions
+
+    void moveBackAndIntake() throws InterruptedException{
+
+        runIntake();
+        //sleep(100);
+        imuMoveAuto(0,-6,1,.1,3);
+        sleep(600);
+        turnOffIntake();
+        clawDown();
+
+    }
+
+    void runIntake() throws InterruptedException{
+        intakeLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeLeft.setPower(Variables.INTAKE_PWR);
+        intakeRight.setPower(Variables.INTAKE_PWR);
+    }
+
+    void turnOffIntake() throws InterruptedException{
+        intakeLeft.setPower(0);
+        intakeRight.setPower(0);
+    }
+
+    void clawDown() throws InterruptedException{
+        servoClaw.setPosition(0);
+    }
+
+    void clawUp() throws InterruptedException{
+        servoClaw.setPosition(0.35);
     }
 }

@@ -35,7 +35,7 @@ public class AutoTurnFoundationBlueBridge extends MasterAutonomous
             imuMoveAuto(0 ,14 ,1,.2,3);
             grabbersUp();
             sleep(2000);
-            imuMoveAuto(10 ,0 ,1,.2,3);
+            imuMoveAuto(8 ,0 ,1,.2,3);
             imuMoveAuto(0,-44,1,.2,3);
             break;
         }

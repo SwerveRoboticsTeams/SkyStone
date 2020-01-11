@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team8923_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -46,8 +47,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  *
  * 2018/09/30 Copied from OpenCvExampleBlueVisionDemo.java to experiment with various parameters.
  */
-@Autonomous(name = "Skystone Detection Test", group = "Test")
-public class SkyStoneDetectionTest extends MasterAutonomous
+@Disabled
+@Autonomous(name = "Auto SkyStone Blue", group = "Test")
+public class AutoSkyStoneBlue extends MasterAutonomous
 {
     SkystoneDetectionOpenCV OpenCV_detector;
 
@@ -168,35 +170,6 @@ public class SkyStoneDetectionTest extends MasterAutonomous
 
     }
 
-    private void moveBackAndIntake() throws InterruptedException{
 
-        runIntake();
-        //sleep(100);
-        imuMoveAuto(0,-6,1,.1,3);
-        sleep(600);
-        turnOffIntake();
-        clawDown();
-
-    }
-
-    private void runIntake() throws InterruptedException{
-        intakeLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        intakeLeft.setPower(Variables.INTAKE_PWR);
-        intakeRight.setPower(Variables.INTAKE_PWR);
-    }
-
-    private void turnOffIntake() throws InterruptedException{
-        intakeLeft.setPower(0);
-        intakeRight.setPower(0);
-    }
-
-    private void clawDown() throws InterruptedException{
-        servoClaw.setPosition(0);
-    }
-
-    private void clawUp() throws InterruptedException{
-        servoClaw.setPosition(0.35);
-    }
 
 }

@@ -14,7 +14,7 @@ public class AutoPullFoundationBlue extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-        configureAutonomous();
+
         initAuto();
         telemetry.clear();
         telemetry.update();
