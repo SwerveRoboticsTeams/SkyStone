@@ -426,6 +426,60 @@ abstract public class MasterOpMode extends LinearOpMode
         stopDriveMotors();
     }
 
+    // todo UNTESTED
+    // Turn to a specified angle by driving one side of the robot.
+    public void pivotTurn(boolean leftSide, double targetAngle, double maxPower)
+    {
+        double pivotPower;
+        currentAngle = getAngularOrientationWithOffset();
+        double angleDiff = normalizeAngle(targetAngle - currentAngle);
+
+        // Robot only stops turning when it is within angle tolerance
+        while (Math.abs(angleDiff) >= Constants.ANGLE_TOLERANCE_DEG && opModeIsActive())
+        {
+            currentAngle = getAngularOrientationWithOffset();
+
+            // Give robot raw value for turning power
+            angleDiff = normalizeAngle(targetAngle - currentAngle);
+
+            // Send raw turning power through PID filter to adjust range and minimize oscillation
+            rotationFilter.roll(angleDiff);
+            pivotPower = rotationFilter.getFilteredValue();
+
+            // Make sure turningPower doesn't go above maximum power
+            if (Math.abs(pivotPower) > maxPower)
+            {
+                pivotPower = maxPower * Math.signum(pivotPower);
+            }
+
+            // Makes sure turningPower doesn't go below minimum power
+            if (Math.abs(pivotPower) < Constants.MINIMUM_TURNING_POWER)
+            {
+                pivotPower = Math.signum(pivotPower) * Constants.MINIMUM_TURNING_POWER;
+            }
+
+            // Pivots robot; - signs convert between angle and drive power
+            if (leftSide)   // Turn using left side of robot
+            {
+                motorFL.setPower(-pivotPower);
+                motorBL.setPower(-pivotPower);
+            }
+            else            // Turn using right side of robot
+            {
+                motorFR.setPower(-pivotPower);
+                motorBR.setPower(-pivotPower);
+            }
+
+            telemetry.addData("angleDiff: ", angleDiff);
+            telemetry.addData("pivotPower: ", pivotPower);
+            telemetry.addData("Orientation: ", currentAngle);
+            telemetry.update();
+            idle();
+        }
+
+        stopDriveMotors();
+    }
+
 
     // todo Make sure this works
     // General method for driving collector (auto and TeleOp)
@@ -523,6 +577,7 @@ abstract public class MasterOpMode extends LinearOpMode
             telemetry.addData("Lift Position: ", currentPosition);
             telemetry.addData("Target Position: ", position);
             telemetry.update();
+            idle();
         }
         while ((Math.abs(currentPosition - position) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS) && opModeIsActive() && (loopTimer.seconds() < 5));    // Continue if outside tolerance.
     }

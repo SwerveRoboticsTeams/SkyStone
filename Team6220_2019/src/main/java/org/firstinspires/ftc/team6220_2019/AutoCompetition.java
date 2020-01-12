@@ -50,7 +50,7 @@ public class AutoCompetition extends MasterAutonomous
         // Grabber arn must initialize after match starts in order to satisfy 18" size constraint, after which it flips out collector.
         grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
         grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
-        // Raise lift to correct position for collection of SkyStone.
+        // Raise lift to correct position for collection of SkyStone.   todo Is this running the lift into the ground?  Enable when working.
         //runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
 
 
@@ -58,59 +58,59 @@ public class AutoCompetition extends MasterAutonomous
         alignWithSkyStone();
 
         // Drive forward and collect SkyStone.
-        //navigateUsingEncoders(0, 38, 0.4, true);
+        navigateUsingEncoders(0, 38, 0.5, true);
 
-        // Lower lift, then grab SkyStone and drive backwards (18 in + 3 in behind tile line)
-        //runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
-        //toggleGrabber();
-        //navigateUsingEncoders(0, -22, 0.5, false);
+        // Lower lift, then grab SkyStone and drive backwards (12 in away from tile line)
+        //runLiftToPosition(Constants.LIFT_MOTOR_GRAB_HEIGHT);
+        toggleGrabber();
+        navigateUsingEncoders(0, -11 - parkShift, 0.5, false);  // parkShift accounts for near or far park
 
-        /*
+        // Turn to face Skybridge
+        turnTo(180,0.7);
+
         if (scoreFoundation)
         {
-            // Turn, navigate to center of foundation (+3.5 tiles), and turn again so foundationServos face
-            // the foundation
-            turnTo(0, 0.7);
-            navigateUsingEncoders(0, 88 - robotShiftSign * robotShift - centerAdjustment, 0.7, false);
+            // Navigate to center of foundation (+3.5 tiles and 4 in for foundation), and turn again so foundationServos face the foundation
+            navigateUsingEncoders(0, 88 - robotShiftSign * robotShift /*- centerAdjustment*/, 0.7, false);
             turnTo(-90 + turnShift, 0.7);   // Account for turn shift if blue alliance (+180)
 
-            // Drive up to foundation (forward 3 in + 6 in extra for good measure), activate foundationServos,
-            // and pull foundation into building site
-            navigateUsingEncoders(0, -10, 0.3, false);
+            // Drive up to foundation (forward 3 in + 4 in extra for good measure) and activate foundationServos.
+            navigateUsingEncoders(0, -7 - parkShift, 0.3, false);   // Account for near or far park to go correct distance to foundation.
             toggleFoundationServos();
             pauseWhileUpdating(0.5);
-            navigateUsingEncoders(0, 39, 0.4, false);    // 38 = 2 * 24 - 16 (robot length) + 6 (extra distance)
 
-            // Move lift, drop SkyStone, and retract lift
-            //runScoringSystemAuto(Constants.LIFT_PLACE_POS);
-            pauseWhileUpdating(0.25);
-            toggleGrabber();
-            //runScoringSystemAuto(Constants.LIFT_GRAB_POS);
-
-            // Rotate foundation in, release servos, rotate back
+            // Pull foundation:  Turn 45 degrees and pull, then 45 degrees cw again and push.
+            pivotTurn(!isRedAlliance,robotShiftSign * 45,0.4);   // robotShiftSign accounts for opposite red / blue turns here.
+            pivotTurn(isRedAlliance,0,0.4);                      // isRedAlliance accounts for left / right pull order being reversed.
             toggleFoundationServos();
 
-            // Navigate two tiles to park on line
-            navigateUsingEncoders(robotShiftSign * 56, 0, 0.8, false);
+            // Raise lift, move grabber arm, drop SkyStone, and retract lift along with grabber arm.
+            runLiftToPosition(Constants.LIFT_MOTOR_PLACE_HEIGHT);
+            pauseWhileUpdating(0.5);
+            toggleGrabberArm();
+            pauseWhileUpdating(0.5);
+            toggleGrabber();
+            pauseWhileUpdating(0.5);
+            toggleGrabberArm();
+            pauseWhileUpdating(0.5);
+            runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
+
+            // Release foundation and shift toward wall if parking close (must account for blue / red here).
+            toggleFoundationServos();
+            navigateUsingEncoders(-robotShiftSign * parkShift, 0, 0.5, false);   // todo Factor here may be very wrong!
+
+            // Drive forward 72 - (9 + 18.5) = 44.5 in to park on line.
+            navigateUsingEncoders(0, 45, 0.7, false);
         }
         else
         {
-            // If not scoring foundation, simply park far
-            // todo Need to properly account for park far option
-            navigateUsingEncoders(robotShiftSign * 60, 0, 0.4, false);
-            runCollector(false, false);
-            toggleGrabber();
-
-            navigateUsingEncoders(0, -4, 0.4, false);
-            collectorLeft.setPower(0);
-            collectorRight.setPower(0);
-            navigateUsingEncoders(0, 4, 0.4, false);
-
-            navigateUsingEncoders(-robotShiftSign * 24, 0, 0.5, false);
-        }*/
+            // Center of robot 14 inches past center line
+            // Move past line and return to both park and score SkyStone.
+            navigateUsingEncoders(0, -50, 0.7, false);
+            navigateUsingEncoders(0, 14, 0.7, false);
+        }
 
 
-        // todo Currently don't need trackables; will probably rely on odometry rather than Vuforia.
         // Turn off OpenCV.
         skystoneDetector.disable();
         // stop the vision system

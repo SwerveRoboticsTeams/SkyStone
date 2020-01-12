@@ -43,7 +43,7 @@ public class Constants
     // Movement control constants------------------------------------
     public static final double MINIMUM_DRIVE_POWER = 0.08;
     public static final double MAX_DRIVE_POWER = 1.0;
-    public static final double MINIMUM_TURNING_POWER = 0.02;
+    public static final double MINIMUM_TURNING_POWER = 0.02;    // todo Too small?
      // Constants for adjusting powers that are proportional to angle and position differences
     public static final double TURNING_POWER_FACTOR = 0.01;
     public static final double DRIVE_POWER_FACTOR = 0.04;
@@ -90,6 +90,7 @@ public class Constants
     // Lift constants------------------------------------------------
     public static final int LIFT_SCALE_HEIGHT = 600;   // Scales power for runLiftToPosition()
     public static final int LIFT_MOTOR_MAX_HEIGHT = 7000;   // In encoder ticks for AndyMark 20
+    public static final int LIFT_MOTOR_PLACE_HEIGHT = 2000;   // todo Has not been adjusted!
     public static final int LIFT_MOTOR_COLLECT_HEIGHT = 300;   // Height for collecting stones
     public static final int LIFT_MOTOR_GRAB_HEIGHT = 100;   // Height for grabbing stones
     public static final int LIFT_MOTOR_MIN_HEIGHT = 0;   // Acts as a software stop for lift

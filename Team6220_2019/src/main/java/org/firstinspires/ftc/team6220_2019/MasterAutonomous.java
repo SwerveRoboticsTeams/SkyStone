@@ -22,13 +22,14 @@ abstract public class MasterAutonomous extends MasterOpMode
     // Whether we want to score the foundation or not
     boolean scoreFoundation = true;
     // Whether we want to park on far or close end of line under alliance Skybridge
-    boolean parkClose = true;
+    boolean parkClose = false;
     //------------------------------------------------------------------------------------------
 
     // todo Changes needed for these to work in new auto?
     // Initialize angles and distances for various differing setup options----------------------
     double stoneShift = 8; // Centers of stones are 8 in apart
     double robotShift = stoneShift;     // Actual distance the robot moved (will be changed)
+    double parkShift = 0;              // Adjusts whether we park far (0 in) or close (24 in)
 
     // Change initial orientation based on red / blue alliance.  Red is default
     double initAngle_side = 90;
@@ -36,8 +37,9 @@ abstract public class MasterAutonomous extends MasterOpMode
     double turnShift = 0;
     // Account for translation being opposite directions relative to field on red / blue alliances
     double robotShiftSign = 1.0;
+    // todo Not needed?
     // Account for center being shifted in opposite directions on red / blue alliance
-    double centerAdjustment = 0;
+//    double centerAdjustment = 0;
     //------------------------------------------------------------------------------------------
 
 
@@ -124,8 +126,12 @@ abstract public class MasterAutonomous extends MasterOpMode
             initAngle_side = -90;
             turnShift = 180;
             robotShiftSign = -1.0;
-            centerAdjustment = 2.0 * stoneShift;
+            //centerAdjustment = 2.0 * stoneShift;
         }
+
+        // Adjust where we park
+        if (parkClose)
+            parkShift = 24;
 
         telemetry.log().clear();
         telemetry.log().add("Setup finished.");
