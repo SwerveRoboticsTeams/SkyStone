@@ -17,6 +17,11 @@ public class TeleOpCompetition extends MasterTeleOp
         // Accounts for delay between initializing the program and starting TeleOp
         lTime = timer.seconds();
 
+        // Grabber arn must initialize after match starts in order to satisfy 18" size constraint, after which it flips out collector.
+        grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
+        grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
+
+
         while(opModeIsActive())
         {
             // Finds the time elapsed each loop
@@ -30,7 +35,7 @@ public class TeleOpCompetition extends MasterTeleOp
 
             // Driver 2 controls
             driveLift();
-            // Only toggle foundationServos if Button.A is just pressed.
+             // Only toggle foundationServos if Button.A is just pressed.
             if(driver2.isButtonJustPressed(Button.A))
                 toggleFoundationServos();
             //--------------------------------------------------------------------------------------

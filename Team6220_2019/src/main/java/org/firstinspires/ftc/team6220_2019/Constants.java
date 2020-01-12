@@ -89,13 +89,14 @@ public class Constants
 
     // Lift constants------------------------------------------------
     public static final int LIFT_MOTOR_MAX_HEIGHT = 7000;   // In encoder ticks for AndyMark 20
-    public static final int LIFT_MOTOR_GRAB_HEIGHT = 450;   // Acts as a software stop for lift motor
+    public static final int LIFT_MOTOR_COLLECT_HEIGHT = 350;   // Acts as a software stop for lift motor
+    public static final int LIFT_MOTOR_GRAB_HEIGHT = 0;   // Acts as a software stop for lift motor
     public static final double LIFT_POWER_FACTOR = 1.0;     // todo Too big?
     //---------------------------------------------------------------
 
 
     // Collector constants-------------------------------------------
-    public static final double COLLECTOR_POWER = 0.45;          // todo May need to adjust
+    public static final double COLLECTOR_POWER = 0.7;          // todo May need to adjust
     public static final double COLLECTOR_ROTATE_POWER = 0.5;    // todo Adjust
     //---------------------------------------------------------------
 

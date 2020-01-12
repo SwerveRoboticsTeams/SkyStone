@@ -107,7 +107,7 @@ abstract public class MasterOpMode extends LinearOpMode
         if (isUsingVuforia)
             initVuforiaAndOpenCV();
 
-        // Drive motor initialization--------------------------------------
+        // Motor initializations--------------------------------------------
         motorFL = hardwareMap.dcMotor.get("motorFL");
         motorFR = hardwareMap.dcMotor.get("motorFR");
         motorBL = hardwareMap.dcMotor.get("motorBL");
@@ -119,11 +119,6 @@ abstract public class MasterOpMode extends LinearOpMode
         collectorLeft = hardwareMap.dcMotor.get("collectorLeft");
         collectorRight = hardwareMap.dcMotor.get("collectorRight");
 
-        grabberServo = hardwareMap.servo.get("grabberServo");
-        grabberArmLeft = hardwareMap.servo.get("grabberArmLeft");
-        grabberArmRight = hardwareMap.servo.get("grabberArmRight");
-        foundationServoLeft = hardwareMap.servo.get("foundationServoLeft");
-        foundationServoRight = hardwareMap.servo.get("foundationServoRight");
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -153,17 +148,24 @@ abstract public class MasterOpMode extends LinearOpMode
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        stopDriveMotors();
+        //-----------------------------------------------------------------
+
+
+        // Servo initializations-------------------------------------------
+        grabberServo = hardwareMap.servo.get("grabberServo");
+        grabberArmLeft = hardwareMap.servo.get("grabberArmLeft");
+        grabberArmRight = hardwareMap.servo.get("grabberArmRight");
+        foundationServoLeft = hardwareMap.servo.get("foundationServoLeft");
+        foundationServoRight = hardwareMap.servo.get("foundationServoRight");
+
+
         foundationServoLeft.setPosition(Constants.FOUNDATION_SERVO_LEFT_UP);
         foundationServoRight.setPosition(Constants.FOUNDATION_SERVO_RIGHT_UP);
 
-        grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
-        grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
-
         grabberServo.setPosition(Constants.GRABBER_OPEN);
-
-
-        stopDriveMotors();
         //-----------------------------------------------------------------
+
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
@@ -352,9 +354,9 @@ abstract public class MasterOpMode extends LinearOpMode
                 // If we are within collectionDistance of stone, rotate collector.
                 // Otherwise, collect the stone.
                 if (Math.abs(initDeltaY - deltaY) < collectionDistance)
-                    runCollector(true, true);
+                    runCollector(1.0, true, true);
                 else
-                    runCollector(true, false);
+                    runCollector(1.0, true, false);
             }
 
             driveMecanum(driveAngle, drivePower, rotationPower);
@@ -427,7 +429,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // todo Make sure this works
     // General method for driving collector (auto and TeleOp)
-    public void runCollector(boolean isCollectingIn, boolean isRotatingStone)
+    public void runCollector(double powerFraction, boolean isCollectingIn, boolean isRotatingStone)
     {
         // Allows us to change direction of collector
         double powerSign = 1.0;
@@ -438,13 +440,13 @@ abstract public class MasterOpMode extends LinearOpMode
 
         if (isRotatingStone)    // We are trying to spin stone for easier collection
         {
-            collectorLeft.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
-            collectorRight.setPower(powerSign * Constants.COLLECTOR_ROTATE_POWER);
+            collectorLeft.setPower(powerSign * powerFraction * Constants.COLLECTOR_ROTATE_POWER);
+            collectorRight.setPower(powerSign * powerFraction * Constants.COLLECTOR_ROTATE_POWER);
         }
         else    // We are collecting normally
         {
-            collectorLeft.setPower(powerSign * -Constants.COLLECTOR_POWER);
-            collectorRight.setPower(powerSign * Constants.COLLECTOR_POWER);
+            collectorLeft.setPower(powerSign * powerFraction * -Constants.COLLECTOR_POWER);
+            collectorRight.setPower(powerSign * powerFraction * Constants.COLLECTOR_POWER);
         }
     }
 
@@ -473,10 +475,10 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         if (isGrabberOpen)
         {
-            grabberServo.setPosition(Constants.GRABBER_OPEN);
+            grabberServo.setPosition(Constants.GRABBER_CLOSED);
         } else
         {
-            grabberServo.setPosition(Constants.GRABBER_CLOSED);
+            grabberServo.setPosition(Constants.GRABBER_OPEN);
         }
         isGrabberOpen = !isGrabberOpen;
     }
@@ -497,10 +499,37 @@ abstract public class MasterOpMode extends LinearOpMode
         isGrabberArmRetracted = !isGrabberArmRetracted;
     }
 
+
+    // Runs the lift to a specified encoder position.
+    public void runLiftToPosition(double position)
+    {
+        double currentPosition;
+
+        do
+        {
+            // Update lift position.
+            currentPosition = liftMotor1.getCurrentPosition();
+
+            if (currentPosition > position) // If greater, drive down
+            {
+                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - position) / 100));
+            }
+            else if (liftMotor1.getCurrentPosition() < position)    // If less, drive up
+            {
+                driveLift(Math.min(1, (Constants.LIFT_MOTOR_COLLECT_HEIGHT - position) / 100));
+            }
+
+            telemetry.addData("Lift Position: ", currentPosition);
+            telemetry.update();
+        }
+        while (Math.abs(currentPosition - position) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS);    // Continue if outside tolerance.
+    }
+
+
     // Drives the lift motors.  If encoder position is below 0 or above max height, do not drive further outside operation limits.
     public void driveLift(double power)
     {
-        if(!(((power < 0 && liftMotor1.getCurrentPosition() <= 0) && isBottomHardStopOn)
+        if(!(((power < 0 && liftMotor1.getCurrentPosition() <= Constants.LIFT_MOTOR_GRAB_HEIGHT) && isBottomHardStopOn)
                 || (power > 0 && liftMotor1.getCurrentPosition() >= Constants.LIFT_MOTOR_MAX_HEIGHT)))
         {
             liftMotor1.setPower(-power * Constants.LIFT_POWER_FACTOR);

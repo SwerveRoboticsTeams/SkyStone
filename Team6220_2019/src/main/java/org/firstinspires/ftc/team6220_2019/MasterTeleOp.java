@@ -76,16 +76,20 @@ abstract public class MasterTeleOp extends MasterOpMode {
 
     // todo Do we want to change dpad controls to A / Y ?
     // TeleOp method for driving collector.  Controlled by driver 2.
-    public void driveCollector() {
+    public void driveCollector()
+    {
+        double leftTriggerValue = driver1.getLeftTriggerValue();
+        double rightTriggerValue = driver1.getRightTriggerValue();
+
         // Drive collector motors-------------------------------------------------------------------
-        if (driver1.getRightTriggerValue() > Constants.MINIMUM_TRIGGER_VALUE)    // Collect stone
-            runCollector(true, false);
-        else if (driver1.getLeftTriggerValue() > Constants.MINIMUM_TRIGGER_VALUE)     // Spit out stone
-            runCollector(false, false);
+        if (rightTriggerValue > Constants.MINIMUM_TRIGGER_VALUE)    // Collect stone
+            runCollector(rightTriggerValue, true, false);
+        else if (leftTriggerValue > Constants.MINIMUM_TRIGGER_VALUE)     // Spit out stone
+            runCollector(leftTriggerValue, false, false);
         else if (driver1.isButtonPressed(Button.DPAD_RIGHT))     // Rotate stone right
-            runCollector(true, true);
+            runCollector(1.0, true, true);
         else if (driver1.isButtonPressed(Button.DPAD_LEFT))     // Rotate stone left
-            runCollector(false, true);
+            runCollector(1.0, false, true);
         else    // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed, the motors don't continue running
         {
             collectorLeft.setPower(0);
@@ -110,32 +114,15 @@ abstract public class MasterTeleOp extends MasterOpMode {
         double rightTriggerVal = driver2.getRightTriggerValue();
 
         if (leftTriggerVal >= Constants.MINIMUM_TRIGGER_VALUE)  // Lower lift
-        {
             driveLift(-leftTriggerVal);
-        }
         else if (rightTriggerVal >= Constants.MINIMUM_TRIGGER_VALUE)    // Raise lift
-        {
             driveLift(rightTriggerVal);
-        }
-        else if (driver2.isButtonPressed(Button.RIGHT_BUMPER))  // Lift auto reset position (for grabbing)
-        {
-            if (Math.abs(liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_GRAB_HEIGHT) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
-            {
-                driveLift(0);
-            }
-            else if (liftMotor1.getCurrentPosition() > Constants.LIFT_MOTOR_GRAB_HEIGHT)
-            {
-                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_GRAB_HEIGHT) / 100));
-            }
-            else if (liftMotor1.getCurrentPosition() < Constants.LIFT_MOTOR_GRAB_HEIGHT)
-            {
-                driveLift(Math.min(1, (Constants.LIFT_MOTOR_GRAB_HEIGHT - liftMotor1.getCurrentPosition()) / 100));
-            }
-        }
+        else if (driver2.isButtonJustPressed(Button.RIGHT_BUMPER))  // Lift auto reset position (for collecting)
+            runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
+        else if (driver2.isButtonJustPressed(Button.LEFT_BUMPER))   // Lift auto reset position (for grabbing)
+            runLiftToPosition(Constants.LIFT_MOTOR_GRAB_HEIGHT);
         else
-        {
             driveLift(0);
-        }
 
         // If driver 2 presses B, toggle grabber.
         if (driver2.isButtonJustPressed(Button.B))

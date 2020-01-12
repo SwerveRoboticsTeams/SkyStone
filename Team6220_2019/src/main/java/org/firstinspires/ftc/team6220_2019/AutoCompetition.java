@@ -47,18 +47,25 @@ public class AutoCompetition extends MasterAutonomous
         waitForStart();
         // Wait to start the match for 0-10 seconds, depending on setup input.
         pauseWhileUpdating(delayCount);
+        // Grabber arn must initialize after match starts in order to satisfy 18" size constraint, after which it flips out collector.
+        grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
+        grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
+        // Raise lift to correct position for collection of SkyStone.
+        runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
 
-        // Find SkyStone image target and translate appropriate distance toward image target
+
+        // Find SkyStone image target and translate appropriate distance toward image target.
         alignWithSkyStone();
 
-        // Drive forward and collect SkyStone
+        // Drive forward and collect SkyStone.
         navigateUsingEncoders(0, 38, 0.4, true);
 
-        /*// Lower grabber, then grab SkyStone and drive backwards (18 in + 3 in behind tile line)
-        //runScoringSystemAuto(0);
+        // Lower lift, then grab SkyStone and drive backwards (18 in + 3 in behind tile line)
+        runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
         toggleGrabber();
         navigateUsingEncoders(0, -22, 0.5, false);
 
+        /*
         if (scoreFoundation)
         {
             // Turn, navigate to center of foundation (+3.5 tiles), and turn again so foundationServos face
