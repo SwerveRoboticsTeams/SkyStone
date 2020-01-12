@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.team417_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import java.util.Locale;
 
+
+@Disabled
 @Autonomous(name="Auto Parking", group = "Swerve")
-// @Disabled
 public class AutoPark extends MasterAutonomous
 {
     public void runOpMode() throws InterruptedException {

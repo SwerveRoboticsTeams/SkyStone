@@ -39,9 +39,10 @@ abstract public class MasterAutonomous extends MasterOpMode
 
     boolean isLogging = true;
 
+    // Detection
     Dogeforia vuforia;
     WebcamName webcamName;
-    OpenCVDetect OpenCV_detector;
+    OpenCVDetect findSkystone;
 
     // VARIABLES FOR VUFORIA
     public VuforiaTrackable targetInView = null;
@@ -108,130 +109,37 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
     public void InitializeDetection()
     {
         // instantiate webcam
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         // show display on screen
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         // specify Vuforia parameters used to instantiate engine
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.vuforiaLicenseKey = "AQdgAgj/////AAABmZGzg951/0AVjcK/+QiLWG1Z1PfbTwUouhED8hlwM6qrpAncj4xoMYYOUDxF+kreiazigY0q7OMa9XeMyxNlEQvyMFdefVUGSReIxJIXYhFaru/0IzldUlb90OUO3+J4mGvnzrqYMWG1guy00D8EbCTzzl5LAAml+XJQVLbMGrym2ievOij74wabsouyLb2HOab5nxk0FycYqTWGhKmS7/h4Ddd0UtckgnHDjNrMN4jqk0Q9HeTa8rvN3aQpSUToubAmfXe6Jgzdh2zNcxbaNIfVUe/6LXEe23BC5mYkLAFz0WcGZUPs+7oVRQb7ej7jTAJGA6Nvb9QKEa9MOdn0e8edlQfSBRASxfzBU2FIGH8a";
         parameters.fillCameraMonitorViewParent = true;
         parameters.cameraName = webcamName;
-        parameters.useExtendedTracking = false;
-        //  Instantiate the Vuforia engine
+        /*parameters.useExtendedTracking = false;*/
+        // Instantiate the Vuforia engine
         vuforia = new Dogeforia(parameters);
         vuforia.enableConvertFrameToBitmap();
-
-        OpenCV_detector = new OpenCVDetect();
-
-        OpenCV_detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, true);
-        // Load the data sets for the trackable objects (stored in 'assets')
-        // fullscreen display:
-        //   app crashes if screen orientation switches from portrait to landscape
-        //   screen goes to sleep, and webcam turns off a few minutes after init, and after play
-        //OpenCV_detector.init(hardwareMap.appContext, ActivityViewDisplay.getInstance(), 0, true);
-        OpenCV_detector.setShowCountours(false);
-        // Set the OpenCV_detector
-        vuforia.setDogeCVDetector(OpenCV_detector);
+        // create a new OpenCV detector and initialize
+        findSkystone = new OpenCVDetect();
+        findSkystone.init(hardwareMap.appContext, CameraViewDisplay.getInstance(),0 , true);
+        findSkystone.setShowContours(true);
+        // have vuforia enabled with the specific detector
+        vuforia.setDogeCVDetector(findSkystone);
         vuforia.enableDogeCV();
+
+        //File file = new file(Users/artsy/OneDrive/Desktop/Testing);
+        /* Debug only
         // don't show Vuforia vuforia.showDebug();
+         */
+        // start running Vuforia ( memory and space intensive)
         vuforia.start();
 
-        targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
-
-        telemetry.addData("Done: ", "initializing");
+        telemetry.addData("Init:", "complete");
         telemetry.update();
-    }
-
-    public void positionTargets() {
-        // declare targets
-        VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
-        stoneTarget.setName("Stone Target");
-        VuforiaTrackable blueRearBridge = targetsSkyStone.get(1);
-        blueRearBridge.setName("Blue Rear Bridge");
-        VuforiaTrackable redRearBridge = targetsSkyStone.get(2);
-        redRearBridge.setName("Red Rear Bridge");
-        VuforiaTrackable redFrontBridge = targetsSkyStone.get(3);
-        redFrontBridge.setName("Red Front Bridge");
-        VuforiaTrackable blueFrontBridge = targetsSkyStone.get(4);
-        blueFrontBridge.setName("Blue Front Bridge");
-        VuforiaTrackable red1 = targetsSkyStone.get(5);
-        red1.setName("Red Perimeter 1");
-        VuforiaTrackable red2 = targetsSkyStone.get(6);
-        red2.setName("Red Perimeter 2");
-        VuforiaTrackable front1 = targetsSkyStone.get(7);
-        front1.setName("Front Perimeter 1");
-        VuforiaTrackable front2 = targetsSkyStone.get(8);
-        front2.setName("Front Perimeter 2");
-        VuforiaTrackable blue1 = targetsSkyStone.get(9);
-        blue1.setName("Blue Perimeter 1");
-        VuforiaTrackable blue2 = targetsSkyStone.get(10);
-        blue2.setName("Blue Perimeter 2");
-        VuforiaTrackable rear1 = targetsSkyStone.get(11);
-        rear1.setName("Rear Perimeter 1");
-        VuforiaTrackable rear2 = targetsSkyStone.get(12);
-        rear2.setName("Rear Perimeter 2");
-        // position targets on field
-        stoneTarget.setLocation(OpenGLMatrix
-                .translation(0, 0, Constants.stoneZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-
-        //Set the position of the bridge support targets with relation to origin (center of field)
-        blueFrontBridge.setLocation(OpenGLMatrix
-                .translation(-Constants.bridgeX, Constants.bridgeY, Constants.bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, Constants.bridgeRotY, Constants.bridgeRotZ)));
-
-        blueRearBridge.setLocation(OpenGLMatrix
-                .translation(-Constants.bridgeX, Constants.bridgeY, Constants.bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -Constants.bridgeRotY, Constants.bridgeRotZ)));
-
-        redFrontBridge.setLocation(OpenGLMatrix
-                .translation(-Constants.bridgeX, -Constants.bridgeY, Constants.bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -Constants.bridgeRotY, 0)));
-
-        redRearBridge.setLocation(OpenGLMatrix
-                .translation(Constants.bridgeX, -Constants.bridgeY, Constants.bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        0, Constants.bridgeRotY, 0)));
-
-        //Set the position of the perimeter targets with relation to origin (center of field)
-        red1.setLocation(OpenGLMatrix
-                .translation(Constants.quadField, -Constants.halfField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
-        red2.setLocation(OpenGLMatrix
-                .translation(-Constants.quadField, -Constants.halfField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
-        front1.setLocation(OpenGLMatrix
-                .translation(-Constants.halfField, -Constants.quadField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-
-        front2.setLocation(OpenGLMatrix
-                .translation(-Constants.halfField, Constants.quadField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-
-        blue1.setLocation(OpenGLMatrix
-                .translation(-Constants.quadField, Constants.halfField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-
-        blue2.setLocation(OpenGLMatrix
-                .translation(Constants.quadField, Constants.halfField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-
-        rear1.setLocation(OpenGLMatrix
-                .translation(Constants.halfField, Constants.quadField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-
-        rear2.setLocation(OpenGLMatrix
-                .translation(Constants.halfField, -Constants.quadField, Constants.mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-
-        //return targetsSkyStone;
     }
     // drive forwards/backwards/horizontal left and right function
     public void move(double x, double y, double minSpeed, double maxSpeed, double timeout) throws InterruptedException
@@ -567,7 +475,6 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBL.setPower(0);
         motorBR.setPower(0);
     }
-
     // this method drives for seconds, and it can only pivot
     public void moveTimed(double yPower, int milliSeconds) throws InterruptedException
     {

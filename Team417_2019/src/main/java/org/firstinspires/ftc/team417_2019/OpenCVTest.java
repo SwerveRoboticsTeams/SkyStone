@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team417_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.corningrobotics.enderbots.endercv.ActivityViewDisplay;
@@ -11,6 +12,7 @@ import org.opencv.core.Rect;
 
 import java.io.File;
 
+@Disabled
 @Autonomous(name="OpenCV Test")
 public class OpenCVTest extends LinearOpMode
 {
@@ -20,7 +22,7 @@ public class OpenCVTest extends LinearOpMode
 
     // for use once we know focal length -> make sure to check with specs
     public double getHorizontal(double p1, double p2) {
-        double middle = findSkystone.size.width/2;
+        double middle = findSkystone.width/2;
         double p = (p1 + p2)/2;
         return (p - middle) / (p2 - p1) * 8 ;
     }
@@ -28,6 +30,7 @@ public class OpenCVTest extends LinearOpMode
         float x = (float) (1/imageWidth);
         return (x - 0.0004f) / 0.0002f;
     }
+
 
     public double newFocal(double imageWidth, double imageHeight){
         double add = imageWidth * imageWidth + imageHeight * imageHeight;
@@ -75,7 +78,7 @@ public class OpenCVTest extends LinearOpMode
             telemetry.addData("Working", "Not Crashed");
             // w * h
             telemetry.addData("Skystone Position:", findSkystone.getSksytonePosition());
-            telemetry.addData("total width: ", findSkystone.size.width);
+            telemetry.addData("total width: ", findSkystone.width);
             telemetry.addData("Distance", findRange(findSkystone.getSksytonePosition().width));
             telemetry.addData("Horizontal",getHorizontal(findSkystone.p1, findSkystone.p2));
             telemetry.addData("P1", findSkystone.p1);

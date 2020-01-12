@@ -38,6 +38,7 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -49,7 +50,7 @@ import java.util.List;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
@@ -83,7 +84,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-
+@Disabled
 @Autonomous(name="Autonomous", group ="Concept")
 
 public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
@@ -318,7 +319,7 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                     .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, phoneXRotate, phoneYRotate, phoneZRotate));
 
         /**  Let all the trackable listeners know where the phone is.  */
         for (VuforiaTrackable trackable : allTrackables) {
@@ -360,11 +361,23 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
                 translation = lastLocation.getTranslation();
-                telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                // X and Y are swapped for our robot because of the field coordinate system
+                // remember imu does not affect translation it only affects orientation
+                telemetry.addData("Pos wrong(mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                        translation.get(0)  , translation.get(1) , translation.get(2));
+                telemetry.addData("Pos correct(mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(1)  , translation.get(0) , translation.get(2));
-                rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+                rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, ZYX, DEGREES);
+                telemetry.addData("Rot (deg)", "{Heading, Pitch, Roll} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
 
+                // subtract or add 90 based on field position because you are turning the axis of the field clockwise or counterclockwise so that it is a normal cartesian system
+                double refAngle = imu.getAngularOrientation().firstAngle;
+                // coordinate system needs to be rotated based on position of field
+                telemetry.addData("Rot w/out change :", refAngle );
+                // left side of field is subtract
+                telemetry.addData("Rot left:",  refAngle - 90);
+                // right side of field is add
+                telemetry.addData("Rot right:", refAngle + 90);
             }
             else {
                 telemetry.addData("Visible Target", "none");
@@ -374,9 +387,11 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
 
         waitForStart();
 
+
+        /*
         float yMovement = -translation.get(0);
         float xMovement = translation.get(1);
-        double refAngle = imu.getAngularOrientation().firstAngle; // possibly move to initialization
+        // add 90 to correct angle
 
         telemetry.addData("x",xMovement);
         telemetry.addData("y",yMovement);
@@ -387,7 +402,7 @@ public class ConceptVuforiaSkyStoneNavigationWebcam extends MasterAutonomous {
         // move x
         move(xMovement,0,0.3,1.0,5.0);
         move(0, yMovement, 0.3,1.0,5.0);
-
+*/
 
         //moveMaintainHeading(moveX , moveY - 100, rotation.thirdAngle,0.2,0.9,7.0);
         //pivotWithReference(0,refAngle, 0.3,0.8);

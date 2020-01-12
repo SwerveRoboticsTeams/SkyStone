@@ -45,7 +45,7 @@ public class OpenCVDetect extends OpenCVPipeline
 
     public double p2 = blackRect.x + blackRect.width;
 
-    public org.opencv.core.Size size;
+    public double width = displayMat.size().width;
 
     // special mask
     public Mat YellowDetection( Mat src , Mat nonYellowMask) {
@@ -133,8 +133,7 @@ public class OpenCVDetect extends OpenCVPipeline
         // get (x,y) of the yellow rectangle
         int y = maxRect.y;
         // find size of displayMat for extending the rectangle
-        size = displayMat.size();
-        double width = size.width;
+        width = displayMat.size().width;
         double height = maxRect.height;
         // crop the camera's view such that we only see what we want
 
@@ -172,7 +171,7 @@ public class OpenCVDetect extends OpenCVPipeline
 
         if (showContours){
             Imgproc.rectangle(displayMat, lastStep.tl(), lastStep.br(), new Scalar(0, 255, 0), 5);
-            Imgproc.rectangle(displayMat, maxRect.tl(), maxRect.br(), new Scalar(0,255,0), 5);
+            //Imgproc.rectangle(displayMat, maxRect.tl(), maxRect.br(), new Scalar(0,255,0), 5);
             Imgproc.putText(displayMat, "Width"+ lastStep.width, lastStep.tl(),0,1,new Scalar(255,255,255));
             //Imgproc.putText(displayMat, "Hei" + blackRect.height, blackRect.br(),0,1,new Scalar(255,255,255));
             p1 = lastStep.x;

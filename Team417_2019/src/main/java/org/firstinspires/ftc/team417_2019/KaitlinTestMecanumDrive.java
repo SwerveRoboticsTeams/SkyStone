@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.team417_2019;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+@Disabled
 @TeleOp (name = "Test Mecanum Drive")
 abstract public class KaitlinTestMecanumDrive extends MasterTeleOp {
 
