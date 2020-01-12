@@ -192,7 +192,7 @@ abstract public class MasterAutonomous extends MasterOpMode
 
         // todo Need position edits
         // Translate robot
-        navigateUsingEncoders(robotShift, 0, 0.3, false);
+        navigateUsingEncoders(robotShift, 0, 0.5, false);
     }
 
 
