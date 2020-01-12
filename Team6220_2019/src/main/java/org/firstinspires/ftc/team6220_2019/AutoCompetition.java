@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team6220_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+// todo Edit autonomous outline based on new structure.
 /**
  * General autonomous class.  During initialization, driver 1 selects various options, including
  * alliance, delay time, number of SkyStones, whether we want to soore the foundation, and whether
@@ -53,26 +54,36 @@ public class AutoCompetition extends MasterAutonomous
         // Raise lift to correct position for collection of SkyStone.   todo Is this running the lift into the ground?  Enable when working.
         //runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
 
+        // Only run stone collection section of auto if we have specified that we want to collect 1 or more SkyStones.
+        if (numSkyStones > 0)
+        {
+            // Find SkyStone image target and translate appropriate distance toward image target.
+            alignWithSkyStone();
 
-        // Find SkyStone image target and translate appropriate distance toward image target.
-        alignWithSkyStone();
+            // Drive forward and collect SkyStone.
+            navigateUsingEncoders(0, 38, 0.5, true);
 
-        // Drive forward and collect SkyStone.
-        navigateUsingEncoders(0, 38, 0.5, true);
+            // Lower lift, then grab SkyStone and drive backwards (12 in away from tile line)
+            //runLiftToPosition(Constants.LIFT_MOTOR_GRAB_HEIGHT);
+            toggleGrabber();
+            navigateUsingEncoders(0, -11 - parkShift, 0.5, false);  // parkShift accounts for near or far park
 
-        // Lower lift, then grab SkyStone and drive backwards (12 in away from tile line)
-        //runLiftToPosition(Constants.LIFT_MOTOR_GRAB_HEIGHT);
-        toggleGrabber();
-        navigateUsingEncoders(0, -11 - parkShift, 0.5, false);  // parkShift accounts for near or far park
-
-        // Turn to face Skybridge
-        turnTo(180,0.7);
+            // Turn to face Skybridge
+            turnTo(180, 0.7);
+        }
 
         if (scoreFoundation)
         {
-            // Navigate to center of foundation (+3.5 tiles and 4 in for foundation), and turn again so foundationServos face the foundation
-            navigateUsingEncoders(0, 88 - robotShiftSign * robotShift /*- centerAdjustment*/, 0.7, false);
-            turnTo(-90 + turnShift, 0.7);   // Account for turn shift if blue alliance (+180)
+            // Account for different robot positions depending on whether we are scoring SkyStones or not.
+            if (numSkyStones != 0)
+            {
+                // Navigate to center of foundation (+3.5 tiles and 4 in for foundation), and turn again so foundationServos face the foundation
+                navigateUsingEncoders(0, -88 + robotShiftSign * robotShift /*- centerAdjustment*/, 0.7, false);
+                turnTo(-90 + turnShift, 0.7);   // Account for turn shift if blue alliance (+180)
+            }
+            else    // Otherwise, if no stones are to be scored, just drive from wall to front of foundation.
+                navigateUsingEncoders(0, -27, 0.7, false);      // WARNING:  Collector might hit wall in this setup scenario.
+
 
             // Drive up to foundation (forward 3 in + 4 in extra for good measure) and activate foundationServos.
             navigateUsingEncoders(0, -7 - parkShift, 0.3, false);   // Account for near or far park to go correct distance to foundation.
@@ -85,19 +96,19 @@ public class AutoCompetition extends MasterAutonomous
             toggleFoundationServos();
 
             // Raise lift, move grabber arm, drop SkyStone, and retract lift along with grabber arm.
-            runLiftToPosition(Constants.LIFT_MOTOR_PLACE_HEIGHT);
+            //runLiftToPosition(Constants.LIFT_MOTOR_PLACE_HEIGHT);
             pauseWhileUpdating(0.5);
-            toggleGrabberArm();
+            //toggleGrabberArm();
             pauseWhileUpdating(0.5);
             toggleGrabber();
             pauseWhileUpdating(0.5);
-            toggleGrabberArm();
+            //toggleGrabberArm();
             pauseWhileUpdating(0.5);
-            runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
+            //runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
 
             // Release foundation and shift toward wall if parking close (must account for blue / red here).
             toggleFoundationServos();
-            navigateUsingEncoders(-robotShiftSign * parkShift, 0, 0.5, false);   // todo Factor here may be very wrong!
+            navigateUsingEncoders(-robotShiftSign * parkShift / 2, 0, 0.5, false);   // todo /2 factor here may be very wrong!
 
             // Drive forward 72 - (9 + 18.5) = 44.5 in to park on line.
             navigateUsingEncoders(0, 45, 0.7, false);
