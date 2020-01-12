@@ -67,6 +67,7 @@ import java.util.Locale;
 
  */
 
+@Disabled
 @TeleOp(name="Test Encoders", group ="Test")
 
 public class TestMotorEncoders extends MasterOpMode

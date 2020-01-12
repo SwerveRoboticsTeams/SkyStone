@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.team417_2019;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+@Disabled
 @TeleOp(name = "TeleOp Competition Copy")
 public class TeleOpCompetitionCopy extends MasterTeleOp
 {

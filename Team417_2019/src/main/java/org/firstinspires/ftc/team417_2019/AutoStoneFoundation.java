@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.team417_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 
 @Autonomous(name="Auto Stone Foundation", group = "Swerve")
-// @Disabled
+@Disabled
 
 public class AutoStoneFoundation extends MasterAutonomous {
     public void runOpMode() throws InterruptedException {
