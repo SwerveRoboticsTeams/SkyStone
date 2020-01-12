@@ -19,7 +19,7 @@ public class Constants
     public static final double ANGLE_TOLERANCE_DEG = /*1.0*/3.0;    // todo Too big?
     public static final double POSITION_TOLERANCE_IN = /*0.2*/1.0;  // todo Too big?
     public static final double OPENCV_TOLERANCE_PIX = 0.5;
-    public static final double LIFT_MOTOR_TOLERANCE_ENC_TICKS = 10; // Tolerance for automatic lift movements
+    public static final double LIFT_MOTOR_TOLERANCE_ENC_TICKS = 30; // Tolerance for automatic lift movements
     //---------------------------------------------------------------
 
 
@@ -88,9 +88,12 @@ public class Constants
 
 
     // Lift constants------------------------------------------------
+    public static final int LIFT_SCALE_HEIGHT = 600;   // Scales power for runLiftToPosition()
     public static final int LIFT_MOTOR_MAX_HEIGHT = 7000;   // In encoder ticks for AndyMark 20
-    public static final int LIFT_MOTOR_COLLECT_HEIGHT = 350;   // Acts as a software stop for lift motor
-    public static final int LIFT_MOTOR_GRAB_HEIGHT = 0;   // Acts as a software stop for lift motor
+    public static final int LIFT_MOTOR_COLLECT_HEIGHT = 300;   // Height for collecting stones
+    public static final int LIFT_MOTOR_GRAB_HEIGHT = 100;   // Height for grabbing stones
+    public static final int LIFT_MOTOR_MIN_HEIGHT = 0;   // Acts as a software stop for lift
+
     public static final double LIFT_POWER_FACTOR = 1.0;     // todo Too big?
     //---------------------------------------------------------------
 

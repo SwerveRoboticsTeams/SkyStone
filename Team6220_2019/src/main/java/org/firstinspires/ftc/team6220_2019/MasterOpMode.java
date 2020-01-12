@@ -504,6 +504,7 @@ abstract public class MasterOpMode extends LinearOpMode
     public void runLiftToPosition(double position)
     {
         double currentPosition;
+        ElapsedTime loopTimer = new ElapsedTime();      // Ensures we don't get stuck in loop.
 
         do
         {
@@ -512,30 +513,32 @@ abstract public class MasterOpMode extends LinearOpMode
 
             if (currentPosition > position) // If greater, drive down
             {
-                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - position) / 100));
+                driveLift(-1 * Math.min(1, Math.abs(currentPosition - position) / Constants.LIFT_SCALE_HEIGHT));
             }
-            else if (liftMotor1.getCurrentPosition() < position)    // If less, drive up
+            else if (currentPosition < position)    // If less, drive up
             {
-                driveLift(Math.min(1, (Constants.LIFT_MOTOR_COLLECT_HEIGHT - position) / 100));
+                driveLift(Math.min(1, Math.abs(currentPosition - position) / Constants.LIFT_SCALE_HEIGHT));
             }
 
             telemetry.addData("Lift Position: ", currentPosition);
+            telemetry.addData("Target Position: ", position);
             telemetry.update();
         }
-        while (Math.abs(currentPosition - position) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS);    // Continue if outside tolerance.
+        while ((Math.abs(currentPosition - position) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS) && opModeIsActive() && (loopTimer.seconds() < 5));    // Continue if outside tolerance.
     }
 
 
     // Drives the lift motors.  If encoder position is below 0 or above max height, do not drive further outside operation limits.
     public void driveLift(double power)
     {
-        if(!(((power < 0 && liftMotor1.getCurrentPosition() <= Constants.LIFT_MOTOR_GRAB_HEIGHT) && isBottomHardStopOn)
-                || (power > 0 && liftMotor1.getCurrentPosition() >= Constants.LIFT_MOTOR_MAX_HEIGHT)))
+        if(!(((power < 0 && liftMotor1.getCurrentPosition() < Constants.LIFT_MOTOR_MIN_HEIGHT) && isBottomHardStopOn)
+                || (power > 0 && liftMotor1.getCurrentPosition() > Constants.LIFT_MOTOR_MAX_HEIGHT)))
         {
             liftMotor1.setPower(-power * Constants.LIFT_POWER_FACTOR);
             liftMotor2.setPower(power * Constants.LIFT_POWER_FACTOR);
         }
-        else {
+        else
+        {
             liftMotor1.setPower(0);
             liftMotor2.setPower(0);
         }

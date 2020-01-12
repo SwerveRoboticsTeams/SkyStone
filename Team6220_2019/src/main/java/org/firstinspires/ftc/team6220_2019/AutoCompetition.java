@@ -51,19 +51,19 @@ public class AutoCompetition extends MasterAutonomous
         grabberArmLeft.setPosition(Constants.GRABBER_ARM_SERVO_LEFT_RETRACT);
         grabberArmRight.setPosition(Constants.GRABBER_ARM_SERVO_RIGHT_RETRACT);
         // Raise lift to correct position for collection of SkyStone.
-        runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
+        //runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
 
 
         // Find SkyStone image target and translate appropriate distance toward image target.
         alignWithSkyStone();
 
         // Drive forward and collect SkyStone.
-        navigateUsingEncoders(0, 38, 0.4, true);
+        //navigateUsingEncoders(0, 38, 0.4, true);
 
         // Lower lift, then grab SkyStone and drive backwards (18 in + 3 in behind tile line)
-        runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
-        toggleGrabber();
-        navigateUsingEncoders(0, -22, 0.5, false);
+        //runLiftToPosition(Constants.LIFT_MOTOR_COLLECT_HEIGHT);
+        //toggleGrabber();
+        //navigateUsingEncoders(0, -22, 0.5, false);
 
         /*
         if (scoreFoundation)
