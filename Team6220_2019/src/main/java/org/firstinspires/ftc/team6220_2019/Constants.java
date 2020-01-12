@@ -18,6 +18,7 @@ public class Constants
     // todo Confirm this is correct
     public static final double IN_PER_ANDYMARK_TICK = (Math.PI * WHEEL_DIAMETER_IN) / (0.5 * AM_40_TICKS_PER_ROTATION * SPROCKET_RATIO);
 
+
     // Drive mode constants
     public static final double SLOW_MODE_T_FACTOR = 0.3;
     public static final double SLOW_MODE_R_FACTOR = 0.3;
@@ -26,24 +27,17 @@ public class Constants
     public static final double MAX_NAV_ROT_POWER = 0.3;
     public static final double AUTO_SEARCH_TURN_POWER = 0.2;
 
-    public static final double LIFT_POWER_FACTOR = 0.6;     // todo This could be increased!
 
-    // Constant that acts as a software hardstop for lift motor.
-    public static final double LIFT_MOTOR_MAX_HEIGHT = 4200; //In encoder ticks for Andymark 20
-    // Constant that sets a goal position for liftMotor1 in encoder ticks.
-    public static final int LIFT_MOTOR_POSITION = 450;
-     // Constants to control power of collector motors
+    // Lift constants
+     // Constant that acts as a software hardstop for lift motor.
+    public static final double LIFT_MOTOR_MAX_HEIGHT = 7000; //In encoder ticks for Andymark 20
+    public static final int LIFT_MOTOR_MIN_HEIGHT = 450;
+    public static final double LIFT_POWER_FACTOR = 0.8;     // todo This could be increased!
+    // Constants to control power of collector motors
     public static final double COLLECTOR_POWER = 0.45;
     public static final double COLLECTOR_ROTATE_POWER = 0.5;    // todo Adjust
     public static final double COLLECTOR_MIN_TRIGGER_VALUE = 0.05;     // Deadzone
 
-    // Constants to control slide motors
-    // todo Edit these names and change values to use for lift.
-    public static final double SLIDE_MOTOR_MAX_POWER = 0.8;
-    public static final double SLIDE_MOTOR_LOW_POWER_FACTOR = 0.2;
-    public static final int SLIDE_MOTOR_MIN_DIST = 0;
-    public static final int SLIDE_MOTOR_MAX_DIST = 3000;
-    public static final int SLIDE_EXTENDED = 1300;
 
     // Autonomous Drive constants
     public static final float AUTONOMOUS_SCALE_DISTANCE = 24;
@@ -94,10 +88,10 @@ public class Constants
     public static final double GRABBER_CLOSED = 0.4;
     public static final double GRABBER_OPEN = 0.9;
      // Open = stowed, closed = grabbing foundation
-    public static final double FOUNDATION_SERVO_LEFT_UP = 0.88;
-    public static final double FOUNDATION_SERVO_LEFT_DOWN = 0.1;    // todo Small adjustments for down positions
-    public static final double FOUNDATION_SERVO_RIGHT_UP = 0.2;
-    public static final double FOUNDATION_SERVO_RIGHT_DOWN = 0.98;
+    public static final double FOUNDATION_SERVO_LEFT_UP = 0.8;
+    public static final double FOUNDATION_SERVO_LEFT_DOWN = 0.0;    // todo Small adjustments for down positions
+    public static final double FOUNDATION_SERVO_RIGHT_UP = 0.24 ;
+    public static final double FOUNDATION_SERVO_RIGHT_DOWN = 1.0;
 
     //todo adjust grabberArm constants
     public static final double GRABBER_ARM_SERVO_LEFT_EXTEND = 0.0;
@@ -119,5 +113,5 @@ public class Constants
 
     // Ensure that input isn't used when no commands are given
     public static final double MINIMUM_JOYSTICK_POWER = 0.05;
-    public static final double MINIMUM_TRIGGER_VALUE = 0.05;    // todo Adjust
+    public static final double MINIMUM_TRIGGER_VALUE = 0.1;
 }

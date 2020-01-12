@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.team6220_2019;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.team6220_2019.ResourceClasses.Button;
 
 abstract public class MasterTeleOp extends MasterOpMode {
@@ -82,13 +79,13 @@ abstract public class MasterTeleOp extends MasterOpMode {
     public void driveCollector() {
         // Drive collector motors-------------------------------------------------------------------
         if (driver1.getRightTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)    // Collect stone
-            runCollector(false, false);
-        else if (driver1.getLeftTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)     // Spit out stone
             runCollector(true, false);
-        else if (driver1.isButtonPressed(Button.DPAD_LEFT))     // Rotate stone left
-            runCollector(false, true);
+        else if (driver1.getLeftTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)     // Spit out stone
+            runCollector(false, false);
         else if (driver1.isButtonPressed(Button.DPAD_RIGHT))     // Rotate stone right
             runCollector(true, true);
+        else if (driver1.isButtonPressed(Button.DPAD_LEFT))     // Rotate stone left
+            runCollector(false, true);
         else    // Make sure that if neither DPAD_UP or DPAD_DOWN are pressed, the motors don't continue running
         {
             collectorLeft.setPower(0);
@@ -101,27 +98,42 @@ abstract public class MasterTeleOp extends MasterOpMode {
     // todo Needs RUN_TO_POSITION mode and automatic distances fixed.
     // TeleOp scoring system method.  Uses liftMotor to move scoring arm, with parallelServo
     // keeping grabber parallel to the ground.
-    public void driveLift() {
+    public void driveLift()
+    {
 
 //            hasLoweredArm = false;
 //            hasGrabbedStone = false;
 //            hasRotatedArm = false;
 //            hasPlacedStone = false;
 
+        double leftTriggerVal = driver2.getLeftTriggerValue();
+        double rightTriggerVal = driver2.getRightTriggerValue();
 
-        if (driver2.isButtonPressed(Button.LEFT_BUMPER)) {
-            driveLift(-1);
-        } else if (driver2.isButtonPressed(Button.RIGHT_BUMPER)) {
-            driveLift(1);
-        } else if (driver2.getRightTriggerValue() > 0.5) { //0.5 is arbitrary; should be in Constants class
-            if (Math.abs(liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_POSITION) <= 10) {
+        if (leftTriggerVal >= Constants.MINIMUM_TRIGGER_VALUE)  // Lower lift
+        {
+            driveLift(-leftTriggerVal);
+        }
+        else if (rightTriggerVal >= Constants.MINIMUM_TRIGGER_VALUE)    // Raise lift
+        {
+            driveLift(rightTriggerVal);
+        }
+        else if (driver2.isButtonPressed(Button.RIGHT_BUMPER))  // Lift auto reset position (for grabbing)
+        {
+            if (Math.abs(liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_MIN_HEIGHT) <= 10)
+            {
                 driveLift(0);
-            } else if (liftMotor1.getCurrentPosition() > Constants.LIFT_MOTOR_POSITION) {
-                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_POSITION) / 100));
-            } else if (liftMotor1.getCurrentPosition() < Constants.LIFT_MOTOR_POSITION) {
-                driveLift(Math.min(1, (Constants.LIFT_MOTOR_POSITION - liftMotor1.getCurrentPosition()) / 100));
             }
-        } else {
+            else if (liftMotor1.getCurrentPosition() > Constants.LIFT_MOTOR_MIN_HEIGHT)
+            {
+                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_MIN_HEIGHT) / 100));
+            }
+            else if (liftMotor1.getCurrentPosition() < Constants.LIFT_MOTOR_MIN_HEIGHT)
+            {
+                driveLift(Math.min(1, (Constants.LIFT_MOTOR_MIN_HEIGHT - liftMotor1.getCurrentPosition()) / 100));
+            }
+        }
+        else
+        {
             driveLift(0);
         }
 
