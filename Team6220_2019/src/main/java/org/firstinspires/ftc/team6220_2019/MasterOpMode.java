@@ -104,8 +104,8 @@ abstract public class MasterOpMode extends LinearOpMode
         driver2 = new DriverInput(gamepad2);
 
         // Only initialize Vuforia if we specify that we want to.
-        /*if (isUsingVuforia)
-            initVuforiaAndOpenCV();*/
+        if (isUsingVuforia)
+            initVuforiaAndOpenCV();
 
         // Drive motor initialization--------------------------------------
         motorFL = hardwareMap.dcMotor.get("motorFL");
@@ -241,12 +241,13 @@ abstract public class MasterOpMode extends LinearOpMode
         double y = drivePower * Math.sin(Math.toRadians(driveAngle));
         double x = drivePower * Math.cos(Math.toRadians(driveAngle));
 
+        // todo Did x and y sign flip work?
         // Signs for x, y, and w are based on the motor configuration and inherent properties of mecanum drive
         // Note:  Flipped x and y to flip front of robot.
-        double powerFL = x + y + w;
-        double powerFR = x - y + w;
-        double powerBL = -x + y + w;
-        double powerBR = -x - y + w;
+        double powerFL = -x - y + w;
+        double powerFR = -x + y + w;
+        double powerBL = x - y + w;
+        double powerBR = x + y + w;
 
         // Scale powers-------------------------
         /*
@@ -311,10 +312,10 @@ abstract public class MasterOpMode extends LinearOpMode
         while (((distanceToTarget > Constants.POSITION_TOLERANCE_IN) || (headingDiff > Constants.ANGLE_TOLERANCE_DEG)) && opModeIsActive())
         {
             // todo Why does sqrt(2) not show up in empirical distance tests?
-            deltaX = initDeltaX - Constants.IN_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() +
-                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / (4 /* Math.sqrt(2)*/);
-            deltaY = initDeltaY - Constants.IN_PER_ANDYMARK_TICK * (-motorFL.getCurrentPosition() -
-                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() + motorBR.getCurrentPosition()) / 4;
+            deltaX = initDeltaX - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() -
+                    motorBL.getCurrentPosition() + motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / (4 /* Math.sqrt(2)*/);
+            deltaY = initDeltaY - Constants.IN_PER_ANDYMARK_TICK * (motorFL.getCurrentPosition() +
+                    motorBL.getCurrentPosition() - motorFR.getCurrentPosition() - motorBR.getCurrentPosition()) / 4;
 
             // Calculate how far off robot is from its initial heading
             currentAngle = getAngularOrientationWithOffset();
@@ -340,9 +341,8 @@ abstract public class MasterOpMode extends LinearOpMode
                 drivePower = Math.signum(drivePower) * maxPower;
             }
 
-            // todo - signs should be properly accounted for.
             // Additional factor is necessary to ensure turning power is large enough
-            rotationFilter.roll(-headingDiff);
+            rotationFilter.roll(headingDiff);
             rotationPower = rotationFilter.getFilteredValue();
             //-------------------------------------------------------------------------------------
 
