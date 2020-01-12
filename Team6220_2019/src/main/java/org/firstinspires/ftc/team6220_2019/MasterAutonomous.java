@@ -196,6 +196,9 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
 
+    /*
+     *  CURRENTLY NOT IN USE
+     */
     // todo Test method again now that IMU is being used to calculate angle.
     // todo Consolidate use of floats and doubles
     /**
@@ -316,41 +319,5 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
 
         stopDriveMotors();
-    }
-
-    // todo We shouldn't need these now that we have implemented PID loops
-
-    /**
-     * Note: This method is private; it should never need to be called outside of this class.
-     * distancePower limits the maximum value of power to Constants.AUTONOMOUS_SCALE_DISTANCE,
-     * and scales in proportion with Constants.AUTONOMOUS_SCALE_POWER when power is smaller.
-     */
-    private float distancePower(float power)
-    {
-        if (power > Constants.AUTONOMOUS_SCALE_DISTANCE)
-        {
-            power = Constants.AUTONOMOUS_SCALE_DISTANCE;
-        } else
-        {
-            power /= Constants.AUTONOMOUS_SCALE_DISTANCE;
-        }
-        return power;
-    }
-
-    /**
-     * Note: This method is private; it should never need to be called outside of this class.
-     * rotationPower limits the maximum value of angle to Constants.AUTONOMOUS_SCALE_ANGLE,
-     * and scales in proportion with Constants.AUTONOMOUS_SCALE_ANGLE when angle is smaller.
-     */
-    private float rotationPower(float angle)
-    {
-        if (Math.abs(angle) > Constants.AUTONOMOUS_SCALE_ANGLE)
-        {
-            angle = Constants.AUTONOMOUS_SCALE_ANGLE;
-        } else
-        {
-            angle /= Constants.AUTONOMOUS_SCALE_ANGLE;
-        }
-        return angle;
     }
 }

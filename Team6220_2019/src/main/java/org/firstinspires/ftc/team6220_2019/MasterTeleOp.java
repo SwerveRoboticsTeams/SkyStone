@@ -78,9 +78,9 @@ abstract public class MasterTeleOp extends MasterOpMode {
     // TeleOp method for driving collector.  Controlled by driver 2.
     public void driveCollector() {
         // Drive collector motors-------------------------------------------------------------------
-        if (driver1.getRightTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)    // Collect stone
+        if (driver1.getRightTriggerValue() > Constants.MINIMUM_TRIGGER_VALUE)    // Collect stone
             runCollector(true, false);
-        else if (driver1.getLeftTriggerValue() > Constants.COLLECTOR_MIN_TRIGGER_VALUE)     // Spit out stone
+        else if (driver1.getLeftTriggerValue() > Constants.MINIMUM_TRIGGER_VALUE)     // Spit out stone
             runCollector(false, false);
         else if (driver1.isButtonPressed(Button.DPAD_RIGHT))     // Rotate stone right
             runCollector(true, true);
@@ -119,17 +119,17 @@ abstract public class MasterTeleOp extends MasterOpMode {
         }
         else if (driver2.isButtonPressed(Button.RIGHT_BUMPER))  // Lift auto reset position (for grabbing)
         {
-            if (Math.abs(liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_MIN_HEIGHT) <= 10)
+            if (Math.abs(liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_GRAB_HEIGHT) <= Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS)
             {
                 driveLift(0);
             }
-            else if (liftMotor1.getCurrentPosition() > Constants.LIFT_MOTOR_MIN_HEIGHT)
+            else if (liftMotor1.getCurrentPosition() > Constants.LIFT_MOTOR_GRAB_HEIGHT)
             {
-                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_MIN_HEIGHT) / 100));
+                driveLift(-1 * Math.min(1, (liftMotor1.getCurrentPosition() - Constants.LIFT_MOTOR_GRAB_HEIGHT) / 100));
             }
-            else if (liftMotor1.getCurrentPosition() < Constants.LIFT_MOTOR_MIN_HEIGHT)
+            else if (liftMotor1.getCurrentPosition() < Constants.LIFT_MOTOR_GRAB_HEIGHT)
             {
-                driveLift(Math.min(1, (Constants.LIFT_MOTOR_MIN_HEIGHT - liftMotor1.getCurrentPosition()) / 100));
+                driveLift(Math.min(1, (Constants.LIFT_MOTOR_GRAB_HEIGHT - liftMotor1.getCurrentPosition()) / 100));
             }
         }
         else

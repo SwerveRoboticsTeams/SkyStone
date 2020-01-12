@@ -497,16 +497,16 @@ abstract public class MasterOpMode extends LinearOpMode
         isGrabberArmRetracted = !isGrabberArmRetracted;
     }
 
-    // Drives the lift motors. If encoder position is 0, do not drive backwards.
+    // Drives the lift motors.  If encoder position is below 0 or above max height, do not drive further outside operation limits.
     public void driveLift(double power)
     {
         if(!(((power < 0 && liftMotor1.getCurrentPosition() <= 0) && isBottomHardStopOn)
                 || (power > 0 && liftMotor1.getCurrentPosition() >= Constants.LIFT_MOTOR_MAX_HEIGHT)))
         {
-            liftMotor1.setPower(-power * Constants.LIFT_POWER_FACTOR); //todo Can LIFT_POWER_FACTOR be greater?
+            liftMotor1.setPower(-power * Constants.LIFT_POWER_FACTOR);
             liftMotor2.setPower(power * Constants.LIFT_POWER_FACTOR);
         }
-        else{
+        else {
             liftMotor1.setPower(0);
             liftMotor2.setPower(0);
         }
