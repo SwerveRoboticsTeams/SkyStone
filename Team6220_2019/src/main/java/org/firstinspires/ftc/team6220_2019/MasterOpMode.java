@@ -354,7 +354,7 @@ abstract public class MasterOpMode extends LinearOpMode
                 // If we are within collectionDistance of stone, rotate collector.
                 // Otherwise, collect the stone.
                 if (Math.abs(initDeltaY - deltaY) < collectionDistance)
-                    runCollector(1.0, true, true);
+                    runCollector(1.0, true, false);
                 else
                     runCollector(1.0, true, false);
             }
@@ -374,10 +374,10 @@ abstract public class MasterOpMode extends LinearOpMode
         // Turn off collector if we were running it.
         if (isCollecting)
         {
-            pauseWhileUpdating(0.5);
-
-            collectorLeft.setPower(0);
-            collectorRight.setPower(0);
+//            pauseWhileUpdating(1.0);
+//
+//            collectorLeft.setPower(0);
+//            collectorRight.setPower(0);
         }
     }
 
@@ -414,7 +414,7 @@ abstract public class MasterOpMode extends LinearOpMode
             }
 
             // Turns robot
-            driveMecanum(0.0, 0.0, -turningPower);
+            driveMecanum(0.0, 0.0, turningPower);
 
             telemetry.addData("angleDiff: ", angleDiff);
             telemetry.addData("Turning Power: ", turningPower);
@@ -428,6 +428,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     // todo UNTESTED
     // Turn to a specified angle by driving one side of the robot.
+    // Left side is with respect to collector in front.
     public void pivotTurn(boolean leftSide, double targetAngle, double maxPower)
     {
         double pivotPower;
@@ -435,7 +436,7 @@ abstract public class MasterOpMode extends LinearOpMode
         double angleDiff = normalizeAngle(targetAngle - currentAngle);
 
         // Robot only stops turning when it is within angle tolerance
-        while (Math.abs(angleDiff) >= Constants.ANGLE_TOLERANCE_DEG && opModeIsActive())
+        while ((Math.abs(angleDiff) >= 4 * Constants.ANGLE_TOLERANCE_DEG) && !isStopRequested())
         {
             currentAngle = getAngularOrientationWithOffset();
 
@@ -461,13 +462,13 @@ abstract public class MasterOpMode extends LinearOpMode
             // Pivots robot; - signs convert between angle and drive power
             if (leftSide)   // Turn using left side of robot
             {
-                motorFL.setPower(-pivotPower);
-                motorBL.setPower(-pivotPower);
+                motorFL.setPower(pivotPower);
+                motorBL.setPower(pivotPower);
             }
             else            // Turn using right side of robot
             {
-                motorFR.setPower(-pivotPower);
-                motorBR.setPower(-pivotPower);
+                motorFR.setPower(pivotPower);
+                motorBR.setPower(pivotPower);
             }
 
             telemetry.addData("angleDiff: ", angleDiff);
@@ -573,6 +574,9 @@ abstract public class MasterOpMode extends LinearOpMode
             {
                 driveLift(Math.min(1, Math.abs(currentPosition - position) / Constants.LIFT_SCALE_HEIGHT));
             }
+            else{
+                driveLift(0);
+            }
 
             telemetry.addData("Lift Position: ", currentPosition);
             telemetry.addData("Target Position: ", position);
@@ -580,6 +584,8 @@ abstract public class MasterOpMode extends LinearOpMode
             idle();
         }
         while ((Math.abs(currentPosition - position) > Constants.LIFT_MOTOR_TOLERANCE_ENC_TICKS) && opModeIsActive() && (loopTimer.seconds() < 5));    // Continue if outside tolerance.
+
+        driveLift(0);
     }
 
 
