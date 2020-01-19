@@ -18,7 +18,7 @@ public class AutoModular extends MasterAutonomous {
     public double getHorizontal(double p1, double p2) {
         double middle = findSkystone.width/2;
         double p = (p1 + p2)/2;
-        return (p - middle) / (p2 - p1) * 8 ;
+        return (p - middle) / (p2 - p1) * 8;
     }
     public float findRange(double imageWidth){
         float x = (float) (1/imageWidth);
@@ -30,6 +30,7 @@ public class AutoModular extends MasterAutonomous {
     public void runOpMode() throws InterruptedException {
 
         autoInitializeRobot();
+
         // instantiate webcam
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         // show display on screen
@@ -127,11 +128,15 @@ public class AutoModular extends MasterAutonomous {
                 sleep(300);
             }
             horizontal = inchesToMM(getHorizontal(findSkystone.p1, findSkystone.p2));
-            if  ( horizontal < 0){
-                skystoneMove -= 0;
+            if (horizontal < 0 && horizontal > -100){
+                horizontal = -150;
             }
-            if (horizontal > 0) {
-                skystoneMove += 0;
+            else if(horizontal > 0 && horizontal < 100){
+                horizontal = 150;
+            }
+
+            if (horizontal > 5){
+                horizontal = inchesToMM(7.3);
             }
             // movement telemetry
             telemetry.addLine("Make X values negative if on blue side");
@@ -148,12 +153,14 @@ public class AutoModular extends MasterAutonomous {
             telemetry.addData("Skystone Position:", findSkystone.getSksytonePosition());
             telemetry.addData("Distance", findRange(findSkystone.getSksytonePosition().width));
             telemetry.addData("Horizontal", getHorizontal(findSkystone.p1, findSkystone.p2));
+            telemetry.addData("Update Horizontal", horizontal );
             telemetry.update();
 
         }
 
         waitForStart();
         vuforia.stop();
+        findSkystone.disable();
 
         leftFoundationPuller.setPosition(1);
         rightFoundationPuller.setPosition(0);
@@ -167,7 +174,7 @@ public class AutoModular extends MasterAutonomous {
         arm1.setPower(0);
         arm2.setPower(0);
         // extend arm
-        while (core2.getCurrentPosition() < 320) {
+        while (core2.getCurrentPosition() < 250) {
             core2.setPower(1.0);
         }
         core2.setPower(0);
@@ -183,16 +190,13 @@ public class AutoModular extends MasterAutonomous {
 
             // move to block
             // change 270 for translate to skystone
-            if (allianceSide == -1) {
-                moveMaintainHeading(horizontal * allianceSide, 0, 0, 0.1, 0.9, 3.0); // CHANGE X VALUE FOR SKYSTONE, 270 is third block from wall
-            }
-            else if ( allianceSide == 1){
-                moveMaintainHeading(horizontal * allianceSide, 0, 0, 0.1, 0.9, 3.0); // CHAN
-            }
+            moveMaintainHeading(-horizontal * allianceSide, 0, 0, 0.1, 0.9, 3.0); // CHANGE X VALUE FOR SKYSTONE, 270 is third block from wall
+
+
             // push block forwards
-            move(0, 400, 0.1, 0.4, 3.0);
+            move(0, 390, 0.1, 0.4, 3.0);
             // lower arm
-            while (arm1.getCurrentPosition() < -20) {
+            while (arm1.getCurrentPosition() < -20 && opModeIsActive()) {
                 arm1.setPower(0.5);
                 arm2.setPower(-0.5);
             }
@@ -202,15 +206,8 @@ public class AutoModular extends MasterAutonomous {
             smallGrabber.setPosition(1);
             pause(100);
             move(0, -380, 0.4,0.9, 3.0);
-            // raise arm
-            while (arm1.getCurrentPosition() > -40) {
-                arm1.setPower(-0.7);
-                arm2.setPower(0.7);
-            }
-            arm1.setPower(0);
-            arm2.setPower(0);
             move(0, 50, 0.4, 0.9, 3.0);
-            moveMaintainHeading(-horizontal * allianceSide, 0, 0, 0.4, 0.9, 3.0);
+            moveMaintainHeading(horizontal * allianceSide, 0, 0, 0.4, 0.9, 3.0);
             // update robot position
             robotPosX = 3 * allianceSide;
             robotPosY = -1.5;
@@ -219,7 +216,7 @@ public class AutoModular extends MasterAutonomous {
             if (!pullFoundation) {
 
                 // de-extend arm
-                while (core2.getCurrentPosition() > 150) {
+                while (core2.getCurrentPosition() > 150 && opModeIsActive()) {
                     core2.setPower(-1.0);
                 }
                 core2.setPower(0);
@@ -230,7 +227,7 @@ public class AutoModular extends MasterAutonomous {
                 moveMaintainHeading(0.5 * (robotPosY - foundationY) * tileSide * allianceSide, 0, 0, 0.1, 0.6, 3.0);
 
                 // raise arm
-                while (arm1.getCurrentPosition() > -200) {
+                while (arm1.getCurrentPosition() > -200 && opModeIsActive()) {
                     arm1.setPower(-0.8);
                     arm2.setPower(0.8);
                 }
@@ -239,7 +236,7 @@ public class AutoModular extends MasterAutonomous {
 
                 moveMaintainHeading(0, (((crossingX - foundationX) * -tile)), 0, 0.2, 0.9, 3.0);
                 // lower arm
-                while (arm1.getCurrentPosition() < -120) {
+                while (arm1.getCurrentPosition() < -120 && opModeIsActive()) {
                     arm1.setPower(0.8);
                     arm2.setPower(-0.8);
                 }
@@ -254,7 +251,7 @@ public class AutoModular extends MasterAutonomous {
 
 
                 // raise arm
-                while (arm1.getCurrentPosition() > -150) {
+                while (arm1.getCurrentPosition() > -150 && opModeIsActive()) {
                     arm1.setPower(-0.7);
                     arm2.setPower(0.7);
                 }
@@ -266,14 +263,14 @@ public class AutoModular extends MasterAutonomous {
                 moveMaintainHeading(300 * allianceSide, 0, 0, 0.4, 0.9, 3.0);
 
                 // lower arm
-                while (arm1.getCurrentPosition() < -100) {
+                while (arm1.getCurrentPosition() < -100 && opModeIsActive()) {
                     arm1.setPower(0.3);
                     arm2.setPower(-0.3);
                 }
                 arm1.setPower(0);
                 arm2.setPower(0);
                 // de-extend arm
-                while (core2.getCurrentPosition() > 100) {
+                while (core2.getCurrentPosition() > 100 && opModeIsActive()) {
                     core2.setPower(-1.0);
                 }
                 core2.setPower(0);
@@ -287,7 +284,7 @@ public class AutoModular extends MasterAutonomous {
         if (pullFoundation) {
 
             // de-extend arm
-            while (core2.getCurrentPosition() > 150) {
+            while (core2.getCurrentPosition() > 150 && opModeIsActive()) {
                 core2.setPower(-1.0);
             }
             core2.setPower(0);
@@ -303,7 +300,7 @@ public class AutoModular extends MasterAutonomous {
             moveMaintainHeading(0.5 * (robotPosY - foundationY) * tileSide * allianceSide, 0, rotation.thirdAngle, 0.1, 0.5, 3.0);
 
             // raise arm
-            while (arm1.getCurrentPosition() > -200) {
+            while (arm1.getCurrentPosition() > -200 && opModeIsActive()) {
                 arm1.setPower(-0.7);
                 arm2.setPower(0.7);
             }
@@ -329,7 +326,7 @@ public class AutoModular extends MasterAutonomous {
             leftFoundationPuller.setPosition(1);
             rightFoundationPuller.setPosition(0);
             // lower arm
-            while (arm1.getCurrentPosition() < -120) {
+            while (arm1.getCurrentPosition() < -120 && opModeIsActive()) {
                 arm1.setPower(0.8);
                 arm2.setPower(-0.8);
             }
@@ -339,7 +336,7 @@ public class AutoModular extends MasterAutonomous {
             smallGrabber.setPosition(0.5);
 
             // raise arm
-            while (arm1.getCurrentPosition() > -170) {
+            while (arm1.getCurrentPosition() > -170 && opModeIsActive()) {
                 arm1.setPower(-0.5);
                 arm2.setPower(0.5);
             }
@@ -354,14 +351,14 @@ public class AutoModular extends MasterAutonomous {
             moveMaintainHeading(300 * allianceSide, 0, 0, 0.4, 1.0, 3.0);
 
             // lower arm
-            while (arm1.getCurrentPosition() < -100) {
+            while (arm1.getCurrentPosition() < -100 && opModeIsActive()) {
                 arm1.setPower(0.3);
                 arm2.setPower(-0.3);
             }
             arm1.setPower(0);
             arm2.setPower(0);
             // de-extend arm
-            while (core2.getCurrentPosition() > 100) {
+            while (core2.getCurrentPosition() > 100 && opModeIsActive()) {
                 core2.setPower(-1.0);
             }
             core2.setPower(0);
@@ -382,14 +379,7 @@ public class AutoModular extends MasterAutonomous {
             // move sideways to correct position
             moveMaintainHeading((robotPosY - bridgeY) * tile * allianceSide, 0, 0, 0.4, 1.0, 3.0);
 
-            while (true) {
-                telemetry.addData("arm1:", arm1.getCurrentPosition());
-            }
-
         }
-
-
-        findSkystone.disable();
     }
 
 }

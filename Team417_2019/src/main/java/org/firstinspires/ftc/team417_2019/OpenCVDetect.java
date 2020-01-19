@@ -76,10 +76,10 @@ public class OpenCVDetect extends OpenCVPipeline
 
         // darker conditions
         Scalar lower = new Scalar(0,100,100);
-        Scalar upper = new Scalar(15,255,255);
+        Scalar upper = new Scalar(20,255,255);
         // lighter conditions
-       // Scalar lower = new Scalar(0,0,0);
-       // Scalar upper = new Scalar(79,145,166);
+        //Scalar lower = new Scalar(0,0,0);
+        //Scalar upper = new Scalar(79,145,166);
 
         Imgproc.GaussianBlur(cropped,cropped,new Size(3,3),0);
 
