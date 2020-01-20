@@ -29,7 +29,7 @@ public class SkystoneDetectionOpenCV extends OpenCVPipeline
     // todo Adjust w/ actual stones, make constants.
     private int[] section1 = {250, 40, 120, 50}; //{S, E, width, height}
     private int[] section2 = {250, 250, 120, 50};
-    private int[] section3 = {240, 440, 120, 50};
+    private int[] section3 = {250, 460, 120, 50};
 
     @Override
     public Mat processFrame(Mat rgba, Mat gray)

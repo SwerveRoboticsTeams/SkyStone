@@ -13,7 +13,7 @@ public class Constants
     static final double COUNTS_PER_MM = TICKS_PER_WHEEL_REVOLUTION / MM_PER_REVOLUTION;
 
     // Controls
-    public static final double MINIMUM_JOYSTICK_PWR = 0.33;
+    public static final double MINIMUM_JOYSTICK_PWR = 0.0;
     public static final double MINIMUM_TRIGGER_VALUE = 0.33;
     public static final double MINIMUM_DRIVE_POWER = 0.08;
 

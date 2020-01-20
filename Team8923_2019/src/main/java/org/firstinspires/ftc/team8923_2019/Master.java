@@ -96,7 +96,7 @@ abstract class Master extends LinearOpMode
         servoJoint.setPosition(0);
         servoFoundationLeft.setPosition(0.64);
         servoFoundationRight.setPosition(0.1);
-        servoCapstone.setPosition(0.44);
+        servoCapstone.setPosition(0.39);
         servoClaw.setPosition(0.5);
 
 

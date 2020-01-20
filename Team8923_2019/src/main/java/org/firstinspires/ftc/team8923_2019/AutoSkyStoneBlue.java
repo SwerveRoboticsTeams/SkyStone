@@ -15,17 +15,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Created by guinea on 10/5/17.
  * -------------------------------------------------------------------------------------
  * Copyright (c) 2018 FTC Team 5484 Enderbots
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,8 +33,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
- * 
+ *
+ *
  * By downloading, copying, installing or using the software you agree to this license.
  * If you do not agree to this license, do not download, install,
  * copy or use the software.
@@ -47,7 +47,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  *
  * 2018/09/30 Copied from OpenCvExampleBlueVisionDemo.java to experiment with various parameters.
  */
-@Disabled
+//@Disabled
 @Autonomous(name = "Auto SkyStone Blue", group = "Test")
 public class AutoSkyStoneBlue extends MasterAutonomous
 {
@@ -95,7 +95,7 @@ public class AutoSkyStoneBlue extends MasterAutonomous
         // run after user presses 'PLAY'
         while (opModeIsActive())
         {
-           imuMoveAuto(12,7,1,.2,3);
+           imuMoveAuto(12,9,1,.2,3);
            sleep(400);
 
 
@@ -120,7 +120,7 @@ public class AutoSkyStoneBlue extends MasterAutonomous
                 if(m1 < m2 && m1 < m3)
                 {
                     telemetry.addData("Left stone is SkyStone", "");
-                    skystonePlacement = Stone.LEFT;
+                    skystonePlacement = Stone.RIGHT;
                     isDetectingSkystone = false;
 
                 }
@@ -133,7 +133,7 @@ public class AutoSkyStoneBlue extends MasterAutonomous
                 else if(m3 < m1 && m3 < m2)
                 {
                     telemetry.addData("Right stone is SkyStone", "");
-                    skystonePlacement = Stone.RIGHT;
+                    skystonePlacement = Stone.LEFT;
                     isDetectingSkystone = false;
                 }
             }
@@ -153,16 +153,13 @@ public class AutoSkyStoneBlue extends MasterAutonomous
 
         switch (direction){
             case LEFT:
+                imuPivot(imu.getAngularOrientation().firstAngle,100,.4,1,1);
                 break;
             case MIDDLE:
+                imuPivot(imu.getAngularOrientation().firstAngle,95,.4,1,1);
                 break;
             case RIGHT:
-                imuMoveAuto(30.5,3.5,1,.4,3);
-                moveBackAndIntake();
-                imuPivot(imu.getAngularOrientation().firstAngle,30,.3,1,1);
-                imuMoveAuto(0,30,1,.4,3);
-                imuPivot(imu.getAngularOrientation().firstAngle,-30,.3,1,1);
-                imuMoveAuto(0,63,1,.4,3);
+                imuPivot(imu.getAngularOrientation().firstAngle,60,.4,1,1);
                 break;
 
 

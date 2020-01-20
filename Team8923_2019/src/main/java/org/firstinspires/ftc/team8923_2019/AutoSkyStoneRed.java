@@ -41,7 +41,7 @@ import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
  *
  * 2018/09/30 Copied from OpenCvExampleBlueVisionDemo.java to experiment with various parameters.
  */
-@Disabled
+//@Disabled
 @Autonomous(name = "Auto SkyStone Red", group = "Test")
 public class AutoSkyStoneRed extends MasterAutonomous
 {
@@ -65,7 +65,7 @@ public class AutoSkyStoneRed extends MasterAutonomous
         waitForStart();
         telemetry.clear();
 
-        autoReverseDrive = false;
+        autoReverseDrive = true;
 
         OpenCV_detector = new SkystoneDetectionOpenCV();
         OpenCV_detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
@@ -85,9 +85,9 @@ public class AutoSkyStoneRed extends MasterAutonomous
            sleep(400);
 
 
-            telemetry.addData("Left stone: ", m1);
+            telemetry.addData("Right stone: ", m1);
             telemetry.addData("Middle stone: ", m2);
-            telemetry.addData("Right stone: ", m3);
+            telemetry.addData("Left stone: ", m3);
 
             /*
              *  If the yellow filter value of the right stone is lower than that of the middle or
@@ -105,21 +105,21 @@ public class AutoSkyStoneRed extends MasterAutonomous
 
                 if(m1 < m2 && m1 < m3)
                 {
-                    telemetry.addData("Left stone is SkyStone", "");
-                    skystonePlacement = Stone.LEFT;
+                    telemetry.addData("RIGHT stone is SkyStone", "");
+                    skystonePlacement = Stone.RIGHT;
                     isDetectingSkystone = false;
 
                 }
                 else if(m2 < m3 && m2 < m1)
                 {
-                    telemetry.addData("Middle stone is SkyStone", "");
+                    telemetry.addData("MIDDLE stone is SkyStone", "");
                     skystonePlacement = Stone.MIDDLE;
                     isDetectingSkystone = false;
                 }
                 else if(m3 < m1 && m3 < m2)
                 {
-                    telemetry.addData("Right stone is SkyStone", "");
-                    skystonePlacement = Stone.RIGHT;
+                    telemetry.addData("LEFT stone is SkyStone", "");
+                    skystonePlacement = Stone.LEFT;
                     isDetectingSkystone = false;
                 }
             }
@@ -127,8 +127,8 @@ public class AutoSkyStoneRed extends MasterAutonomous
 
             telemetry.update();
 
-            collectSkystone(skystonePlacement);
-            break;
+            //collectSkystone(skystonePlacement);
+            //break;
 
 
         }
@@ -143,11 +143,9 @@ public class AutoSkyStoneRed extends MasterAutonomous
             case MIDDLE:
                 break;
             case RIGHT:
-                imuMoveAuto(30.5,3.5,1,.4,3);
+                imuMoveAuto(0,63,1,.4,3);
                 moveBackAndIntake();
-                imuPivot(imu.getAngularOrientation().firstAngle,30,.3,1,1);
-                imuMoveAuto(0,30,1,.4,3);
-                imuPivot(imu.getAngularOrientation().firstAngle,-30,.3,1,1);
+
                 imuMoveAuto(0,63,1,.4,3);
                 break;
 

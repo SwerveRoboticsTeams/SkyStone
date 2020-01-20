@@ -161,8 +161,8 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
         while(isDoneSettingUp == false)
         {
-            if(gamepad1.dpad_up) numOfSecondsDelay++;
-            else if(gamepad1.dpad_down && numOfSecondsDelay != 0) numOfSecondsDelay--;
+            if(gamepad1.dpad_up) numOfSecondsDelay += 1000;
+            else if(gamepad1.dpad_down && numOfSecondsDelay != 0) numOfSecondsDelay -= 1000;
             else if(gamepad1.start) isDoneSettingUp = true;
 
             while (!buttonsAreReleased(gamepad1))
@@ -172,7 +172,8 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
             }
 
             telemetry.addLine("d-pad up/down");
-            telemetry.addData("Number of Seconds", numOfSecondsDelay);
+            telemetry.addData("Number of Milliseconds", numOfSecondsDelay);
+            telemetry.addLine("press start BEFORE play");
             telemetry.update();
         }
 

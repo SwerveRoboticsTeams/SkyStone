@@ -29,7 +29,7 @@ public class AutoParkBridgeDelayBlue extends MasterAutonomous
         while (opModeIsActive())
         {
             imuMoveAuto(0, 9, .5, .1, 3);
-            sleep(delays);
+            sleep(numOfSecondsDelay);
             imuMoveAuto(28,0,.7,.3,3);
             break;
         }

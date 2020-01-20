@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team8923_2019;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.internal.android.dx.dex.code.VariableSizeInsn;
@@ -38,11 +39,13 @@ abstract class MasterTeleOp extends Master
             reverseDrive = true;
         if(gamepad1.a)
             reverseDrive = false;
+            slowModeDivisor = 1.0;
 
         if(gamepad1.dpad_down)
             slowModeDivisor = 3.0;
         else if(gamepad1.dpad_up)
             slowModeDivisor = 1.0;
+
 
         double y = -gamepad1.left_stick_y; // Y axis is negative when up
         double x = 0.5 * gamepad1.left_stick_x;
@@ -72,7 +75,7 @@ abstract class MasterTeleOp extends Master
             servoCapstone.setPosition(0.0);
 
         }else if (gamepad2.x){
-            servoCapstone.setPosition(.44);
+            servoCapstone.setPosition(.39);
         }
 
     }
@@ -126,9 +129,11 @@ abstract class MasterTeleOp extends Master
 
     public void runJoint(){
         if(gamepad2.b){
+            //servoMoveTo(servoJoint,1,95);
             servoJoint.setPosition(1);
             clawIsOut = false;
         }else if(gamepad2.a){
+            //servoMoveTo(servoJoint,0.03,95);
             servoJoint.setPosition(0.03);
             clawIsOut = true;
 
@@ -158,8 +163,42 @@ abstract class MasterTeleOp extends Master
     }
 
     // Helper Functions
+    // todo Ask how to extend the servo class so we don't have to pass in servo
+    private void servoMoveTo(Servo servo, double targetPosition, double percentSpeed)
+    {
+        try {
+            // Get current servo position
+            double servoCurrentPosition = servo.getPosition();
 
+            // Map servo position to degrees
+            int servoPositionInDegrees = (int)map(servoCurrentPosition,0,1,0,180);
 
+            // Map target position to degrees
+            double targetPositionInDegrees = map(targetPosition,0,1,0,180);
+
+            // Calculate delay from percent speed
+            // -increase minMappedOutput for slower speeds
+            double delay = map(percentSpeed, 0, 100,5,0);
+
+            // Calculate increment for loop (target position could be higher or lower than current position)
+            int increment;
+            if(servoPositionInDegrees < targetPositionInDegrees){
+                increment = 1;
+            }else{
+                increment = -1;
+            }
+
+            // Move to each degree with calculated delay
+            for(int i = servoPositionInDegrees; i != targetPositionInDegrees; i += increment){
+                double servoPositionZeroToOne = map(i,0,180,0,1);
+                servo.setPosition(servoPositionZeroToOne);
+                sleep((int)delay);
+            }
+
+        } catch (Exception e) {
+            System.out.printf("no servo");
+        }
+    }
 
     private double map(double value, double minInput, double maxInput, double minMappedOutput, double maxMappedOutput)
     {

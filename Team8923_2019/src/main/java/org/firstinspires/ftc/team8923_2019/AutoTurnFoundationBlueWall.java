@@ -34,7 +34,7 @@ public class AutoTurnFoundationBlueWall extends MasterAutonomous
             imuPivot(imu.getAngularOrientation().firstAngle,60,.5,1,1);
             imuMoveAuto(0 ,14 ,1,.2,3);
             grabbersUp();
-            sleep(2000);
+            sleep(700);
             imuMoveAuto(-19 ,0 ,1,.2,3);
             imuMoveAuto(0,-44,1,.2,3);
             break;
