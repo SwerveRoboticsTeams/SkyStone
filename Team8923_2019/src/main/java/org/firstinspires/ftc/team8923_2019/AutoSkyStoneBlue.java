@@ -95,7 +95,8 @@ public class AutoSkyStoneBlue extends MasterAutonomous
         // run after user presses 'PLAY'
         while (opModeIsActive())
         {
-           imuMoveAuto(12,9,1,.2,3);
+           imuMoveAuto(12,0,1,.2,3);
+            imuMoveAuto(0,9,1,.2,3);
            sleep(400);
 
 
@@ -119,7 +120,7 @@ public class AutoSkyStoneBlue extends MasterAutonomous
 
                 if(m1 < m2 && m1 < m3)
                 {
-                    telemetry.addData("Left stone is SkyStone", "");
+                    telemetry.addData("Right stone is SkyStone", "");
                     skystonePlacement = Stone.RIGHT;
                     isDetectingSkystone = false;
 
@@ -132,7 +133,7 @@ public class AutoSkyStoneBlue extends MasterAutonomous
                 }
                 else if(m3 < m1 && m3 < m2)
                 {
-                    telemetry.addData("Right stone is SkyStone", "");
+                    telemetry.addData("Left stone is SkyStone", "");
                     skystonePlacement = Stone.LEFT;
                     isDetectingSkystone = false;
                 }
@@ -153,13 +154,31 @@ public class AutoSkyStoneBlue extends MasterAutonomous
 
         switch (direction){
             case LEFT:
-                imuPivot(imu.getAngularOrientation().firstAngle,100,.4,1,1);
+                //imuPivot(imu.getAngularOrientation().firstAngle,90,.4,1,1);
+                runIntake();
+                imuMoveAuto(-5,0,1,.4,3);
                 break;
             case MIDDLE:
-                imuPivot(imu.getAngularOrientation().firstAngle,95,.4,1,1);
+                //imuPivot(imu.getAngularOrientation().firstAngle,90,.4,1,1);
+                runIntake();
+                imuMoveAuto(0,0,1,.4,3);
                 break;
             case RIGHT:
-                imuPivot(imu.getAngularOrientation().firstAngle,60,.4,1,1);
+                //imuPivot(imu.getAngularOrientation().firstAngle,90,.4,1,1);
+                runIntake();
+                imuMoveAuto(0,2,.5,.2,3);
+                imuMoveAuto(26.5,0,1,.2,3);
+                moveBackAndIntake();
+                imuMoveAuto(-18,0,1,.2,3);
+                imuMoveAuto(0,76,1,.2,3);
+                imuPivot(imu.getAngularOrientation().firstAngle,-90,.3,1,1);
+                liftToPosition(-1114);
+                clawOut();
+                liftToPosition(1114);
+                clawUp();
+                liftToPosition(-1114);
+                clawIn();
+                liftToPosition(1114);
                 break;
 
 

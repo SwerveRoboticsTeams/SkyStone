@@ -30,6 +30,7 @@ abstract class Master extends LinearOpMode
     Servo servoJoint;
     Servo servoClaw;
 
+    int initialLiftTicks;
 
     BNO055IMU imu;
 
@@ -81,7 +82,7 @@ abstract class Master extends LinearOpMode
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorLift.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorLift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -98,6 +99,9 @@ abstract class Master extends LinearOpMode
         servoFoundationRight.setPosition(0.1);
         servoCapstone.setPosition(0.39);
         servoClaw.setPosition(0.5);
+
+        //lift
+        initialLiftTicks = motorLift2.getCurrentPosition();
 
 
     }

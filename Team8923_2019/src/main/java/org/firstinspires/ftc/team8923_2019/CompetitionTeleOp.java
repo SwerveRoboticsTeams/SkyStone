@@ -29,6 +29,7 @@ public class CompetitionTeleOp extends MasterTeleOp
             runCapstonePlacer();
             runIntake();
 
+            sendTelemetry();
             idle();
 
         }

@@ -134,7 +134,7 @@ abstract class MasterTeleOp extends Master
             clawIsOut = false;
         }else if(gamepad2.a){
             //servoMoveTo(servoJoint,0.03,95);
-            servoJoint.setPosition(0.03);
+            servoJoint.setPosition(0);
             clawIsOut = true;
 
         }
@@ -151,12 +151,14 @@ abstract class MasterTeleOp extends Master
     void sendTelemetry()
     {
 
-        telemetry.addData("left stick x:", gamepad1.left_stick_x);
-        telemetry.addData("left stick y:", gamepad1.left_stick_y);
-        telemetry.addData("right stick x:", gamepad1.right_stick_x);
-        telemetry.addData("right stick y:", gamepad1.right_stick_y);
-        telemetry.addData("right trigger:", gamepad2.right_trigger);
-        telemetry.addData("left trigger:", gamepad2.left_trigger);
+        telemetry.addData("lift ticks", motorLift2.getCurrentPosition());
+//
+//        telemetry.addData("left stick x:", gamepad1.left_stick_x);
+//        telemetry.addData("left stick y:", gamepad1.left_stick_y);
+//        telemetry.addData("right stick x:", gamepad1.right_stick_x);
+//        telemetry.addData("right stick y:", gamepad1.right_stick_y);
+//        telemetry.addData("right trigger:", gamepad2.right_trigger);
+//        telemetry.addData("left trigger:", gamepad2.left_trigger);
 
 
         telemetry.update();

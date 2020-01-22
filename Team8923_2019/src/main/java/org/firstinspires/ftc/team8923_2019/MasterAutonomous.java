@@ -655,4 +655,24 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     void clawUp() throws InterruptedException{
         servoClaw.setPosition(0.35);
     }
+
+    void clawOut() throws InterruptedException{
+        servoJoint.setPosition(1);
+    }
+    void clawIn() throws InterruptedException{
+        servoJoint.setPosition(0);
+    }
+
+    void liftToPosition(int ticks) throws InterruptedException{
+        motorLift.setTargetPosition(getCurrentLiftTicks() + ticks);
+        motorLift2.setTargetPosition(getCurrentLiftTicks() + ticks);
+        motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLift.setPower(.5);
+        motorLift.setPower(.5);
+    }
+
+    int getCurrentLiftTicks() throws InterruptedException{
+        return motorLift2.getCurrentPosition() - initialLiftTicks;
+    }
 }
