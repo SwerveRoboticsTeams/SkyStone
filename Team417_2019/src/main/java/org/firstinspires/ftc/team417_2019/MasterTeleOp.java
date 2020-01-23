@@ -33,8 +33,11 @@ abstract public class MasterTeleOp extends MasterOpMode
     final double Krev = -1/1210.0;
     int targetCorePos = 0;
 
+    boolean controlArm = false;
+
     Toggle grabber = new Toggle();
     Toggle puller = new Toggle();
+
 
     AvgFilter filterJoyStickInput = new AvgFilter();
 
@@ -162,28 +165,50 @@ abstract public class MasterTeleOp extends MasterOpMode
 
     }
 
+    void lower()
+    {
+        while(arm1.getCurrentPosition() < 0 && arm2.getCurrentPosition() > 0) {
+            arm1.setPower(0.8);
+            arm2.setPower(-0.8);
+        }
+        arm1.setPower(0);
+        arm2.setPower(0);
+    }
+
     void collector()
     {
-        // control arm motors with G2 right stick
-        if (gamepad2.right_stick_y != 0)
-        {
-            arm1.setPower(Range.clip(gamepad2.right_stick_y, -0.5, 0.5));
-            arm2.setPower(Range.clip(-gamepad2.right_stick_y, -0.5, 0.5));
+        if (gamepad2.x){
+            controlArm = true;
+        }
+        if (controlArm) {
+            arm1.setPower(arm1.getCurrentPosition() / -200);
+            arm2.setPower(arm2.getCurrentPosition() / 200);
+            if( arm1.getCurrentPosition() > -120 || Math.abs(gamepad2.right_stick_y) > 0.2){
+                controlArm = false;
+            }
         }
         else
         {
-            arm1.setPower(0.0);
-            arm2.setPower(0.0);
+            arm1.setPower(gamepad2.right_stick_y * 0.7);
+            arm2.setPower(gamepad2.right_stick_y * -0.7);
         }
 
-        // Set Automatic Rev servo position
-        // took a bunch of positions for arm + wrist so part of linear equation
-        autoDouble = (double) (arm1.getCurrentPosition() + 100);
-        // the slope of the equation
-        autoDouble *= -0.00033; //0.4 / -1200
-        // when the arm is 0 we want the wrist to be 0.25
-        autoRevPos =  autoDouble + 0.235; // high pos = -1058, low = 0
-        mainWristServo.setPosition(autoRevPos);
+        if (gamepad2.dpad_down)
+        {
+            mainWristServo.setPosition(0.47);
+        }
+        else {
+                // Set Automatic Rev servo position
+                // took a bunch of positions for arm + wrist so part of linear equation
+                autoDouble = (double) (arm1.getCurrentPosition() + 100);
+                // the slope of the equation
+                autoDouble *= -0.00033; //0.4 / -1200
+                // when the arm is 0 we want the wrist to be 0.25
+                autoRevPos =  autoDouble + 0.235; // high pos = -1058, low = 0
+                mainWristServo.setPosition(autoRevPos);
+        }
+        // control arm motors with G2 right stick
+
 
         // Toggle grabber
         if(grabber.getToggle(gamepad2.a))
@@ -194,7 +219,12 @@ abstract public class MasterTeleOp extends MasterOpMode
         else
         {
             // set smallGrabber to open position
-            smallGrabber.setPosition(0.5);
+            if( gamepad2.dpad_down){
+                smallGrabber.setPosition(0.6);
+            }
+            else{
+                smallGrabber.setPosition(0.5);
+            }
         }
 
 

@@ -134,6 +134,7 @@ public class OpenCVDetect extends OpenCVPipeline
         int y = maxRect.y;
         // find size of displayMat for extending the rectangle
         width = displayMat.size().width;
+        //width = maxRect.width;
         double height = maxRect.height;
         // crop the camera's view such that we only see what we want
 
