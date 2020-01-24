@@ -103,6 +103,19 @@ abstract class Master extends LinearOpMode
         //lift
         initialLiftTicks = motorLift2.getCurrentPosition();
 
+        //imu
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        // Makes sure imu is calibrated before continuing
+        while (!isStopRequested() && !imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
 
     }
 

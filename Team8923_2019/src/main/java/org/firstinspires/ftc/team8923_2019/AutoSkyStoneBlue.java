@@ -90,8 +90,6 @@ public class AutoSkyStoneBlue extends MasterAutonomous
             telemetry.update();
         }
 
-        waitForStart();
-
         // run after user presses 'PLAY'
         while (opModeIsActive())
         {
@@ -152,6 +150,8 @@ public class AutoSkyStoneBlue extends MasterAutonomous
 
     private void collectSkystone(Stone direction) throws InterruptedException {
 
+        double referenceAngle = imu.getAngularOrientation().firstAngle;
+
         switch (direction){
             case LEFT:
                 //imuPivot(imu.getAngularOrientation().firstAngle,90,.4,1,1);
@@ -164,21 +164,43 @@ public class AutoSkyStoneBlue extends MasterAutonomous
                 imuMoveAuto(0,0,1,.4,3);
                 break;
             case RIGHT:
-                //imuPivot(imu.getAngularOrientation().firstAngle,90,.4,1,1);
-                runIntake();
-                imuMoveAuto(0,2,.5,.2,3);
-                imuMoveAuto(26.5,0,1,.2,3);
+
+                imuMoveAuto(0,-12,1,.3,3);
+                imuPivot(referenceAngle,90,.35,1,4);
+                imuMoveAuto(0,-15,1,.3,3);
                 moveBackAndIntake();
-                imuMoveAuto(-18,0,1,.2,3);
-                imuMoveAuto(0,76,1,.2,3);
-                imuPivot(imu.getAngularOrientation().firstAngle,-90,.3,1,1);
-                liftToPosition(-1114);
+                imuMoveAuto(0,13,1,.3,3);
+                imuPivot(referenceAngle,0,.35,1,4);
+
+                imuMoveAuto(0,89,1,.4,4);
+                imuPivot(referenceAngle,-90,.35,1,4);
+
+                imuMoveAuto(0,13,1,.3,3);
+                grabbersDown();
+                sleep(150);
+                imuPivot(referenceAngle,-60,.5,1,1);
+                imuMoveAuto(0 ,-23 ,1,.5,3);
+                imuPivot(referenceAngle,0,.5,1,1);
+                imuMoveAuto(0 ,14 ,1,.5,3);
+                grabbersUp();
+
+                moveLift(-1100);
+                sleep(500);
                 clawOut();
-                liftToPosition(1114);
+                sleep(600);
+
                 clawUp();
-                liftToPosition(-1114);
+                sleep(200);
                 clawIn();
-                liftToPosition(1114);
+                sleep(200);
+                moveLift(1500);
+
+                imuMoveAuto(8 ,0 ,1,.2,3);
+                imuMoveAuto(0,-44,1,.2,3);
+
+
+
+
                 break;
 
 

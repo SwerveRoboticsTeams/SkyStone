@@ -152,6 +152,9 @@ abstract class MasterTeleOp extends Master
     {
 
         telemetry.addData("lift ticks", motorLift2.getCurrentPosition());
+        telemetry.addData("first", imu.getAngularOrientation().firstAngle);
+        telemetry.addData("second", imu.getAngularOrientation().secondAngle);
+        telemetry.addData("Third", imu.getAngularOrientation().thirdAngle);
 //
 //        telemetry.addData("left stick x:", gamepad1.left_stick_x);
 //        telemetry.addData("left stick y:", gamepad1.left_stick_y);

@@ -28,7 +28,7 @@ public class Constants
     public static final double TRANSLATION_I = 0.0;
     public static final double TRANSLATION_D = 0.0;
     public static final double ANGLE_TOLERANCE_DEG = 5.0;
-    public static final double POSITION_TOLERANCE_MM = 0.5*25.4;
+    public static final double POSITION_TOLERANCE_MM = 2*25.4;
 
     // Foundation servos
     public static final double LEFT_FOUNDATION_SERVO_POSITION_UP    = 0.3;

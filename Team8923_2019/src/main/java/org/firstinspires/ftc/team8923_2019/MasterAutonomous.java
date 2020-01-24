@@ -629,7 +629,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
         runIntake();
         //sleep(100);
-        imuMoveAuto(0,-6,1,.1,3);
+        imuMoveAuto(0,-8,1,.3,3);
         sleep(600);
         turnOffIntake();
         clawDown();
@@ -663,16 +663,36 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         servoJoint.setPosition(0);
     }
 
-    void liftToPosition(int ticks) throws InterruptedException{
-        motorLift.setTargetPosition(getCurrentLiftTicks() + ticks);
-        motorLift2.setTargetPosition(getCurrentLiftTicks() + ticks);
-        motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorLift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorLift.setPower(.5);
-        motorLift.setPower(.5);
+    public void stopLift()
+    {
+        motorLift.setPower(0.0);
+        motorLift2.setPower(0.0);
+        idle();
+    }
+    public void moveLift (int ticks)
+    {
+        while (Math.abs(ticks - motorLift.getCurrentPosition()) > TOL)
+        {
+            motorLift.setTargetPosition(motorLift.getCurrentPosition() + ticks);
+            motorLift.setPower((motorLift.getTargetPosition() - motorLift.getCurrentPosition()) * (1 / 1000.0));
+            motorLift2.setTargetPosition(motorLift.getCurrentPosition() + ticks);
+            motorLift2.setPower((motorLift.getTargetPosition() - motorLift.getCurrentPosition()) * (1 / 1000.0));
+            sendTelemetry();
+            idle();
+        }
+        stopLift();
     }
 
-    int getCurrentLiftTicks() throws InterruptedException{
-        return motorLift2.getCurrentPosition() - initialLiftTicks;
-    }
+//    void liftToPosition(int ticks) throws InterruptedException{
+//        motorLift.setTargetPosition(getCurrentLiftTicks() + ticks);
+//        motorLift2.setTargetPosition(getCurrentLiftTicks() + ticks);
+//        motorLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        motorLift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        motorLift.setPower(.5);
+//        motorLift2.setPower(.5);
+//    }
+//
+//    int getCurrentLiftTicks() throws InterruptedException{
+//        return motorLift2.getCurrentPosition() - initialLiftTicks;
+//    }
 }
