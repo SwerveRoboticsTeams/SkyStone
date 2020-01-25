@@ -189,8 +189,10 @@ abstract public class MasterTeleOp extends MasterOpMode
         }
         else
         {
-            arm1.setPower(gamepad2.right_stick_y * 0.7);
-            arm2.setPower(gamepad2.right_stick_y * -0.7);
+            double value = gamepad2.right_stick_y;
+            double power = 0.8 * value * value * value + 0.15 * value * value + 0.2 * value;
+            arm1.setPower(power);
+            arm2.setPower(-power);
         }
 
         if (gamepad2.dpad_down)
