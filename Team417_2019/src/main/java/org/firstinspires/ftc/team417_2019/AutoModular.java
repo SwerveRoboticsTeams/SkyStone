@@ -194,7 +194,7 @@ public class AutoModular extends MasterAutonomous {
 
 
             // push block forwards
-            move(0, 390, 0.1, 0.4, 3.0);
+            move(0, 400, 0.1, 0.4, 3.0);
             // lower arm
             while (arm1.getCurrentPosition() < -20 && opModeIsActive()) {
                 arm1.setPower(0.5);
@@ -205,6 +205,13 @@ public class AutoModular extends MasterAutonomous {
             // grab block
             smallGrabber.setPosition(1);
             pause(100);
+            // raise arm
+            while (arm1.getCurrentPosition() > -60 && opModeIsActive()) {
+                arm1.setPower(-0.5);
+                arm2.setPower(0.5);
+            }
+            arm1.setPower(0);
+            arm2.setPower(0);
             move(0, -380, 0.4,0.9, 3.0);
             move(0, 50, 0.4, 0.9, 3.0);
             moveMaintainHeading(horizontal * allianceSide, 0, 0, 0.4, 0.9, 3.0);
@@ -292,12 +299,13 @@ public class AutoModular extends MasterAutonomous {
             // navigate to foundation
             // if moving on outside of field, move forward to not get stuck on wall
             if (Math.abs(crossingX) == 3) {
-                move(0, 150, 0.4,0.8, 3.0);
+                move(0, 75, 0.4,0.8, 3.0);
             }
             moveMaintainHeading(0, -(((robotPosX - crossingX) * 380)* allianceSide), 0, 0.4, 1.0, 3.0);
             // split up X movement into two smaller movements
-            moveMaintainHeading(0.5 * (robotPosY - foundationY) * tileSide * allianceSide, 0, rotation.thirdAngle, 0.1, 0.5, 3.0);
-            moveMaintainHeading(0.5 * (robotPosY - foundationY) * tileSide * allianceSide, 0, rotation.thirdAngle, 0.1, 0.5, 3.0);
+            pivotWithReference(-85 * allianceSide, 0, 0.4,0.8);
+            moveMaintainHeading(0, 0.5 * (robotPosY - foundationY) * tile * allianceSide, -90 * allianceSide, 0.1, 0.8, 3.0);
+            moveMaintainHeading(0, 0.5 * (robotPosY - foundationY) * 400 * allianceSide, -90 * allianceSide, 0.1, 0.8, 3.0);
 
             // raise arm
             while (arm1.getCurrentPosition() > -200 && opModeIsActive()) {
@@ -307,14 +315,11 @@ public class AutoModular extends MasterAutonomous {
             arm1.setPower(0);
             arm2.setPower(0);
 
-            // align against wall
-            if (Math.abs(crossingX) == 3) {
-                move(0, -200, 0.4, 0.7, 3.0);
-            }
-            else {
-                move(0, -400, 0.4, 0.7, 3.0);
-            }
-            moveMaintainHeading(0, ((((3 * allianceSide) - foundationX) * -(tile - 50))* allianceSide), 0, 0.2, 0.5, 3.0);
+            // back away from wall
+            move(0, -300, 0.4, 0.7, 3.0);
+            pivotWithReference(0, -90 * allianceSide, 0.4, 0.8);
+
+            moveMaintainHeading(0, ((((3 * allianceSide) - foundationX) * -(350))* allianceSide), 0, 0.2, 0.5, 3.0);
 
             // lower foundation pullers
             leftFoundationPuller.setPosition(0.65);
@@ -322,6 +327,7 @@ public class AutoModular extends MasterAutonomous {
             pause(500);
             // pull foundation
             move(0, -900,  0.3, 0.7, 3.0);
+            //moveMaintainHeading(0, -100, -85 * allianceSide, 0.3, 0.7, 3.0);
             // raise foundation pullers
             leftFoundationPuller.setPosition(1);
             rightFoundationPuller.setPosition(0);
@@ -336,7 +342,7 @@ public class AutoModular extends MasterAutonomous {
             smallGrabber.setPosition(0.5);
 
             // raise arm
-            while (arm1.getCurrentPosition() > -170 && opModeIsActive()) {
+            while (arm1.getCurrentPosition() > -235 && opModeIsActive()) {
                 arm1.setPower(-0.5);
                 arm2.setPower(0.5);
             }
@@ -345,13 +351,11 @@ public class AutoModular extends MasterAutonomous {
 
             move(0, 100, 0.4, 0.8, 3.0);
             moveMaintainHeading(550 * allianceSide, 0, 0, 0.4, 1.0, 3.0);
-            // pivot 5 degrees to the right
-            //moveMaintainHeading(0, 0, -5 * allianceSide, 0.4, 1.0, 3.0);
             moveMaintainHeading(0, -150, 0, 0.4, 1.0, 3.0);
             moveMaintainHeading(300 * allianceSide, 0, 0, 0.4, 1.0, 3.0);
 
             // lower arm
-            while (arm1.getCurrentPosition() < -100 && opModeIsActive()) {
+            while ((arm1.getCurrentPosition() < -50)&& opModeIsActive()) {
                 arm1.setPower(0.3);
                 arm2.setPower(-0.3);
             }
@@ -361,8 +365,8 @@ public class AutoModular extends MasterAutonomous {
             while (core2.getCurrentPosition() > 100 && opModeIsActive()) {
                 core2.setPower(-1.0);
             }
-            core2.setPower(0);
 
+            core2.setPower(0);
             robotPosX = 3 * allianceSide;
             robotPosY = 1.25;
 
