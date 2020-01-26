@@ -3,7 +3,7 @@ package org.firstinspires.ftc.team8923_2019;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-//@Disabled
+@Disabled
 @Autonomous(name="Test", group = "Swerve")
 /**
  * Runable shell for Master Autonomous code
@@ -30,7 +30,8 @@ public class Test extends MasterAutonomous
         {
             autoReverseDrive = true;
             //imuPivot(imu.getAngularOrientation().firstAngle,-90,.3,1,3);
-            moveLift(-500);
+            moveLift(-1000, 2);
+            moveLift(500, 2);
             break;
             //servoFoundationRight.setPosition(1.0);
 

@@ -11,42 +11,6 @@ import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
-/**
- * Created by guinea on 10/5/17.
- * -------------------------------------------------------------------------------------
- * Copyright (c) 2018 FTC Team 5484 Enderbots
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- *
- * By downloading, copying, installing or using the software you agree to this license.
- * If you do not agree to this license, do not download, install,
- * copy or use the software.
- * -------------------------------------------------------------------------------------
- * This is a sample opmode that demonstrates the use of an OpenCVPipeline with FTC code.
- * When the x button is pressed on controller one, the camera is set to show areas of the image
- * where a certain color is, in this case, blue.
- *
- * Additionally, the centers of the bounding rectangles of the contours are sent to telemetry.
- *
- * 2018/09/30 Copied from OpenCvExampleBlueVisionDemo.java to experiment with various parameters.
- */
 //@Disabled
 @Autonomous(name = "Auto SkyStone Blue", group = "Test")
 public class AutoSkyStoneBlue extends MasterAutonomous
@@ -55,9 +19,7 @@ public class AutoSkyStoneBlue extends MasterAutonomous
 
     public double m1, m2, m3;
     Stone skystonePlacement = Stone.MIDDLE;
-    enum Stone {
-        RIGHT,MIDDLE,LEFT
-    }
+
 
     boolean isDetectingSkystone = true;
 
@@ -65,6 +27,9 @@ public class AutoSkyStoneBlue extends MasterAutonomous
     public void runOpMode() throws InterruptedException
     {
         initAuto();
+
+        alliance = Alliance.BLUE;
+        double referenceAngle = imu.getAngularOrientation().firstAngle;
         telemetry.clear();
         telemetry.update();
 
@@ -93,9 +58,9 @@ public class AutoSkyStoneBlue extends MasterAutonomous
         // run after user presses 'PLAY'
         while (opModeIsActive())
         {
-           imuMoveAuto(12,0,1,.2,3);
+           imuMoveAuto(12,0,1,.5,3);
             imuMoveAuto(0,9,1,.2,3);
-           sleep(400);
+
 
 
             telemetry.addData("Left stone: ", m1);
@@ -140,74 +105,42 @@ public class AutoSkyStoneBlue extends MasterAutonomous
 
             telemetry.update();
 
-            collectSkystone(skystonePlacement);
+            collectSkystone(skystonePlacement,alliance);
+
+            imuPivot(referenceAngle,-90,.35,1,4);
+
+            imuMoveAuto(0,14,.3,.3,3);
+            grabbersDown();
+
+            sleep(150);
+            imuMoveAuto(0,-10,.3,.3,3);
+            imuPivot(referenceAngle,-60,.5,.015,1);
+            imuMoveAuto(0 ,-23 ,1,.5,3);
+            imuPivot(referenceAngle,0,.5,.015,1);
+            imuMoveAuto(0 ,16 ,1,.5,3);
+            grabbersUp();
+            imuMoveAuto(25 ,0 ,1,.7,3);
+
+            moveLift(-1100, 2);
+            sleep(500);
+            clawOut();
+            sleep(600);
+
+            clawUp();
+            sleep(200);
+            clawIn();
+
+            moveLift(600, 1.2);
+            sleep(500);
+
+            imuMoveAuto(0,-40,1,.7,3);
+            idle();
+
+
             break;
 
 
         }
 
     }
-
-    private void collectSkystone(Stone direction) throws InterruptedException {
-
-        double referenceAngle = imu.getAngularOrientation().firstAngle;
-
-        switch (direction){
-            case LEFT:
-                //imuPivot(imu.getAngularOrientation().firstAngle,90,.4,1,1);
-                runIntake();
-                imuMoveAuto(-5,0,1,.4,3);
-                break;
-            case MIDDLE:
-                //imuPivot(imu.getAngularOrientation().firstAngle,90,.4,1,1);
-                runIntake();
-                imuMoveAuto(0,0,1,.4,3);
-                break;
-            case RIGHT:
-
-                imuMoveAuto(0,-12,1,.3,3);
-                imuPivot(referenceAngle,90,.35,1,4);
-                imuMoveAuto(0,-15,1,.3,3);
-                moveBackAndIntake();
-                imuMoveAuto(0,13,1,.3,3);
-                imuPivot(referenceAngle,0,.35,1,4);
-
-                imuMoveAuto(0,89,1,.4,4);
-                imuPivot(referenceAngle,-90,.35,1,4);
-
-                imuMoveAuto(0,13,1,.3,3);
-                grabbersDown();
-                sleep(150);
-                imuPivot(referenceAngle,-60,.5,1,1);
-                imuMoveAuto(0 ,-23 ,1,.5,3);
-                imuPivot(referenceAngle,0,.5,1,1);
-                imuMoveAuto(0 ,14 ,1,.5,3);
-                grabbersUp();
-
-                moveLift(-1100);
-                sleep(500);
-                clawOut();
-                sleep(600);
-
-                clawUp();
-                sleep(200);
-                clawIn();
-                sleep(200);
-                moveLift(1500);
-
-                imuMoveAuto(8 ,0 ,1,.2,3);
-                imuMoveAuto(0,-44,1,.2,3);
-
-
-
-
-                break;
-
-
-        }
-
-    }
-
-
-
 }

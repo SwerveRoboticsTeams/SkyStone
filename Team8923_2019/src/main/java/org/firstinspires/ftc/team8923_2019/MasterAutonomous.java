@@ -16,6 +16,9 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
     double robotY;
     double robotAngle;
     double headingOffset = 0.0;
+    enum Stone {
+        RIGHT,MIDDLE,LEFT
+    }
 
     PIDFilter translationFilter;
     PIDFilter rotationFilter;
@@ -273,7 +276,7 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         runtime.reset();
 
 
-        while (((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM) ) )
+        while ((((headingDiff > Constants.ANGLE_TOLERANCE_DEG) || (distanceToTarget > Constants.POSITION_TOLERANCE_MM)) && (opModeIsActive())) )
         {
             telemetry.update();
 
@@ -629,10 +632,123 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
 
         runIntake();
         //sleep(100);
-        imuMoveAuto(0,-8,1,.3,3);
-        sleep(600);
-        turnOffIntake();
+        imuMoveAuto(0,-12,1,.3,3);
+        sleep(900);
         clawDown();
+
+    }
+
+    void moveForwardAndIntake() throws InterruptedException{
+
+        runIntake();
+        //sleep(100);
+        imuMoveAuto(0,12,1,.3,3);
+        sleep(900);
+        clawDown();
+
+    }
+    public void collectSkystone(Stone direction, Alliance alliance) throws InterruptedException
+    {
+
+        double referenceAngle = imu.getAngularOrientation().firstAngle;
+
+        switch(alliance){
+            case BLUE:
+                switch (direction){
+                    case LEFT:
+                        imuMoveAuto(0,3,1,.4,3);
+                        imuPivot(referenceAngle,90,.4,.015,4);
+                        imuMoveAuto(0,-15,1,.4,3);
+                        moveBackAndIntake();
+                        imuMoveAuto(0,14,1,.7,3);
+                        imuPivot(referenceAngle,0,.35,.015,4);
+                        turnOffIntake();
+
+                        imuMoveAuto(0,64,1,.9,4);
+                        imuMoveAuto(0,5,1,.5,4);
+
+
+                        break;
+                    case MIDDLE:
+                        imuMoveAuto(0,-5,1,.4,3);
+                        imuPivot(referenceAngle,90,.4,.015,4);
+                        imuMoveAuto(0,-15,1,.4,3);
+                        moveBackAndIntake();
+                        imuMoveAuto(0,14,1,.7,3);
+                        imuPivot(referenceAngle,0,.35,.015,4);
+                        turnOffIntake();
+
+                        imuMoveAuto(0,72,1,.9,4);
+                        imuMoveAuto(0,5,1,.5,4);
+
+                        break;
+                    case RIGHT:
+
+                        imuMoveAuto(0,-13,1,.4,3);
+                        imuPivot(referenceAngle,90,.4,.015,4);
+                        imuMoveAuto(0,-15,1,.4,3);
+                        moveBackAndIntake();
+                        imuMoveAuto(0,14,1,.7,3);
+                        imuPivot(referenceAngle,0,.35,.015,4);
+                        turnOffIntake();
+
+                        imuMoveAuto(0,80,1,.9,4);
+                        imuMoveAuto(0,5,1,.5,4);
+
+                        break;
+                }
+                break;
+            case RED:
+                switch (direction){
+                    case LEFT:
+                        imuMoveAuto(0,-3,1,.4,3);
+                        imuPivot(referenceAngle,90,.4,.015,4);
+                        imuMoveAuto(0,15,1,.4,3);
+                        moveForwardAndIntake();
+                        imuMoveAuto(0,-14,1,.7,3);
+                        imuPivot(referenceAngle,0,.35,.015,4);
+                        turnOffIntake();
+
+                        imuMoveAuto(0,72,1,.9,4);
+                        imuMoveAuto(0,6,1,.5,4);
+
+                        break;
+                    case MIDDLE:
+                        imuMoveAuto(0,3,1,.4,3);
+                        imuPivot(referenceAngle,90,.4,.015,4);
+                        imuMoveAuto(0,15,1,.4,3);
+                        moveForwardAndIntake();
+                        imuMoveAuto(0,-14,1,.7,3);
+                        imuPivot(referenceAngle,0,.35,.015,4);
+                        turnOffIntake();
+
+                        imuMoveAuto(0,66,1,.9,4);
+                        imuMoveAuto(0,6,1,.5,4);
+
+                        break;
+                    case RIGHT:
+
+                        imuMoveAuto(0,9,1,.4,3);
+                        imuPivot(referenceAngle,90,.4,.015,4);
+                        imuMoveAuto(0,15,1,.4,3);
+                        moveForwardAndIntake();
+                        imuMoveAuto(0,-14,1,.7,3);
+                        imuPivot(referenceAngle,0,.35,.015,4);
+                        turnOffIntake();
+
+                        imuMoveAuto(0,60,1,.9,4);
+                        imuMoveAuto(0,6,1,.5,4);
+
+                        break;
+                }
+                break;
+
+
+
+        }
+
+
+
 
     }
 
@@ -669,9 +785,10 @@ abstract class MasterAutonomous<rotationFilter, robotAngle> extends Master
         motorLift2.setPower(0.0);
         idle();
     }
-    public void moveLift (int ticks)
+    public void moveLift (int ticks, double timeout)
     {
-        while (Math.abs(ticks - motorLift.getCurrentPosition()) > TOL)
+        runtime.reset();
+        while (Math.abs(ticks - motorLift.getCurrentPosition()) > TOL && (runtime.seconds() < timeout))
         {
             motorLift.setTargetPosition(motorLift.getCurrentPosition() + ticks);
             motorLift.setPower((motorLift.getTargetPosition() - motorLift.getCurrentPosition()) * (1 / 1000.0));
