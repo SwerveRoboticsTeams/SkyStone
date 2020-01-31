@@ -41,6 +41,8 @@ public class OpenCVDetect extends OpenCVPipeline
 
     private Rect blackRect = new Rect(0,0,0,0);
 
+    public double thresh = 33;
+
     public double p1 = blackRect.x;
 
     public double p2 = blackRect.x + blackRect.width;
@@ -76,7 +78,7 @@ public class OpenCVDetect extends OpenCVPipeline
 
         // darker conditions
         Scalar lower = new Scalar(0,100,100);
-        Scalar upper = new Scalar(20,255,255);
+        Scalar upper = new Scalar(thresh,255,255);
         // lighter conditions
         //Scalar lower = new Scalar(0,0,0);
         //Scalar upper = new Scalar(79,145,166);
@@ -94,6 +96,25 @@ public class OpenCVDetect extends OpenCVPipeline
         //Imgproc.erode(nonYellowMask, nonYellowMask, kernel, anchor, iterations);
 
         Imgproc.dilate(nonBlackMask, nonBlackMask, kernel, anchor,iterations);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         return nonBlackMask;
     }
