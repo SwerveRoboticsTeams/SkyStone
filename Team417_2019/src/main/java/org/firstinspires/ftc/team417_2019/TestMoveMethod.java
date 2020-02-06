@@ -1,17 +1,19 @@
 package org.firstinspires.ftc.team417_2019;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Disabled
-@TeleOp(name = "TeleOp Competition Copy")
-public class TeleOpCompetitionCopy extends MasterTeleOp
+//@Disabled
+@Autonomous(name = "Test Move")
+public class TestMoveMethod extends MasterAutonomous
 {
     @Override
     public void runOpMode() throws InterruptedException
     {
 
+        /*
         motorFL = hardwareMap.dcMotor.get("motorFL");
         motorFR = hardwareMap.dcMotor.get("motorFR");
         motorBL = hardwareMap.dcMotor.get("motorBL");
@@ -52,15 +54,15 @@ public class TeleOpCompetitionCopy extends MasterTeleOp
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("Init:", "Done");
+
+         */
+
+        autoInitializeRobot();
         telemetry.update();
 
         waitForStart();
 
-        while (opModeIsActive())
-        {
-            mecanumDrive();
-
-
-        }
+        move(0, 1000, 0.2, 0.6, 3.0);
+        move(1000,0,0.2,0.6,3.0);
     }
 }
