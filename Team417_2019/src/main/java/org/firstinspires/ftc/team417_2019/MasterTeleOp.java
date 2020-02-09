@@ -2,6 +2,9 @@ package org.firstinspires.ftc.team417_2019;
 
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.team417_2019.Resources.AvgFilter;
+import org.firstinspires.ftc.team417_2019.Resources.Toggle;
+
 abstract public class MasterTeleOp extends MasterOpMode
 {
     double x = 0;
@@ -56,20 +59,12 @@ abstract public class MasterTeleOp extends MasterOpMode
         {
             y = gamepad1.right_stick_y * ADAGIO_POWER; // Y axis is negative when up
             x = -gamepad1.right_stick_x * ADAGIO_POWER;
-            if (gamepad1.dpad_left) x = -0.2;
-            if (gamepad1.dpad_right) x = 0.2;
-            if (gamepad1.dpad_down) y = -0.2;
-            if (gamepad1.dpad_up) y = 0.2;
             pivotPower = Range.clip(gamepad1.left_stick_x, -0.4, 0.4);
 
             if (isReverseMode) // if both legato and reverse mode
             {
                 y *= -1; // Y axis is negative when up
                 x *= -1;
-                if (gamepad1.dpad_left) x = -0.3;
-                if (gamepad1.dpad_right) x = 0.3;
-                if (gamepad1.dpad_down) y = -0.3;
-                if (gamepad1.dpad_up) y = 0.3;
                 pivotPower = Range.clip(gamepad1.left_stick_x, -0.3, 0.3);
             }
         }
@@ -77,21 +72,12 @@ abstract public class MasterTeleOp extends MasterOpMode
         {
             y = -gamepad1.right_stick_y; // Y axis is negative when up
             x = gamepad1.right_stick_x;
-            if (gamepad1.dpad_left) x = -0.75;
-            if (gamepad1.dpad_right) x = 0.75;
-            if (gamepad1.dpad_down) y = -0.75;
-            if (gamepad1.dpad_up) y = 0.75;
             pivotPower = gamepad1.left_stick_x * 0.3;
         }
         else // Staccato Mode
         {
             y = gamepad1.right_stick_y; // Y axis is negative when up
             x = -gamepad1.right_stick_x;
-            if (gamepad1.dpad_left) x = -0.75;
-            if (gamepad1.dpad_right) x = 0.75;
-            if (gamepad1.dpad_down) y = -0.75;
-            if (gamepad1.dpad_up) y = 0.75;
-            if (gamepad1.right_stick_y != 0) y = gamepad1.right_stick_y;
             //pivotPower = Range.clip(gamepad1.left_stick_x, -0.9, 0.9);
             pivotPower = (gamepad1.left_stick_x) * 0.95;
         }
@@ -102,10 +88,10 @@ abstract public class MasterTeleOp extends MasterOpMode
         y = filterJoyStickInput.getFilteredY();
         pivotPower = filterJoyStickInput.getFilteredP();
 
-        powerFL = -x - y + pivotPower;
-        powerFR = x - y - pivotPower;
-        powerBL = x - y + pivotPower;
-        powerBR = -x - y - pivotPower;
+        double powerFL = -x - y + pivotPower;
+        double powerFR = x - y - pivotPower;
+        double powerBL = x - y + pivotPower;
+        double powerBR = -x - y - pivotPower;
 
         motorFL.setPower(powerFL);
         motorBL.setPower(Range.clip(powerBL,-0.6,0.6));

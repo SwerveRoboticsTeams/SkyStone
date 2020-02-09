@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team417_2019;
+package org.firstinspires.ftc.team417_2019.Resources;
 
 public class AvgFilter
 {

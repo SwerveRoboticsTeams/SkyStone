@@ -1,16 +1,12 @@
-package org.firstinspires.ftc.team417_2019;
+package org.firstinspires.ftc.team417_2019.ImageRecognition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.corningrobotics.enderbots.endercv.ActivityViewDisplay;
 import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.opencv.core.Rect;
-
-import java.io.File;
 
 @Disabled
 @Autonomous(name="OpenCV Test")

@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.team417_2019;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+
+import org.firstinspires.ftc.team417_2019.Resources.Constants;
 
 @Autonomous(name="Auto Modular", group = "Swerve")
 // @Disabled

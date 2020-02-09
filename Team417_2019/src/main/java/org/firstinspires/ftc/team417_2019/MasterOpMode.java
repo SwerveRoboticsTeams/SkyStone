@@ -21,7 +21,7 @@ abstract public class MasterOpMode extends LinearOpMode
     DcMotor motorBL = null; // hub 2 port 1
     DcMotor motorBR = null; // hub 1 port 1
     // hub 2 port 2
-    DcMotor core2 = null;
+    public DcMotor core2 = null;
     // hub 1 port 3
     DcMotor arm1 = null;
     // hub 2 port 3
@@ -31,12 +31,12 @@ abstract public class MasterOpMode extends LinearOpMode
     // hub 2 port 5
     Servo smallGrabber  = null;
     // hub 2 port 0
-    Servo leftFoundationPuller = null;
+    public Servo leftFoundationPuller = null;
     // hub 2 port 1
-    Servo rightFoundationPuller = null;
+    public Servo rightFoundationPuller = null;
 
     // For movement using Vuforia
-    BNO055IMU imu;
+    public BNO055IMU imu;
     Orientation angles;
     OpenGLMatrix vuMark;
     VectorF translation;
@@ -48,7 +48,7 @@ abstract public class MasterOpMode extends LinearOpMode
     static final double WHEEL_DIAMETER_INCHES = 4.0; // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double COUNTS_PER_MM = COUNTS_PER_INCH / 25.4;
-    static final double SCALE_OMNI = 1.41;
+    static final double SCALE_OMNI = 1.0 /*1.41 todo should be sqrt(2) but 1 works*/;
 
     final double ROBOT_DIAMETER_MM = 20.5 * 25.4;   // diagonal 20.5 inch FL to BR and FR to BL
     static final double INIT_REV_POS = 0.7; // the initial position is inside the robot, should happen in init
@@ -67,11 +67,6 @@ abstract public class MasterOpMode extends LinearOpMode
     float hsvLeft[] = {0F,0F,0F};
     float hsvRight[] = {0F,0F,0F};
 
-    // motor powers
-    double powerFL;
-    double powerFR;
-    double powerBL;
-    double powerBR;
 
 
     public void initializeHardware()
@@ -185,5 +180,17 @@ abstract public class MasterOpMode extends LinearOpMode
     String formatDegrees(double degrees)
     {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+    public void mecanumDrive(double angle, double drivePower, double rotationalPower){
+
+        double x = drivePower * Math.cos(angle);
+        double y = drivePower * Math.sin(angle);
+
+        /*
+        frontLeft = y;
+        frontRight = y;
+        back
+*/
+
     }
 }

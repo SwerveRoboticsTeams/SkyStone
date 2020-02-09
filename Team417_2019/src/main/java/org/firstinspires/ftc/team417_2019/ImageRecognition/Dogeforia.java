@@ -3,7 +3,7 @@
 // Removed Vuforia tracking because it's not used
 // Need Vuforia to access the webcam
 
-package org.firstinspires.ftc.team417_2019;
+package org.firstinspires.ftc.team417_2019.ImageRecognition;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -13,6 +13,7 @@ import com.vuforia.Frame;
 
 import org.corningrobotics.enderbots.endercv.DrawViewSource;
 import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaLocalizerImpl;
+import org.firstinspires.ftc.team417_2019.OpenCVDetect;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;

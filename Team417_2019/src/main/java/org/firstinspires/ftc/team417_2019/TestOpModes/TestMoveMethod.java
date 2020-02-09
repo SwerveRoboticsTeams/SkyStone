@@ -1,9 +1,11 @@
-package org.firstinspires.ftc.team417_2019;
+package org.firstinspires.ftc.team417_2019.TestOpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.team417_2019.MasterAutonomous;
 
 //@Disabled
 @Autonomous(name = "Test Move")
@@ -62,7 +64,6 @@ public class TestMoveMethod extends MasterAutonomous
 
         waitForStart();
 
-        move(0, 1000, 0.2, 0.6, 3.0);
-        move(1000,0,0.2,0.6,3.0);
+
     }
 }
