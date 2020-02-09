@@ -40,9 +40,9 @@ abstract public class MasterAutonomous extends MasterOpMode
     boolean isLogging = true;
 
     // Detection
+    OpenCVDetect findSkystone;
     Dogeforia vuforia;
     WebcamName webcamName;
-    OpenCVDetect findSkystone;
 
     // VARIABLES FOR VUFORIA
     public VuforiaTrackable targetInView = null;
@@ -127,19 +127,11 @@ abstract public class MasterAutonomous extends MasterOpMode
         findSkystone = new OpenCVDetect();
         findSkystone.init(hardwareMap.appContext, CameraViewDisplay.getInstance(),0 , true);
         findSkystone.setShowContours(true);
+
         // have vuforia enabled with the specific detector
         vuforia.setDogeCVDetector(findSkystone);
         vuforia.enableDogeCV();
-
-        //File file = new file(Users/artsy/OneDrive/Desktop/Testing);
-        /* Debug only
-        // don't show Vuforia vuforia.showDebug();
-         */
-        // start running Vuforia ( memory and space intensive)
         vuforia.start();
-
-        telemetry.addData("Init:", "complete");
-        telemetry.update();
     }
     // drive forwards/backwards/horizontal left and right function
     public void move(double x, double y, double minSpeed, double maxSpeed, double timeout) throws InterruptedException
