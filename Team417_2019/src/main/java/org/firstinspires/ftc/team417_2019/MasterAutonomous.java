@@ -339,6 +339,7 @@ abstract public class MasterAutonomous extends MasterOpMode
        current angle is usually the reference angle/ angle you are currently facing
        add a speed such that the robot does not overpower and stays in -1.0 and 1.0 range
     */
+    // todo work on implementing movement using "driveMecanum" MasterOpMode
     public void goToPosition2(double x, double y, double targetX, double targetY, double curAngle, double speed){
 
          // find distance to target with shortcut distance formula

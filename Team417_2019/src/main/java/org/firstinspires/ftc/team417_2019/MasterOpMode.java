@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -181,16 +182,64 @@ abstract public class MasterOpMode extends LinearOpMode
     {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
-    public void mecanumDrive(double angle, double drivePower, double rotationalPower){
+
+    // get stick angles
+    public double getLeftStickAngle(Gamepad gamepad)
+    {
+        return Math.atan2(-gamepad.left_stick_y, gamepad.left_stick_x);
+    }
+    public double getRightStickAngle(Gamepad gamepad)
+    {
+        return Math.atan2(-gamepad.right_stick_y, gamepad.right_stick_x);
+    }
+
+    // get stick magnitudes
+    public double getLeftStickMagnitude(Gamepad gamepad)
+    {
+        return Math.sqrt(Math.pow(gamepad.left_stick_x, 2) + Math.pow(gamepad.left_stick_y, 2));
+    }
+    public double getRightStickMagnitude(Gamepad gamepad)
+    {
+        return Math.sqrt(Math.pow(gamepad.right_stick_x, 2) + Math.pow(gamepad.right_stick_y, 2));
+    }
+
+    public void mecanumDrive(double angle, double drivePower, double rotationalPower) {
 
         double x = drivePower * Math.cos(angle);
         double y = drivePower * Math.sin(angle);
 
-        /*
-        frontLeft = y;
-        frontRight = y;
-        back
-*/
+        // todo swap order of x and y - test on robot
+        double frontLeft = y + x + rotationalPower;
+        double frontRight = y - x + rotationalPower;
+        double backLeft = y - x + rotationalPower;
+        double backRight = y + x + rotationalPower;
 
+        // get the largest power
+        double powerScalar = returnLargestValue(new double[]{frontLeft, frontRight, backLeft, backRight});
+
+        // scale the power to keep the wheels proportional and between the range of -1 and 1
+        if (powerScalar > 1) {
+            frontLeft /= powerScalar;
+            frontRight /= powerScalar;
+            backLeft /= powerScalar;
+            backRight /= powerScalar;
+        }
+
+        motorFL.setPower(frontLeft);
+        motorFR.setPower(frontRight);
+        motorBL.setPower(backLeft);
+        motorBR.setPower(backRight);
     }
+
+    // takes array of doubles and returns the largest value
+    public double returnLargestValue(double[] numberArray){
+        double max = Double.MIN_VALUE;
+        for ( double num : numberArray ) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        return max;
+    }
+
 }

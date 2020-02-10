@@ -6,6 +6,7 @@ import org.firstinspires.ftc.team417_2019.Resources.Constants;
 
 @Autonomous(name="Auto Modular", group = "Swerve")
 // @Disabled
+// todo remove all "move" statements (they have been commented)
 public class AutoModular extends MasterAutonomous {
 
     /*variables for movement */
@@ -84,7 +85,7 @@ public class AutoModular extends MasterAutonomous {
         if (navQuarry) {
 
             // move to quarry depending on robot position
-            move(0, 100, 0.4, 1.0, 3.0);
+            //move(0, 100, 0.4, 1.0, 3.0);
             moveMaintainHeading((robotPosY - (-1.5)) * 600 * allianceSide, 0, 0, 0.4, 0.8, 3.0); // -2 is the quarry Y position
 
 
@@ -94,7 +95,7 @@ public class AutoModular extends MasterAutonomous {
 
 
             // push block forwards
-            move(0, 400, 0.1, 0.4, 3.0);
+            //move(0, 400, 0.1, 0.4, 3.0);
             // lower arm
             while (arm1.getCurrentPosition() < -20 && opModeIsActive()) {
                 arm1.setPower(0.5);
@@ -112,8 +113,8 @@ public class AutoModular extends MasterAutonomous {
             }
             arm1.setPower(0);
             arm2.setPower(0);
-            move(0, -380, 0.4,0.9, 3.0);
-            move(0, 50, 0.4, 0.9, 3.0);
+            //move(0, -380, 0.4,0.9, 3.0);
+            //move(0, 50, 0.4, 0.9, 3.0);
             moveMaintainHeading(horizontal * allianceSide, 0, 0, 0.4, 0.9, 3.0);
             // update robot position
             robotPosX = 3 * allianceSide;
@@ -143,7 +144,7 @@ public class AutoModular extends MasterAutonomous {
                 arm2.setPower(0);
 
                 // back away from wall
-                move(0, -300, 0.4, 0.7, 3.0);
+                //move(0, -300, 0.4, 0.7, 3.0);
                 pivotWithReference(0, 0, 0.4, 0.8);
 
                 if (Math.abs(crossingX) == 2) {
@@ -166,7 +167,7 @@ public class AutoModular extends MasterAutonomous {
                 pause(150);
 
                 // back away from foundation
-                move(0, -150,  0.3, 0.7, 3.0);
+                //move(0, -150,  0.3, 0.7, 3.0);
 
 
                 // raise arm
@@ -177,7 +178,7 @@ public class AutoModular extends MasterAutonomous {
                 arm1.setPower(0);
                 arm2.setPower(0);
 
-                move(0, 80, 0.4, 0.8, 3.0);
+                //move(0, 80, 0.4, 0.8, 3.0);
                 moveMaintainHeading(550 * allianceSide, 0, 0, 0.4, 0.9, 3.0);
                 moveMaintainHeading(300 * allianceSide, 0, 0, 0.4, 0.9, 3.0);
 
@@ -211,7 +212,7 @@ public class AutoModular extends MasterAutonomous {
             // navigate to foundation
             // if moving on outside of field, move forward to not get stuck on wall
             if (Math.abs(crossingX) == 3) {
-                move(0, 75, 0.4,0.8, 3.0);
+                //move(0, 75, 0.4,0.8, 3.0);
             }
             moveMaintainHeading(0, -(((robotPosX - crossingX) * 400)* allianceSide), 0, 0.4, 1.0, 3.0);
             // split up X movement into two smaller movements
@@ -228,7 +229,7 @@ public class AutoModular extends MasterAutonomous {
             arm2.setPower(0);
 
             // back away from wall
-            move(0, -150, 0.4, 0.7, 3.0);
+            //move(0, -150, 0.4, 0.7, 3.0);
             pivotWithReference(0, 0, 0.4, 0.8);
 
             if (Math.abs(crossingX) == 2) {
@@ -243,7 +244,7 @@ public class AutoModular extends MasterAutonomous {
             rightFoundationPuller.setPosition(0.35);
             pause(500);
             // pull foundation
-            move(0, -900,  0.3, 0.7, 3.0);
+            //move(0, -900,  0.3, 0.7, 3.0);
             //moveMaintainHeading(0, -100, -85 * allianceSide, 0.3, 0.7, 3.0);
             // raise foundation pullers
             leftFoundationPuller.setPosition(1);
@@ -266,7 +267,7 @@ public class AutoModular extends MasterAutonomous {
             arm1.setPower(0);
             arm2.setPower(0);
 
-            move(0, 100, 0.4, 0.8, 3.0);
+            //move(0, 100, 0.4, 0.8, 3.0);
             moveMaintainHeading(550 * allianceSide, 0, 0, 0.4, 1.0, 3.0);
             moveMaintainHeading(0, -150, 0, 0.4, 1.0, 3.0);
             moveMaintainHeading(300 * allianceSide, 0, 0, 0.4, 1.0, 3.0);
@@ -294,7 +295,7 @@ public class AutoModular extends MasterAutonomous {
             // move forward to correct position
             moveMaintainHeading(0, (crossingX - robotPosX) * tile * allianceSide, 0, 0.4, 1.0,3.0);
             if (Math.abs(crossingX) == 2) {
-                move(0, 100, 0.4, 1.0, 3.0);
+                //move(0, 100, 0.4, 1.0, 3.0);
             }
             // move sideways to correct position
             moveMaintainHeading((robotPosY - bridgeY) * tile * allianceSide, 0, 0, 0.4, 1.0, 3.0);

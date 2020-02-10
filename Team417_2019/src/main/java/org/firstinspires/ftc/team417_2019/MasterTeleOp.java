@@ -9,7 +9,7 @@ abstract public class MasterTeleOp extends MasterOpMode
 {
     double x = 0;
     double y = 0;
-    double pivotPower = 0;
+    double rotationalPower = 0;
 
     double curRevPos = INIT_REV_POS; // starts in down position
     double autoRevPos = 0.0;
@@ -45,58 +45,26 @@ abstract public class MasterTeleOp extends MasterOpMode
     AvgFilter filterJoyStickInput = new AvgFilter();
 
 
-    void mecanumDrive()
+    // todo add Legato + Reverse mode
+    void driveRobot()
     {
-        // hold right bumper for adagio legato mode
-        if (gamepad1.right_trigger>0) isLegatoMode = true;
-        else isLegatoMode = false;
-        // hold left bumper for reverse mode
-        if (gamepad1.left_trigger>0) isReverseMode = true;
-        else isReverseMode = false;
+        y = -gamepad1.right_stick_y; // Y axis is negative when up
+        x = gamepad1.right_stick_x;
+        rotationalPower = gamepad1.left_stick_x;
 
-
-        if (isLegatoMode) // Legato Mode
-        {
-            y = gamepad1.right_stick_y * ADAGIO_POWER; // Y axis is negative when up
-            x = -gamepad1.right_stick_x * ADAGIO_POWER;
-            pivotPower = Range.clip(gamepad1.left_stick_x, -0.4, 0.4);
-
-            if (isReverseMode) // if both legato and reverse mode
-            {
-                y *= -1; // Y axis is negative when up
-                x *= -1;
-                pivotPower = Range.clip(gamepad1.left_stick_x, -0.3, 0.3);
-            }
-        }
-        else if (isReverseMode)
-        {
-            y = -gamepad1.right_stick_y; // Y axis is negative when up
-            x = gamepad1.right_stick_x;
-            pivotPower = gamepad1.left_stick_x * 0.3;
-        }
-        else // Staccato Mode
-        {
-            y = gamepad1.right_stick_y; // Y axis is negative when up
-            x = -gamepad1.right_stick_x;
-            //pivotPower = Range.clip(gamepad1.left_stick_x, -0.9, 0.9);
-            pivotPower = (gamepad1.left_stick_x) * 0.95;
-        }
-
+        // todo check and test to see if we need filtering
+        /*
         filterJoyStickInput.appendInput(x, y, pivotPower);
 
         x = filterJoyStickInput.getFilteredX();
         y = filterJoyStickInput.getFilteredY();
         pivotPower = filterJoyStickInput.getFilteredP();
+         */
 
-        double powerFL = -x - y + pivotPower;
-        double powerFR = x - y - pivotPower;
-        double powerBL = x - y + pivotPower;
-        double powerBR = -x - y - pivotPower;
+        double drivePower = Math.hypot(x, y);
+        double angle = Math.atan2(x,y);
 
-        motorFL.setPower(powerFL);
-        motorBL.setPower(Range.clip(powerBL,-0.6,0.6));
-        motorFR.setPower(powerFR);
-        motorBR.setPower(powerBR);
+        mecanumDrive(angle, drivePower, rotationalPower);
     }
 
     void linearSlides()
