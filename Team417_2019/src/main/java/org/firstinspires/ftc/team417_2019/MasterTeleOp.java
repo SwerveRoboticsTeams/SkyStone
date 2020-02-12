@@ -31,7 +31,7 @@ abstract public class MasterTeleOp extends MasterOpMode
 
     AvgFilter filterJoyStickInput = new AvgFilter();
 
-    
+
     void driveRobot()
     {
         if (slowMode.getToggle(gamepad1.right_bumper)) {

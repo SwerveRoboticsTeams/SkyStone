@@ -205,14 +205,14 @@ abstract public class MasterOpMode extends LinearOpMode
 
     public void mecanumDrive(double angle, double drivePower, double rotationalPower) {
 
-        double x = drivePower * Math.cos(angle);
-        double y = drivePower * Math.sin(angle);
+        double x = drivePower * Math.cos(angle + 90);
+        double y = drivePower * Math.sin(angle + 90);
 
         // todo swap order of x and y - test on robot
-        double frontLeft = y + x + rotationalPower;
-        double frontRight = y - x + rotationalPower;
-        double backLeft = y - x + rotationalPower;
-        double backRight = y + x + rotationalPower;
+        double frontLeft = y - x + rotationalPower;
+        double frontRight = y + x - rotationalPower;
+        double backLeft = y + x + rotationalPower;
+        double backRight = y - x - rotationalPower;
 
         // get the largest power
         double powerScalar = returnLargestValue(new double[]{frontLeft, frontRight, backLeft, backRight});
