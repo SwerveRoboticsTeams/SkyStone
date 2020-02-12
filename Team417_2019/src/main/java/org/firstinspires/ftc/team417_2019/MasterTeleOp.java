@@ -18,39 +18,44 @@ abstract public class MasterTeleOp extends MasterOpMode
     final double ADAGIO_POWER = 0.45;
 
     boolean isReverseMode = false;
-    boolean isLegatoMode = false;
-
-    boolean isRightBumperPushed = false;
-    boolean isSuckingIn = false;
-
-
-    boolean isDpadLeftPushed = false;
-    boolean isCollectingPos = false;
-
-    boolean isCollectorDown = false; // gamepad joystick up
-
-    boolean isMarkerDown = true;
-    boolean isExtending = false;
-    boolean isYButtonPressed = true;
-
-    final double Krev = -1/1210.0;
-    int targetCorePos = 0;
+    boolean isSlowMode = false;
 
     boolean controlArm = false;
+    boolean isExtending = false;
 
     Toggle grabber = new Toggle();
     Toggle puller = new Toggle();
+    Toggle slowMode = new Toggle();
+    Toggle reverseMode = new Toggle();
 
 
     AvgFilter filterJoyStickInput = new AvgFilter();
 
-
-    // todo add Legato + Reverse mode
+    
     void driveRobot()
     {
+        if (slowMode.getToggle(gamepad1.right_bumper)) {
+            isSlowMode = !isSlowMode;
+        }
+        if (reverseMode.getToggle(gamepad1.left_bumper)) {
+            isReverseMode = !isReverseMode;
+        }
+
         y = -gamepad1.right_stick_y; // Y axis is negative when up
         x = gamepad1.right_stick_x;
         rotationalPower = gamepad1.left_stick_x;
+
+        if (isSlowMode) {
+            y *= 0.2;
+            x *= 0.2;
+            rotationalPower *= 0.2;
+        }
+        else if (isReverseMode) {
+            y *= -1;
+            x *= -1;
+
+        }
+
 
         // todo check and test to see if we need filtering
         /*
@@ -268,7 +273,7 @@ abstract public class MasterTeleOp extends MasterOpMode
 
     void updateTelemetry()
     {
-        //telemetry.addData("legato: ", isLegatoMode);
+        //telemetry.addData("legato: ", isSlowMode);
         telemetry.addData("reverse: ", isReverseMode);
         telemetry.addData("autoRevPos:", autoRevPos);
         //telemetry.addData("motorMode", core2.getMode());
