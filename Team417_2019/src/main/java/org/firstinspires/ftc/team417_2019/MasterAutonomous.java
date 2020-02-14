@@ -30,7 +30,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     double Kmove = 1.0f/1100.0f;
     double Kpivot = 1.0f/100.0f;
     // this is in encoder counts, and for our robot with 4 inch wheels, it's 0.285 mm in one encoder count
-    double tolerance = 100.0 * COUNTS_PER_MM;
+    double distanceTolerance = 100.0 * COUNTS_PER_MM;
     double angleTolerance = 5;
 
     boolean isLogging = true;
@@ -235,7 +235,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             // calculate average error in distance to figure out when to come to a stop
             avgDistError = (Math.abs(errorFL) + Math.abs(errorFR) + Math.abs(errorBL) + Math.abs(errorBR)) / 4.0;
 
-            if (Math.abs(avgDistError) < tolerance)
+            if (Math.abs(avgDistError) < distanceTolerance)
             {
                 sleep(50);
                 // stop motors
@@ -257,9 +257,9 @@ abstract public class MasterAutonomous extends MasterOpMode
         }
         while ( (opModeIsActive()) && (runtime.seconds() < timeout) &&
                 (
-                        // exit the loop when one of the motors achieve their tolerance
+                        // exit the loop when one of the motors achieve their distanceTolerance
                         //( (Math.abs(errorFL) > TOL) && (Math.abs(errorFR) > TOL) && (Math.abs(errorBL) > TOL) && (Math.abs(errorBR) > TOL) )
-                        avgDistError > tolerance
+                        avgDistError > distanceTolerance
                                 || (Math.abs(errorAngle) > angleTolerance)
                 )
                 );
@@ -340,29 +340,57 @@ abstract public class MasterAutonomous extends MasterOpMode
        add a speed such that the robot does not overpower and stays in -1.0 and 1.0 range
     */
     // todo work on implementing movement using "driveMecanum" MasterOpMode
-    public void goToPosition2(double x, double y, double targetX, double targetY, double curAngle, double speed){
+    public void goToPosition2(double x, double y, double targetX, double targetY, double curAngle, double maxSpeed) throws InterruptedException {
 
-         // find distance to target with shortcut distance formula
-         double distanceToTarget = Math.hypot(targetX - x, targetY-y);
-         // find angle using arc tangent 2 to preserve the sign and find angle to the target
-         double angletoTarget = Math.atan2(targetY - y ,targetX - x);
-         // adjust angle that you need to turn so it is not greater than 180
-         double angleDifference = adjustAngles(angletoTarget - curAngle);
+        double movingPower;
+        double turningPower;
+        double relativeX;
+        double relativeY;
+        double distanceToTarget;
+        double angleToTarget;
+        double angleDifference;
 
-         // cos = adjacent/hypotenuse
-         // math .cos returns in radians so convert it back to degrees
-         // double relativeX = Math.cos(angleDifference * Math.PI/180)  * distanceToTarget;
-         double relativeX = targetX - x;
+        do {
 
-         // sin = opposite/ hypotenuse
-         //double relativeY = Math.sin(angleDifference * Math.PI/180) * distanceToTarget;
-         double relativeY = targetY - y;
+            x = (motorFL.getCurrentPosition() - motorBL.getCurrentPosition()) / 2;
+            y = motorFL.getCurrentPosition();
+            curAngle = imu.getAngularOrientation().firstAngle;
 
-         // scale vector
-        // make sure the power is between 0-1 but maintaining x and y power ratios with the total magnitude
-         double movementXPower = relativeX / Math.abs(relativeX) + Math.abs(relativeY);
-         double movementYPower = relativeY / Math.abs(relativeY) + Math.abs(relativeX);
+            // cos = adjacent/hypotenuse
+            // math .cos returns in radians so convert it back to degrees
+            // double relativeX = Math.cos(angleDifference * Math.PI/180)  * distanceToTarget;
+
+            relativeX = targetX - x;
+
+            // sin = opposite/ hypotenuse
+            //double relativeY = Math.sin(angleDifference * Math.PI/180) * distanceToTarget;
+            relativeY = targetY - y;
+
+
+            // find distance to target with shortcut distance formula
+            distanceToTarget = Math.hypot(relativeX, relativeY);
+            // find angle using arc tangent 2 to preserve the sign and find angle to the target
+            angleToTarget = Math.atan2(relativeY, relativeX);
+            // adjust angle that you need to turn so it is not greater than 180
+            angleDifference = adjustAngles(angleToTarget - curAngle);
+
+            // scale vector
+            // make sure the power is between 0-1 but maintaining x and y power ratios with the total magnitude
+            moveFilter.roll(distanceToTarget);
+            turnFilter.roll(angleDifference);
+
+            movingPower = Range.clip(moveFilter.getFilteredValue(), -maxSpeed, maxSpeed);
+            turningPower = Range.clip(turnFilter.getFilteredValue(), -maxSpeed, maxSpeed);
+
+
+            mecanumDrive(angleToTarget, movingPower, turningPower);
+
+
+            idle();
+        } while ((Math.abs(angleDifference) > angleTolerance || distanceToTarget > distanceTolerance) && opModeIsActive());
     }
+
+
     // reset robot after auto
     public void reset() {}
 

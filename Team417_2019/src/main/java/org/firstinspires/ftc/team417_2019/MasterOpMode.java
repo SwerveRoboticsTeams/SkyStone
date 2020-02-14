@@ -12,6 +12,8 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.team417_2019.Resources.PIDFilter;
+
 import java.util.Locale;
 
 abstract public class MasterOpMode extends LinearOpMode
@@ -41,6 +43,9 @@ abstract public class MasterOpMode extends LinearOpMode
     Orientation angles;
     OpenGLMatrix vuMark;
     VectorF translation;
+    PIDFilter turnFilter = new PIDFilter(0.1, 0, 0);
+    PIDFilter moveFilter = new PIDFilter(0.1, 0, 0);
+
 
     // Declare constants
     // movement constants
