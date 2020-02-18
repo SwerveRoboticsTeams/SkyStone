@@ -340,54 +340,59 @@ abstract public class MasterAutonomous extends MasterOpMode
        add a speed such that the robot does not overpower and stays in -1.0 and 1.0 range
     */
     // todo work on implementing movement using "driveMecanum" MasterOpMode
-    public void goToPosition2(double x, double y, double targetX, double targetY, double curAngle, double maxSpeed) throws InterruptedException {
+    public void goToPosition2(double targetX, double targetY, double maxSpeed) throws InterruptedException {
 
         double movingPower;
         double turningPower;
-        double relativeX;
-        double relativeY;
+        double errorX;
+        double errorY;
         double distanceToTarget;
         double angleToTarget;
-        double angleDifference;
+        double errorAngle;
 
         do {
 
-            x = (motorFL.getCurrentPosition() - motorBL.getCurrentPosition()) / 2;
-            y = motorFL.getCurrentPosition();
-            curAngle = imu.getAngularOrientation().firstAngle;
+            robot.updatePosition();
 
             // cos = adjacent/hypotenuse
             // math .cos returns in radians so convert it back to degrees
-            // double relativeX = Math.cos(angleDifference * Math.PI/180)  * distanceToTarget;
-
-            relativeX = targetX - x;
+            // double errorX = Math.cos(errorAngle * Math.PI/180)  * distanceToTarget;
+            errorX = targetX - robot.currentX;
 
             // sin = opposite/ hypotenuse
-            //double relativeY = Math.sin(angleDifference * Math.PI/180) * distanceToTarget;
-            relativeY = targetY - y;
+            //double errorY = Math.sin(errorAngle * Math.PI/180) * distanceToTarget;
+            errorY = targetY - robot.currentY;
 
 
             // find distance to target with shortcut distance formula
-            distanceToTarget = Math.hypot(relativeX, relativeY);
+            distanceToTarget = Math.hypot(errorX, errorY);
             // find angle using arc tangent 2 to preserve the sign and find angle to the target
-            angleToTarget = Math.atan2(relativeY, relativeX);
+            angleToTarget = Math.atan2(errorY, errorX);
             // adjust angle that you need to turn so it is not greater than 180
-            angleDifference = adjustAngles(angleToTarget - curAngle);
+            errorAngle = adjustAngles(angleToTarget - robot.curAngle);
 
             // scale vector
             // make sure the power is between 0-1 but maintaining x and y power ratios with the total magnitude
             moveFilter.roll(distanceToTarget);
-            turnFilter.roll(angleDifference);
+            turnFilter.roll(errorAngle);
 
             movingPower = Range.clip(moveFilter.getFilteredValue(), -maxSpeed, maxSpeed);
             turningPower = Range.clip(turnFilter.getFilteredValue(), -maxSpeed, maxSpeed);
 
 
-            mecanumDrive(angleToTarget, movingPower, turningPower);
+            mecanumDrive(90, movingPower, 0/*turningPower*/);
 
+            telemetry.addData("motorFL", motorFL.getCurrentPosition());
+            telemetry.addData("motorBL", motorBL.getCurrentPosition());
+            telemetry.addData("motorFR", motorFR.getCurrentPosition());
+            telemetry.addData("motorBR", motorBR.getCurrentPosition());
+            telemetry.addData("errorX", errorX);
+            telemetry.addData("errorY", errorY);
+            telemetry.addData("errorAngle", errorAngle);
+            telemetry.update();
 
             idle();
-        } while ((Math.abs(angleDifference) > angleTolerance || distanceToTarget > distanceTolerance) && opModeIsActive());
+        } while ((Math.abs(errorAngle) > angleTolerance || distanceToTarget > distanceTolerance) && opModeIsActive());
     }
 
 

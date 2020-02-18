@@ -14,58 +14,16 @@ public class TestMoveMethod extends MasterAutonomous
     @Override
     public void runOpMode() throws InterruptedException
     {
-
-        /*
-        motorFL = hardwareMap.dcMotor.get("motorFL");
-        motorFR = hardwareMap.dcMotor.get("motorFR");
-        motorBL = hardwareMap.dcMotor.get("motorBL");
-        motorBR = hardwareMap.dcMotor.get("motorBR");
-
-        motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // reverse front and back right motors just for TeleOp
-        motorFL.setDirection(DcMotor.Direction.REVERSE);
-        motorBL.setDirection(DcMotor.Direction.REVERSE);
-        motorFR.setDirection(DcMotor.Direction.FORWARD);
-        motorBR.setDirection(DcMotor.Direction.FORWARD);
-
-        //motorFL.setMode();
-
-        // set motor power to 0
-        motorFL.setPower(0);
-        motorFR.setPower(0);
-        motorBL.setPower(0);
-        motorBR.setPower(0);
-
-        motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-        telemetry.addData("Init:", "Done");
-
-         */
-
         autoInitializeRobot();
+
+        // change depending on where robot starts
+        robot.setCorrectedHeading(0);
+
         telemetry.update();
 
         waitForStart();
 
-        goToPosition2(0, 0, 1000, 0, 0, 0.5);
-
+        goToPosition2(1000, 0,  0.5);
 
     }
 }

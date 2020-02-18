@@ -18,17 +18,19 @@ import java.util.Locale;
 
 abstract public class MasterOpMode extends LinearOpMode
 {
+
+    public Robot robot = new Robot(this);
     // Declare drive motors
-    DcMotor motorFL = null; // hub 2 port 0
-    DcMotor motorFR = null; // hub 1 port 0
-    DcMotor motorBL = null; // hub 2 port 1
-    DcMotor motorBR = null; // hub 1 port 1
+    public DcMotor motorFL = null; // hub 2 port 0
+    public DcMotor motorFR = null; // hub 1 port 0
+    public DcMotor motorBL = null; // hub 2 port 1
+    public DcMotor motorBR = null; // hub 1 port 1
     // hub 2 port 2
     public DcMotor core2 = null;
     // hub 1 port 3
-    DcMotor arm1 = null;
+    public DcMotor arm1 = null;
     // hub 2 port 3
-    DcMotor arm2 = null;
+    public DcMotor arm2 = null;
     // hub 2 port 3
     Servo mainWristServo = null;
     // hub 2 port 5
@@ -43,8 +45,8 @@ abstract public class MasterOpMode extends LinearOpMode
     Orientation angles;
     OpenGLMatrix vuMark;
     VectorF translation;
-    PIDFilter turnFilter = new PIDFilter(0.1, 0, 0);
-    PIDFilter moveFilter = new PIDFilter(0.1, 0, 0);
+    PIDFilter turnFilter = new PIDFilter(0.0001, 0, 0);
+    PIDFilter moveFilter = new PIDFilter(0.0001, 0, 0);
 
 
     // Declare constants
@@ -213,7 +215,6 @@ abstract public class MasterOpMode extends LinearOpMode
         double x = drivePower * Math.cos(angle + 90);
         double y = drivePower * Math.sin(angle + 90);
 
-        // todo swap order of x and y - test on robot
         double frontLeft = y - x + rotationalPower;
         double frontRight = y + x - rotationalPower;
         double backLeft = y + x + rotationalPower;

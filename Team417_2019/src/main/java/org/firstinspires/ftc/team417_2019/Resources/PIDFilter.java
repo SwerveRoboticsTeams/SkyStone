@@ -40,14 +40,16 @@ public class PIDFilter implements Filter
     public void roll(double newValue)
     {
         // Update calculated values
+
+        // i term add then multiply by constant
         sum += values[0];
+        // change over time
         dV = values[0] - values[1];
 
         // Introduce new value
         values[1] = values[0];
         values[0] = newValue;
     }
-
 
     public double getFilteredValue()
     {
