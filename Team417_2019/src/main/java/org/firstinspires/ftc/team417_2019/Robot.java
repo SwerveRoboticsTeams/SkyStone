@@ -23,10 +23,10 @@ public class Robot {
     }
 
     public void updatePosition() {
-        // divide by 2 because we are averaging them (scaling)
+        // divide by 4 because we are averaging them (scaling)
         // plug in motor values to check the equations below
-        currentX = ( (float) (master.motorFL.getCurrentPosition() - master.motorBL.getCurrentPosition() ) ) / 2;
-        currentY = ( (float) (master.motorFL.getCurrentPosition() + master.motorBL.getCurrentPosition() ) ) / 2;
+        currentX = 0.85 * ( (float) (master.motorFL.getCurrentPosition() - master.motorBL.getCurrentPosition() - master.motorFR.getCurrentPosition() + master.motorBR.getCurrentPosition()) ) / ( 4 * master.COUNTS_PER_INCH );
+        currentY = ( (float) (master.motorFL.getCurrentPosition() + master.motorBL.getCurrentPosition() + master.motorFR.getCurrentPosition() + master.motorBR.getCurrentPosition()) ) / ( 4 * master.COUNTS_PER_INCH );
 
         curAngle = getCorrectedHeading();
     }

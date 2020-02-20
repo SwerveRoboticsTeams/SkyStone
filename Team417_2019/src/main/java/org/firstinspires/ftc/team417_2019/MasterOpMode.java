@@ -45,18 +45,17 @@ abstract public class MasterOpMode extends LinearOpMode
     Orientation angles;
     OpenGLMatrix vuMark;
     VectorF translation;
-    PIDFilter turnFilter = new PIDFilter(0.0001, 0, 0);
-    PIDFilter moveFilter = new PIDFilter(0.0001, 0, 0);
+    PIDFilter turnFilter = new PIDFilter(0.0005, 0, 0.0);
+    PIDFilter moveFilter = new PIDFilter(0.04 , 0, 0/*0.03*/);
 
 
     // Declare constants
     // movement constants
     static final double COUNTS_PER_MOTOR_REV = 1120; // 40:1 motor
-    static final double DRIVE_GEAR_REDUCTION = 1.0; // This is < 1.0 if geared UP
+    static final double DRIVE_GEAR_REDUCTION = 16.0 / 24.0; // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0; // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double COUNTS_PER_MM = COUNTS_PER_INCH / 25.4;
-    static final double SCALE_OMNI = 1.0 /*1.41 todo should be sqrt(2) but 1 works*/;
 
     final double ROBOT_DIAMETER_MM = 20.5 * 25.4;   // diagonal 20.5 inch FL to BR and FR to BL
     static final double INIT_REV_POS = 0.7; // the initial position is inside the robot, should happen in init
@@ -212,13 +211,13 @@ abstract public class MasterOpMode extends LinearOpMode
 
     public void mecanumDrive(double angle, double drivePower, double rotationalPower) {
 
-        double x = drivePower * Math.cos(angle + 90);
-        double y = drivePower * Math.sin(angle + 90);
+        double x = drivePower * Math.cos(angle/* + 90*/);
+        double y = drivePower * Math.sin(angle/* + 90*/);
 
-        double frontLeft = y - x + rotationalPower;
-        double frontRight = y + x - rotationalPower;
-        double backLeft = y + x + rotationalPower;
-        double backRight = y - x - rotationalPower;
+        double frontLeft = y + x + rotationalPower;
+        double frontRight = y - x - rotationalPower;
+        double backLeft = y - x + rotationalPower;
+        double backRight = y + x - rotationalPower;
 
         // get the largest power
         double powerScalar = returnLargestValue(new double[]{frontLeft, frontRight, backLeft, backRight});

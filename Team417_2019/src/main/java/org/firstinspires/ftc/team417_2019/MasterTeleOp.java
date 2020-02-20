@@ -67,7 +67,7 @@ abstract public class MasterTeleOp extends MasterOpMode
          */
 
         double drivePower = Math.hypot(x, y);
-        double angle = Math.atan2(x,y);
+        double angle = Math.atan2(y,x);
 
         mecanumDrive(angle, drivePower, rotationalPower);
     }

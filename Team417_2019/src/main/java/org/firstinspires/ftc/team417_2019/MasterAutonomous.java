@@ -30,7 +30,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     double Kmove = 1.0f/1100.0f;
     double Kpivot = 1.0f/100.0f;
     // this is in encoder counts, and for our robot with 4 inch wheels, it's 0.285 mm in one encoder count
-    double distanceTolerance = 100.0 * COUNTS_PER_MM;
+    double distanceTolerance = 0.5;
     double angleTolerance = 5;
 
     boolean isLogging = true;
@@ -155,11 +155,11 @@ abstract public class MasterAutonomous extends MasterOpMode
         // scale the amount you need to pivot based on the error
         pivotScaled = errorAngle / 360;
         // find that amount of distance you need to pivot based on the error
-        pivotDistance = (int) (pivotScaled * ROBOT_DIAMETER_MM * Math.PI * COUNTS_PER_MM);
+        pivotDistance = (int) (pivotScaled * ROBOT_DIAMETER_MM * Math.PI * COUNTS_PER_INCH);
 
         // find distance that we need to travel in mm
-        int targetX = (int) -Math.round(COUNTS_PER_MM * x);
-        int targetY = (int) -Math.round(COUNTS_PER_MM * y );
+        int targetX = (int) -Math.round(COUNTS_PER_INCH * x);
+        int targetY = (int) -Math.round(COUNTS_PER_INCH * y );
 
         //check pivot distance signs with robot (alternate + and - to test which works)
         newTargetFL = motorFL.getCurrentPosition() + targetX + targetY + pivotDistance;
@@ -357,11 +357,15 @@ abstract public class MasterAutonomous extends MasterOpMode
             // cos = adjacent/hypotenuse
             // math .cos returns in radians so convert it back to degrees
             // double errorX = Math.cos(errorAngle * Math.PI/180)  * distanceToTarget;
+            //errorX = targetX - ( 0.5 * robot.currentX + 0.5 * robot.currentX);
             errorX = targetX - robot.currentX;
+            //errorX = 0;
 
             // sin = opposite/ hypotenuse
             //double errorY = Math.sin(errorAngle * Math.PI/180) * distanceToTarget;
+            //errorY = targetY - ( 0.5 * robot.currentX - 0.5 * robot.currentY);
             errorY = targetY - robot.currentY;
+            //errorY = 0;
 
 
             // find distance to target with shortcut distance formula
@@ -380,7 +384,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             turningPower = Range.clip(turnFilter.getFilteredValue(), -maxSpeed, maxSpeed);
 
 
-            mecanumDrive(90, movingPower, 0/*turningPower*/);
+            mecanumDrive(angleToTarget, movingPower, turningPower);
 
             telemetry.addData("motorFL", motorFL.getCurrentPosition());
             telemetry.addData("motorBL", motorBL.getCurrentPosition());

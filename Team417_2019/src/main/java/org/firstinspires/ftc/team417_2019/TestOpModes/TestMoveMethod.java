@@ -23,7 +23,7 @@ public class TestMoveMethod extends MasterAutonomous
 
         waitForStart();
 
-        goToPosition2(1000, 0,  0.5);
-
+        goToPosition2(48, 0,  0.2);
+        //goToPosition2(0, 24, 0.8);
     }
 }
