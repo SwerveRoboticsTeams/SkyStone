@@ -45,8 +45,8 @@ abstract public class MasterOpMode extends LinearOpMode
     Orientation angles;
     OpenGLMatrix vuMark;
     VectorF translation;
-    PIDFilter turnFilter = new PIDFilter(0.0005, 0, 0.0);
-    PIDFilter moveFilter = new PIDFilter(0.04 , 0, 0/*0.03*/);
+    PIDFilter turnFilter = new PIDFilter(0.02, 0, 0.02);
+    PIDFilter moveFilter = new PIDFilter(0.07 , 0, 0/*0.03*/);
 
 
     // Declare constants

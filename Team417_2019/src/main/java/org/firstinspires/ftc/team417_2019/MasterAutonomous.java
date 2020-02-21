@@ -31,7 +31,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     double Kpivot = 1.0f/100.0f;
     // this is in encoder counts, and for our robot with 4 inch wheels, it's 0.285 mm in one encoder count
     double distanceTolerance = 0.5;
-    double angleTolerance = 5;
+    double angleTolerance = 1;
 
     boolean isLogging = true;
 
@@ -272,17 +272,11 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
     // pivot using IMU, but with a reference start angle, but this angle has to be determined (read) before this method is called
-    public void pivotWithReference(double targetAngle, double refAngle, double minSpeed, double maxSpeed)
+    public void pivot(double targetAngle, double minSpeed, double maxSpeed)
     {
         double pivotSpeed;
         double currentAngle;
         double errorAngle;
-
-        // run with encoder mode
-        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // read angle, record in starting angle variable
         // run motor
@@ -291,37 +285,20 @@ abstract public class MasterAutonomous extends MasterOpMode
 
         do
         {
-            currentAngle = adjustAngles(imu.getAngularOrientation().firstAngle - refAngle);
-            errorAngle = adjustAngles(currentAngle - targetAngle);
-            pivotSpeed = Math.abs(errorAngle) * Kpivot;
-            pivotSpeed = Range.clip(pivotSpeed, minSpeed, maxSpeed); // limit abs speed
-            pivotSpeed = pivotSpeed * Math.signum(errorAngle); // set the sign of speed
+            robot.updatePosition();
 
-            // positive angle means CCW rotation
-            motorFL.setPower(pivotSpeed);
-            motorFR.setPower(-pivotSpeed);
-            motorBL.setPower(Range.clip(pivotSpeed,-0.6,0.6));
-            motorBR.setPower(-pivotSpeed);
+            errorAngle = adjustAngles(robot.curAngle - targetAngle);
+            turnFilter.roll(errorAngle);
+            pivotSpeed = turnFilter.getFilteredValue();
+            pivotSpeed = Math.signum(pivotSpeed) * Range.clip(Math.abs(pivotSpeed), minSpeed, maxSpeed); // limit abs speed
 
-            // allow some time for IMU to catch up
-            if (Math.abs(errorAngle) < 5.0)
-            {
-                sleep(15);
-                // stop motors
-                motorFL.setPower(0);
-                motorFR.setPower(0);
-                motorBL.setPower(0);
-                motorBR.setPower(0);
-                sleep(150);
-            }
-/*
-            sleep(100);
-            motorFL.setPower(0.0);
-            motorFR.setPower(0);
-            motorBL.setPower(0);
-            motorBR.setPower(0);
-*/
-            if (isLogging) telemetry.log().add(String.format("StartAngle: %f, CurAngle: %f, error: %f", refAngle, currentAngle, errorAngle));
+           mecanumDrive(0, 0, pivotSpeed);
+
+           if (isLogging) {
+               telemetry.addData("CurAngle", robot.curAngle);
+               telemetry.addData("ErrorAngle", errorAngle);
+               telemetry.update();
+           }
             idle();
 
         } while (opModeIsActive() && (Math.abs(errorAngle) > angleTolerance));
@@ -359,13 +336,11 @@ abstract public class MasterAutonomous extends MasterOpMode
             // double errorX = Math.cos(errorAngle * Math.PI/180)  * distanceToTarget;
             //errorX = targetX - ( 0.5 * robot.currentX + 0.5 * robot.currentX);
             errorX = targetX - robot.currentX;
-            //errorX = 0;
 
             // sin = opposite/ hypotenuse
             //double errorY = Math.sin(errorAngle * Math.PI/180) * distanceToTarget;
             //errorY = targetY - ( 0.5 * robot.currentX - 0.5 * robot.currentY);
             errorY = targetY - robot.currentY;
-            //errorY = 0;
 
 
             // find distance to target with shortcut distance formula
@@ -373,7 +348,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             // find angle using arc tangent 2 to preserve the sign and find angle to the target
             angleToTarget = Math.atan2(errorY, errorX);
             // adjust angle that you need to turn so it is not greater than 180
-            errorAngle = adjustAngles(angleToTarget - robot.curAngle);
+            errorAngle = adjustAngles(robot.curAngle - angleToTarget);
 
             // scale vector
             // make sure the power is between 0-1 but maintaining x and y power ratios with the total magnitude
