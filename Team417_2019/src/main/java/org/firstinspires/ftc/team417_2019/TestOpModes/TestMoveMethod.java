@@ -20,9 +20,9 @@ public class TestMoveMethod extends MasterAutonomous
 
         waitForStart();
 
-
-        pivot(180, 0, 0.9);
         /*
+        pivot(180, 0, 0.9);
+
         pause(1000);
         pivot(0, 0, 0.6);
         pause(1000);
@@ -34,7 +34,7 @@ public class TestMoveMethod extends MasterAutonomous
 
          */
 
-        //goToPosition2(0, 24,  0.5);
-        //goToPosition2(0, 24, 0.8);
+        move(0, 24,  0.5);
+        //move(0, 24, 0.8);
     }
 }

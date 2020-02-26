@@ -317,7 +317,7 @@ abstract public class MasterAutonomous extends MasterOpMode
        add a speed such that the robot does not overpower and stays in -1.0 and 1.0 range
     */
     // todo work on implementing movement using "driveMecanum" MasterOpMode
-    public void goToPosition2(double targetX, double targetY, double maxSpeed) throws InterruptedException {
+    public void move(double targetX, double targetY, double maxSpeed) throws InterruptedException {
 
         double movingPower;
         double turningPower;
@@ -326,6 +326,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         double distanceToTarget;
         double angleToTarget;
         double errorAngle;
+        double accelerationLimitedPower;
 
         do {
 
@@ -358,8 +359,12 @@ abstract public class MasterAutonomous extends MasterOpMode
             movingPower = Range.clip(moveFilter.getFilteredValue(), -maxSpeed, maxSpeed);
             turningPower = Range.clip(turnFilter.getFilteredValue(), -maxSpeed, maxSpeed);
 
+            // roll movingPower
+            accelerationFilter.roll(movingPower);
+            // limiting movement power acceleration
+            accelerationLimitedPower = accelerationFilter.getFilteredValue();
 
-            mecanumDrive(angleToTarget, movingPower, turningPower);
+            mecanumDrive(angleToTarget, accelerationLimitedPower, turningPower);
 
             telemetry.addData("motorFL", motorFL.getCurrentPosition());
             telemetry.addData("motorBL", motorBL.getCurrentPosition());

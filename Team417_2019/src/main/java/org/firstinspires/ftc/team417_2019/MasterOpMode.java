@@ -12,7 +12,9 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.team417_2019.Resources.FIRFilter;
 import org.firstinspires.ftc.team417_2019.Resources.PIDFilter;
+import org.firstinspires.ftc.team417_2019.Resources.Polynomial;
 
 import java.util.Locale;
 
@@ -45,8 +47,6 @@ abstract public class MasterOpMode extends LinearOpMode
     Orientation angles;
     OpenGLMatrix vuMark;
     VectorF translation;
-    PIDFilter turnFilter = new PIDFilter(0.02, 0, 0.02);
-    PIDFilter moveFilter = new PIDFilter(0.07 , 0, 0/*0.03*/);
 
 
     // Declare constants
@@ -74,10 +74,20 @@ abstract public class MasterOpMode extends LinearOpMode
     float hsvLeft[] = {0F,0F,0F};
     float hsvRight[] = {0F,0F,0F};
 
+    PIDFilter turnFilter;
+    PIDFilter moveFilter;
+    FIRFilter accelerationFilter;
 
 
     public void initializeHardware()
     {
+
+        turnFilter = new PIDFilter(0.02, 0, 0.02);
+        moveFilter = new PIDFilter(0.07 , 0, 0/*0.03*/);
+        double[] filterCoefficients = {1};
+        accelerationFilter = new FIRFilter(filterCoefficients/*new Polynomial(filterCoefficients),20*/);
+
+
         // Initialize motors to be the hardware motors
         motorFL = hardwareMap.dcMotor.get("motorFL");
         motorFR = hardwareMap.dcMotor.get("motorFR");
