@@ -34,7 +34,7 @@ public class TestMoveMethod extends MasterAutonomous
 
          */
 
-        move(0, 24,  0.5);
-        //move(0, 24, 0.8);
+        //move(0, 48,  1.0);
+        move(48, 0, 1.0);
     }
 }
