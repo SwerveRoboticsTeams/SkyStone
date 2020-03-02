@@ -77,17 +77,17 @@ abstract public class MasterOpMode extends LinearOpMode
     PIDFilter turnFilter;
     PIDFilter moveFilter;
     FIRFilter accelerationFilter;
+    int filterLength = 10;
 
 
     public void initializeHardware()
     {
-
-        turnFilter = new PIDFilter(0.02, 0, 0.02);
-        moveFilter = new PIDFilter(0.40, 0, 0.15/*0.03*/);
+        turnFilter = new PIDFilter(0.02, 0, 0.04);
+        moveFilter = new PIDFilter(0.04, 0, 0);
         // weights for weighted average
-        double[] filterCoefficients = {1,1, 1.1};
-        accelerationFilter = new FIRFilter(filterCoefficients/*new Polynomial(filterCoefficients),20*/);
-        accelerationFilter.values = new double[]{1};
+        double[] filterCoefficients = {1};
+        accelerationFilter = new FIRFilter(new Polynomial(filterCoefficients),filterLength);
+        accelerationFilter.values = new double[filterLength];
 
 
         // Initialize motors to be the hardware motors

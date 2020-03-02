@@ -38,4 +38,12 @@ public class FIRFilter implements Filter
     {
         return SequenceUtilities.weightedAverage(values, weights);
     }
+
+    public static double[] createTriangularFilter(int length) {
+        double[] filterOut = new double[length];
+        for (int i = 0; i < length; i++) {
+            filterOut[i] = length - i;
+        }
+        return filterOut;
+    }
 }

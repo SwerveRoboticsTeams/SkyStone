@@ -271,6 +271,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBR.setPower(0);
     }
 
+    // todo Add turnSatisfactionCounter.
     // pivot using IMU, but with a reference start angle, but this angle has to be determined (read) before this method is called
     public void pivot(double targetAngle, double minSpeed, double maxSpeed)
     {
@@ -326,7 +327,13 @@ abstract public class MasterAutonomous extends MasterOpMode
         double distanceToTarget;
         double angleToTarget;
         double errorAngle;
-        double accelerationLimitedPower;
+        // getting initial distance
+        double initialAngle = robot.curAngle;
+        double initialDistanceToTarget = Math.hypot(targetX - robot.currentX, targetY - robot.currentY);
+
+        //This clears any residual vales in our PID loop
+        turnFilter.reset();
+        moveFilter.reset();
 
         do {
 
@@ -349,22 +356,24 @@ abstract public class MasterAutonomous extends MasterOpMode
             // find angle using arc tangent 2 to preserve the sign and find angle to the target
             angleToTarget = Math.atan2(errorY, errorX);
             // adjust angle that you need to turn so it is not greater than 180
-            errorAngle = adjustAngles(robot.curAngle - angleToTarget);
+            errorAngle = adjustAngles(robot.curAngle - initialAngle);
 
             // scale vector
             // make sure the power is between 0-1 but maintaining x and y power ratios with the total magnitude
             moveFilter.roll(distanceToTarget);
             turnFilter.roll(errorAngle);
 
+            // Get filtered movement and turning powers.  Also clip movement power to ensure we aren't moving too fast.
             movingPower = Range.clip(moveFilter.getFilteredValue(), -maxSpeed, maxSpeed);
-            turningPower = Range.clip(turnFilter.getFilteredValue(), -maxSpeed, maxSpeed);
+            turningPower = turnFilter.getFilteredValue();
 
             // roll movingPower
             accelerationFilter.roll(movingPower);
-            // limiting movement power acceleration
-            accelerationLimitedPower = accelerationFilter.getFilteredValue();
-
-            mecanumDrive(angleToTarget, accelerationLimitedPower, turningPower);
+            // limiting movement power acceleration if far away enough from target
+            if (distanceToTarget > initialDistanceToTarget / 2 ) {
+                movingPower = accelerationFilter.getFilteredValue();
+            }
+            mecanumDrive(angleToTarget, movingPower, turningPower);
 
             telemetry.addData("motorFL", motorFL.getCurrentPosition());
             telemetry.addData("motorBL", motorBL.getCurrentPosition());

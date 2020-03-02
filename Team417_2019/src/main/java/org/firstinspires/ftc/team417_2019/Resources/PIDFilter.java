@@ -55,4 +55,11 @@ public class PIDFilter implements Filter
     {
         return (P * values[0] ) + ( I * sum) + ( D * dV );
     }
+
+    //This clears any residual vales in our PID loop
+    public void reset(){
+        sum = 0;
+        values[0] = 0;
+        values[1] = 0;
+    }
 }
