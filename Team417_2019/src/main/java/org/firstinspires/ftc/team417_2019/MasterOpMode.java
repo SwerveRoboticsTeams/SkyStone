@@ -82,7 +82,7 @@ abstract public class MasterOpMode extends LinearOpMode
 
     public void initializeHardware()
     {
-        turnFilter = new PIDFilter(0.02, 0, 0.04);
+        turnFilter = new PIDFilter(0.01, 0, 0.01);
         moveFilter = new PIDFilter(0.04, 0, 0);
         // weights for weighted average
         double[] filterCoefficients = {1};

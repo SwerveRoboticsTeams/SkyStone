@@ -131,7 +131,7 @@ public class AutoModular extends MasterAutonomous {
 
                 // navigate to foundation
                 moveMaintainHeading(0, -(((robotPosX - crossingX) * 380) * allianceSide), 0, 0.4, 1.0, 3.0);
-                pivot(-85 * allianceSide, 0.4,0.8);
+                //pivot(-85 * allianceSide, 0.4,0.8); // todo add back in
                 moveMaintainHeading(0, 0.5 * (robotPosY - foundationY) * tile * allianceSide, -90 * allianceSide, 0.1, 0.8, 3.0);
                 moveMaintainHeading(0, 0.5 * (robotPosY - foundationY) * 400 * allianceSide, -90 * allianceSide, 0.1, 0.8, 3.0);
 
@@ -145,7 +145,7 @@ public class AutoModular extends MasterAutonomous {
 
                 // back away from wall
                 //move(0, -300, 0.4, 0.7, 3.0);
-                pivot(0,  0.4, 0.8);
+                //pivot(0,  0.4, 0.8); // todo add back in
 
                 if (Math.abs(crossingX) == 2) {
                    moveMaintainHeading(0, -310, 0, -0.2, -0.5, 3.0);
@@ -216,7 +216,7 @@ public class AutoModular extends MasterAutonomous {
             }
             moveMaintainHeading(0, -(((robotPosX - crossingX) * 400)* allianceSide), 0, 0.4, 1.0, 3.0);
             // split up X movement into two smaller movements
-            pivot(-85 * allianceSide, 0.4,0.8);
+            //pivot(-85 * allianceSide, 0.4,0.8); // todo add back in
             moveMaintainHeading(0, 0.5 * (robotPosY - foundationY) * tile, -90 * allianceSide, 0.1, 0.8, 3.0);
             moveMaintainHeading(0, 0.5 * (robotPosY - foundationY) * 400, -90 * allianceSide, 0.1, 0.8, 3.0);
 
@@ -230,7 +230,7 @@ public class AutoModular extends MasterAutonomous {
 
             // back away from wall
             //move(0, -150, 0.4, 0.7, 3.0);
-            pivot(0, 0.4, 0.8);
+            //pivot(0, 0.4, 0.8); // todo add back in
 
             if (Math.abs(crossingX) == 2) {
                 moveMaintainHeading(0, -330, 0, -0.2, 0.5, 3.0);

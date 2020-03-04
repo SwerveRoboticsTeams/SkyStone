@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.corningrobotics.enderbots.endercv.CameraViewDisplay;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -16,7 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.team417_2019.ImageRecognition.Dogeforia;
 import org.firstinspires.ftc.team417_2019.ImageRecognition.OpenCVDetect;
+import org.firstinspires.ftc.team417_2019.Resources.FileWriter;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -31,7 +34,7 @@ abstract public class MasterAutonomous extends MasterOpMode
     double Kpivot = 1.0f/100.0f;
     // this is in encoder counts, and for our robot with 4 inch wheels, it's 0.285 mm in one encoder count
     double distanceTolerance = 0.5;
-    double angleTolerance = 1;
+    double angleTolerance = 3;
 
     boolean isLogging = true;
 
@@ -272,12 +275,14 @@ abstract public class MasterAutonomous extends MasterOpMode
     }
 
     // todo Add turnSatisfactionCounter.
+    // todo DON'T USE -180 WITH THIS METHOD, causes a wrap-around issue in the adjustAngles method
     // pivot using IMU, but with a reference start angle, but this angle has to be determined (read) before this method is called
-    public void pivot(double targetAngle, double minSpeed, double maxSpeed)
+    public void pivot(double targetAngle, double maxSpeed)
     {
         double pivotSpeed;
         double currentAngle;
         double errorAngle;
+        int satisfactionCounter = 0;
 
         // read angle, record in starting angle variable
         // run motor
@@ -291,18 +296,26 @@ abstract public class MasterAutonomous extends MasterOpMode
             errorAngle = adjustAngles(robot.curAngle - targetAngle);
             turnFilter.roll(errorAngle);
             pivotSpeed = turnFilter.getFilteredValue();
-            pivotSpeed = Math.signum(pivotSpeed) * Range.clip(Math.abs(pivotSpeed), minSpeed, maxSpeed); // limit abs speed
+            pivotSpeed = Range.clip(pivotSpeed, -maxSpeed, maxSpeed); // limit abs speed
 
-           mecanumDrive(0, 0, pivotSpeed);
+            // add to angle satisfactionCounter if error is in certain range
+            if (Math.abs(errorAngle) < 1) {
+                satisfactionCounter++;
+            }
 
-           if (isLogging) {
-               telemetry.addData("CurAngle", robot.curAngle);
-               telemetry.addData("ErrorAngle", errorAngle);
-               telemetry.update();
-           }
+            accelerationFilter.roll(pivotSpeed);
+            if (Math.abs(robot.curAngle) > Math.abs(targetAngle) / 2) {
+                pivotSpeed = accelerationFilter.getFilteredValue();
+            }
+            mecanumDrive(0, 0, pivotSpeed);
+
+            telemetry.addData("CurAngle", robot.curAngle);
+            telemetry.addData("ErrorAngle", errorAngle);
+            telemetry.update();
+
             idle();
 
-        } while (opModeIsActive() && (Math.abs(errorAngle) > angleTolerance));
+        } while (opModeIsActive() && (Math.abs(errorAngle) > angleTolerance)/* || (satisfactionCounter < 10)*/);
 
         // stop motors
         motorFL.setPower(0);
