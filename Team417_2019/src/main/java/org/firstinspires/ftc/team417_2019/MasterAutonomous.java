@@ -304,7 +304,7 @@ abstract public class MasterAutonomous extends MasterOpMode
             }
 
             accelerationFilter.roll(pivotSpeed);
-            if (Math.abs(robot.curAngle) > Math.abs(targetAngle) / 2) {
+            if (Math.abs(robot.curAngle) < Math.abs(targetAngle) / 2) {
                 pivotSpeed = accelerationFilter.getFilteredValue();
             }
             mecanumDrive(0, 0, pivotSpeed);
