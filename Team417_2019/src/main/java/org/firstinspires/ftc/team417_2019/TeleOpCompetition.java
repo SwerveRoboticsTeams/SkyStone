@@ -25,19 +25,9 @@ public class TeleOpCompetition extends MasterTeleOp
         while (opModeIsActive())
         {
             driveRobot();
-            linearSlides();
             collector();
             foundationPullers();
             updateTelemetry();
-            if(gamepad2.x){
-                lower();
-            }
-
-                telemetry.addData("core2", core2.getCurrentPosition());
-                telemetry.addData("Main Wrist", mainWristServo.getPosition());
-                telemetry.addData("Arm 1", arm1.getCurrentPosition());
-                telemetry.addData("Gamepad 2", gamepad2.right_stick_y);
-                updateTelemetry();
         }
     }
 }

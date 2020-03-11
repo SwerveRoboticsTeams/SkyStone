@@ -12,9 +12,11 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.team417_2019.Resources.Constants;
 import org.firstinspires.ftc.team417_2019.Resources.FIRFilter;
 import org.firstinspires.ftc.team417_2019.Resources.PIDFilter;
 import org.firstinspires.ftc.team417_2019.Resources.Polynomial;
+import org.firstinspires.ftc.team417_2019.Resources.Toggler;
 
 import java.util.Locale;
 
@@ -27,20 +29,18 @@ abstract public class MasterOpMode extends LinearOpMode
     public DcMotor motorFR = null; // hub 1 port 0
     public DcMotor motorBL = null; // hub 2 port 1
     public DcMotor motorBR = null; // hub 1 port 1
-    // hub 2 port 2
-    public DcMotor core2 = null;
-    // hub 1 port 3
-    public DcMotor arm1 = null;
-    // hub 2 port 3
-    public DcMotor arm2 = null;
-    // hub 2 port 3
-    Servo mainWristServo = null;
-    // hub 2 port 5
-    Servo smallGrabber  = null;
+    public DcMotor liftMotor1 = null;
+    public DcMotor liftMotor2 = null;
+    public DcMotor collectorMotorLeft = null;
+    public DcMotor collectorMotorRight = null;
+    // Declare servos
     // hub 2 port 0
     public Servo leftFoundationPuller = null;
     // hub 2 port 1
     public Servo rightFoundationPuller = null;
+    public Servo linkageServo = null;
+    public Servo grabberServo = null;
+
 
     // For movement using Vuforia
     public BNO055IMU imu;
@@ -79,6 +79,10 @@ abstract public class MasterOpMode extends LinearOpMode
     FIRFilter accelerationFilter;
     int filterLength = 10;
 
+    Toggler grabber = new Toggler(Constants.grabberServoIn, Constants.grabberServoOut, grabberServo);
+    Toggler leftPuller = new Toggler(Constants.leftFoundationPullerIn, Constants.leftFoundationPullerOut, leftFoundationPuller);
+    Toggler rightPuller = new Toggler(Constants.rightFoundationPullerIn, Constants.rightFoundationPullerOut, rightFoundationPuller);
+    Toggler linkage = new Toggler(Constants.linkageServoIn, Constants.linkageServoOut, linkageServo);
 
     public void initializeHardware()
     {
@@ -96,56 +100,51 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
 
-        core2 = hardwareMap.dcMotor.get("core2");
-
-        arm1 = hardwareMap.dcMotor.get("arm1");
-        arm2 = hardwareMap.dcMotor.get("arm2");
-
         // not currently in configuration ( need to be configured on the robot)
-        mainWristServo = hardwareMap.servo.get("mainWristServo");
-        smallGrabber = hardwareMap.servo.get("smallGrabber");
         leftFoundationPuller = hardwareMap.servo.get("leftFoundationPuller");
         rightFoundationPuller = hardwareMap.servo.get("rightFoundationPuller");
-
-        core2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        core2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // reverse front and back right motors just for TeleOp
         motorFL.setDirection(DcMotor.Direction.REVERSE);
         motorBL.setDirection(DcMotor.Direction.REVERSE);
         motorFR.setDirection(DcMotor.Direction.FORWARD);
         motorBR.setDirection(DcMotor.Direction.FORWARD);
+        collectorMotorLeft.setDirection(DcMotor.Direction.REVERSE);
+        collectorMotorRight.setDirection(DcMotor.Direction.FORWARD);
 
-        //motorFL.setMode();
 
         // set motor power to 0
         motorFL.setPower(0);
         motorFR.setPower(0);
         motorBL.setPower(0);
         motorBR.setPower(0);
-
-        core2.setPower(0);
+        liftMotor1.setPower(0);
+        liftMotor2.setPower(0);
+        collectorMotorLeft.setPower(0);
+        collectorMotorRight.setPower(0);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -257,6 +256,17 @@ abstract public class MasterOpMode extends LinearOpMode
             }
         }
         return max;
+    }
+
+    public void runCollector(double power, boolean slowMode) {
+        if (!slowMode) {
+            collectorMotorRight.setPower(power);
+            collectorMotorLeft.setPower(power);
+        } else {
+            collectorMotorLeft.setPower(power * Constants.collectorSlowModeMultiplier);
+            collectorMotorRight.setPower(power * Constants.collectorSlowModeMultiplier);
+        }
+
     }
 
 }

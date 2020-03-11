@@ -8,4 +8,17 @@ public class Constants{
     public static final float halfField = 72 * mmPerInch;
     public static final float quadField  = 36 * mmPerInch;
 
+    // todo adjust these later
+    public static final double leftFoundationPullerIn = 0.0;
+    public static final double leftFoundationPullerOut = 1.0;
+    public static final double rightFoundationPullerIn = 1.0;
+    public static final double rightFoundationPullerOut = 0.0;
+    public static final double linkageServoIn = 0.0;
+    public static final double linkageServoOut = 1.0;
+    public static final double grabberServoIn = 0.0;
+    public static final double grabberServoOut = 1.0;
+    public static final double collectorSlowModeMultiplier = 0.5;
+
+
+
 }

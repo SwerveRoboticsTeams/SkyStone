@@ -17,9 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.team417_2019.ImageRecognition.Dogeforia;
 import org.firstinspires.ftc.team417_2019.ImageRecognition.OpenCVDetect;
-import org.firstinspires.ftc.team417_2019.Resources.FileWriter;
-
-import java.io.IOException;
 import java.util.List;
 
 
@@ -43,58 +40,13 @@ abstract public class MasterAutonomous extends MasterOpMode
     Dogeforia vuforia;
     WebcamName webcamName;
 
-    // VARIABLES FOR VUFORIA
-    public VuforiaTrackable targetInView = null;
 
     public static final String VUFORIA_KEY =
             "AQdgAgj/////AAABmZGzg951/0AVjcK/+QiLWG1Z1PfbTwUouhED8hlwM6qrpAncj4xoMYYOUDxF+kreiazigY0q7OMa9XeMyxNlEQvyMFdefVUGSReIxJIXYhFaru/0IzldUlb90OUO3+J4mGvnzrqYMWG1guy00D8EbCTzzl5LAAml+XJQVLbMGrym2ievOij74wabsouyLb2HOab5nxk0FycYqTWGhKmS7/h4Ddd0UtckgnHDjNrMN4jqk0Q9HeTa8rvN3aQpSUToubAmfXe6Jgzdh2zNcxbaNIfVUe/6LXEe23BC5mYkLAFz0WcGZUPs+7oVRQb7ej7jTAJGA6Nvb9QKEa9MOdn0e8edlQfSBRASxfzBU2FIGH8a";
 
-    // Vuforia Class Members
-    public OpenGLMatrix lastLocation = null;
-    public boolean targetVisible = false;
-    public float cameraXRotate    = 0;
-    public float cameraYRotate    = 0;
-    public float cameraZRotate    = 0;
-    public Orientation rotation;
-    public VuforiaTrackables targetsSkyStone = null;
-    public List<VuforiaTrackables> allTrackables = null;
-    public VuforiaLocalizer.Parameters parameters = null;
-
-    // VARIABLES FOR MOVE/ALIGN METHODS
-    int newTargetFL;
-    int newTargetBL;
-    int newTargetFR;
-    int newTargetBR;
-
-    int errorFL;
-    int errorFR;
-    int errorBL;
-    int errorBR;
-
-    double speedFL;
-    double speedFR;
-    double speedBL;
-    double speedBR;
-
-    double speedAbsFL;
-    double speedAbsFR;
-    double speedAbsBL;
-    double speedAbsBR;
-
-    double angleDifference;
-    double pivotSpeed;
-    double pivotScaled;
-    int pivotDistance;
-    double errorAngle;
-
-    double avgDistError;
-    int curLiftPos = 0;
-
     public void autoInitializeRobot()
     {
         super.initializeHardware();
-        //rev1.setPosition(INIT_REV_POS);
-       // marker.setPosition(MARKER_LOW);
 
         // zero the motor controllers before running; we don't know if motors start out at zero
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -131,147 +83,6 @@ abstract public class MasterAutonomous extends MasterOpMode
         vuforia.setDogeCVDetector(findSkystone);
         vuforia.enableDogeCV();
         vuforia.start();
-    }
-
-
-    // a combination of both the align and pivot function
-    // x and y are in mm
-    public void moveMaintainHeading(double x, double y, double refAngle, double minSpeed, double maxSpeed, double timeout)
-    {
-        // run with encoder mode
-        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        rotation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-        // get amount that we have deviated from the angle we started with
-        angleDifference = rotation.thirdAngle - refAngle;
-        // adjust angle so it is not greater/less than +/- 180
-        angleDifference = adjustAngles(angleDifference);
-        // find amount of error (work on this?)
-        errorAngle = angleDifference;
-
-        errorAngle = imu.getAngularOrientation().firstAngle - refAngle;
-        errorAngle = adjustAngles(errorAngle);
-
-        // scale the amount you need to pivot based on the error
-        pivotScaled = errorAngle / 360;
-        // find that amount of distance you need to pivot based on the error
-        pivotDistance = (int) (pivotScaled * ROBOT_DIAMETER_MM * Math.PI * COUNTS_PER_INCH);
-
-        // find distance that we need to travel in mm
-        int targetX = (int) -Math.round(COUNTS_PER_INCH * x);
-        int targetY = (int) -Math.round(COUNTS_PER_INCH * y );
-
-        //check pivot distance signs with robot (alternate + and - to test which works)
-        newTargetFL = motorFL.getCurrentPosition() + targetX + targetY + pivotDistance;
-        newTargetFR = motorFR.getCurrentPosition() - targetX + targetY - pivotDistance;
-        newTargetBL = motorBL.getCurrentPosition() - targetX + targetY + pivotDistance;
-        newTargetBR = motorBR.getCurrentPosition() + targetX + targetY - pivotDistance;
-
-        // reset timer, which is used for loop timeout below
-        runtime.reset();
-
-        // wait until the motors reach the position and adjust robot angle during movement by adjusting speed of motors
-        do
-        {
-            // ---------------------- Angle Calculation ---------------------------------
-            // rotation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-            errorAngle = imu.getAngularOrientation().firstAngle - refAngle;
-            errorAngle = adjustAngles(errorAngle);
-            // read the real current angle and compute error compared to the final angle
-            angleDifference = rotation.thirdAngle - refAngle;
-            angleDifference = adjustAngles(angleDifference);
-            // calculate error in terms of speed
-            // errorAngle = angleDifference;
-            // scale the pivot speed so it slows as it approaches the angle you want it to turn to
-            pivotSpeed = errorAngle * Kpivot;
-            // make sure the pivot speed is not to large
-            pivotSpeed = Range.clip(pivotSpeed, -0.6, 0.6); // limit max pivot speed
-
-            /* take absolute value of speed such that you can clip it
-               speedAbsFL = Math.abs(speedFL);
-               clip abs(speed) MAX speed minus 0.3 to leave room for pivot factor
-               speedAbsFL = Range.clip(speedAbsFL, minSpeed, maxSpeed);
-               speedFL = speedAbsFL * Math.signum(speedFL);  // set sign of speed
-             */
-
-
-            // -----------------------Distance Calculation -----------------------------
-            // calculate error in terms of distance
-            errorFL = newTargetFL - motorFL.getCurrentPosition();
-            // scale the distance speed so it slows as it approaches the distance you want it to move to
-            speedFL = Kmove * errorFL;
-            // insert speed clipping
-            speedFL = Range.clip(speedFL, -maxSpeed, maxSpeed);
-
-
-            errorFR = newTargetFR - motorFR.getCurrentPosition();
-            speedFR = Kmove * errorFR;
-            // insert speed clipping
-            speedFR = Range.clip(speedFR, -maxSpeed, maxSpeed);
-
-
-            errorBL = newTargetBL - motorBL.getCurrentPosition();
-            speedBL = Kmove * errorBL;
-            speedAbsBL = Math.abs(speedBL);
-            // insert speed clipping
-            speedBL = Range.clip(speedBL, -maxSpeed, maxSpeed);
-
-
-            errorBR = newTargetBR - motorBR.getCurrentPosition();
-            speedBR = Kmove * errorBR;
-            speedAbsBR = Math.abs(speedBR);
-            // insert speed clipping
-            speedBR = Range.clip(speedBR, -maxSpeed, maxSpeed);
-
-            //speedBR -= pivotSpeed;
-
-            // combine movement and pivot speed to calculate speed for each individual wheel
-            // consistent with adding pivot speed above
-            motorFL.setPower(speedFL + pivotSpeed);
-            motorFR.setPower(speedFR - pivotSpeed);
-            motorBL.setPower(speedBL + pivotSpeed);
-            motorBR.setPower(speedBR - pivotSpeed);
-
-            // calculate average error in distance to figure out when to come to a stop
-            avgDistError = (Math.abs(errorFL) + Math.abs(errorFR) + Math.abs(errorBL) + Math.abs(errorBR)) / 4.0;
-
-            if (Math.abs(avgDistError) < distanceTolerance)
-            {
-                sleep(50);
-                // stop motors
-                motorFL.setPower(0);
-                motorFR.setPower(0);
-                motorBL.setPower(0);
-                motorBR.setPower(0);
-                sleep(50);
-            }
-
-
-            telemetry.addData("Rotation:", angleDifference);
-            telemetry.addData("FL power:",motorFL.getPower());
-            telemetry.addData("FR power:",motorFR.getPower());
-            telemetry.addData("BL power:",motorBL.getPower());
-            telemetry.addData("BR power:",motorBR.getPower());
-            telemetry.update();
-            idle();
-        }
-        while ( (opModeIsActive()) && (runtime.seconds() < timeout) &&
-                (
-                        // exit the loop when one of the motors achieve their distanceTolerance
-                        //( (Math.abs(errorFL) > TOL) && (Math.abs(errorFR) > TOL) && (Math.abs(errorBL) > TOL) && (Math.abs(errorBR) > TOL) )
-                        avgDistError > distanceTolerance
-                                || (Math.abs(errorAngle) > angleTolerance)
-                )
-                );
-
-        // stop the motors
-        motorFL.setPower(0);
-        motorFR.setPower(0);
-        motorBL.setPower(0);
-        motorBR.setPower(0);
     }
 
     // todo Add turnSatisfactionCounter.
