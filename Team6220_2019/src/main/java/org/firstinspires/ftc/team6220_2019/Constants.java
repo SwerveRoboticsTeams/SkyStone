@@ -10,8 +10,8 @@ public class Constants
      // This is for an AndyMark 40; 20s are 560 ticks / rot and 60s are 1680 ticks / rot
     public static final int AM_40_TICKS_PER_ROTATION = 1120;
     public static final int US_DIGITAL_TICKS_PER_ROTATION = 1440;   // For odometry wheels
-    public static final float MM_PER_INCH = 25.4f;
-    public static final float MM_FIELD_SIZE = (12 * 12) * MM_PER_INCH;
+    public static final double MM_PER_INCH = 25.4;
+    public static final double IN_FIELD_SIZE = 140.94;  // Not 144" due to interlocking pieces being cut off on field edge.
     //---------------------------------------------------------------
 
 

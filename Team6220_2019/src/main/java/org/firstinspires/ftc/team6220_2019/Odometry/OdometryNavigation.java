@@ -8,7 +8,7 @@ import org.firstinspires.ftc.team6220_2019.MasterOpMode;
 
 public abstract class OdometryNavigation extends MasterOpMode
 {
-    public void driveToPosition(double x, double y, double movementSpeed)
+    public void driveToPosition(double x, double y, double maxSpeed)
     {
         double globalXPos = 0;
         double globalYPos = 0;
@@ -16,7 +16,9 @@ public abstract class OdometryNavigation extends MasterOpMode
 
         // Need to get distance and angle between robot and target.
         double distanceToTarget = Math.hypot(x-globalXPos, y-globalYPos);
+
         double absoluteAngleToTarget = Math.atan2(y - globalYPos, x - globalXPos);
+
         double relativeAngleToTarget = normalizeAngle(absoluteAngleToTarget - getAngularOrientationWithOffset());
 
         // Calculate relative x and y distances to our target.
@@ -28,9 +30,8 @@ public abstract class OdometryNavigation extends MasterOpMode
         double movementXPower = relativeXToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
         double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
 
-        // todo Where are movement_x and movement_y supposed to be initialized?  Also, how does this integrate with simulator?
-        // todo Also, size of field = 140.94 in, not 144 in.  (Should probably adjust for this value...)
-        /*movement_x = movementXPower;
-        movement_y = movementXPower;*/
+        // Limit max power.
+        movement_x = movementXPower * maxSpeed;
+        movement_y = movementXPower * maxSpeed;
     }
 }
