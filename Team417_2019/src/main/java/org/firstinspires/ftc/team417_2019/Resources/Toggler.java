@@ -6,17 +6,12 @@ public class Toggler {
     public boolean toggleState = false;
     public boolean prevState = false;
     public boolean press = false;
-    double in;
-    double out;
-    Servo servo;
 
-    public Toggler(double in, double out, Servo servo) {
-        this.in = in;
-        this.out = out;
-        this.servo = servo;
+    public Toggler() {
+
     }
 
-    public void toggle(boolean button)
+    public boolean toggle(boolean button)
     {
         // if button is pressed then alternate the toggle state (this is the value returned to us)
         if(press)
@@ -27,21 +22,19 @@ public class Toggler {
         if(! prevState && button)
         {
             press = true;
-            servo.setPosition(in);
         }
         // if the button is pressed (press is true) then toggle press to false because the button has been pushed
         else if(press)
         {
             press = false;
-            servo.setPosition(out);
         }
         // set previous state to the current push of the button
         prevState = button;
 
+        return toggleState;
     }
 
     public boolean getToggleState() {
         return toggleState;
-
     }
 }

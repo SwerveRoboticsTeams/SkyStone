@@ -61,8 +61,8 @@ public class AutoModular extends MasterAutonomous {
         vuforia.stop();
         findSkystone.disable();
 
-        leftFoundationPuller.setPosition(1);
-        rightFoundationPuller.setPosition(0);
+        foundationPullerL.setPosition(1);
+        foundationPullerR.setPosition(0);
 
         if (navQuarry) {
 

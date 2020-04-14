@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.team417_2019.Resources.Constants;
 import org.firstinspires.ftc.team417_2019.Resources.FIRFilter;
 import org.firstinspires.ftc.team417_2019.Resources.PIDFilter;
 import org.firstinspires.ftc.team417_2019.Resources.Polynomial;
+import org.firstinspires.ftc.team417_2019.Resources.ServoToggler;
 import org.firstinspires.ftc.team417_2019.Resources.Toggler;
 
 import java.util.Locale;
@@ -29,17 +31,17 @@ abstract public class MasterOpMode extends LinearOpMode
     public DcMotor motorFR = null; // hub 1 port 0
     public DcMotor motorBL = null; // hub 2 port 1
     public DcMotor motorBR = null; // hub 1 port 1
-    public DcMotor liftMotor1 = null;
-    public DcMotor liftMotor2 = null;
-    public DcMotor collectorMotorLeft = null;
-    public DcMotor collectorMotorRight = null;
+    public DcMotor liftMotorL = null;
+    public DcMotor liftMotorR = null;
+    public DcMotor collectorMotorL = null;
+    public DcMotor collectorMotorR = null;
     // Declare servos
     // hub 2 port 0
-    public Servo leftFoundationPuller = null;
+    public Servo foundationPullerL = null;
     // hub 2 port 1
-    public Servo rightFoundationPuller = null;
+    public Servo foundationPullerR = null;
     public Servo linkageServo = null;
-    public Servo grabberServo = null;
+    public CRServo grabberServo = null;
 
 
     // For movement using Vuforia
@@ -54,7 +56,7 @@ abstract public class MasterOpMode extends LinearOpMode
     static final double COUNTS_PER_MOTOR_REV = 1120; // 40:1 motor
     static final double DRIVE_GEAR_REDUCTION = 16.0 / 24.0; // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0; // For figuring circumference
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double COUNTS_PER_MM = COUNTS_PER_INCH / 25.4;
 
     final double ROBOT_DIAMETER_MM = 20.5 * 25.4;   // diagonal 20.5 inch FL to BR and FR to BL
@@ -79,12 +81,16 @@ abstract public class MasterOpMode extends LinearOpMode
     FIRFilter accelerationFilter;
     int filterLength = 10;
 
-    Toggler grabber = new Toggler(Constants.grabberServoIn, Constants.grabberServoOut, grabberServo);
-    Toggler leftPuller = new Toggler(Constants.leftFoundationPullerIn, Constants.leftFoundationPullerOut, leftFoundationPuller);
-    Toggler rightPuller = new Toggler(Constants.rightFoundationPullerIn, Constants.rightFoundationPullerOut, rightFoundationPuller);
-    Toggler linkage = new Toggler(Constants.linkageServoIn, Constants.linkageServoOut, linkageServo);
+    /*
+    ServoToggler grabber = new ServoToggler(Constants.grabberServoIn, Constants.grabberServoOut, grabberServo);
+    ServoToggler leftPuller = new ServoToggler(Constants.leftFoundationPullerIn, Constants.leftFoundationPullerOut, foundationPullerL);
+    ServoToggler rightPuller = new ServoToggler(Constants.rightFoundationPullerIn, Constants.rightFoundationPullerOut, foundationPullerR);
+    ServoToggler linkage = new ServoToggler(Constants.linkageServoIn, Constants.linkageServoOut, linkageServo);*/
 
-    public void initializeHardware()
+    /**
+     * Initialize all hardware, including motors, servos, and IMU
+     */
+    protected void initializeHardware()
     {
         turnFilter = new PIDFilter(0.02, 0, 0.02);
         moveFilter = new PIDFilter(0.04, 0, 0);
@@ -99,41 +105,51 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR = hardwareMap.dcMotor.get("motorFR");
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorBR = hardwareMap.dcMotor.get("motorBR");
+        liftMotorL = hardwareMap.dcMotor.get("liftMotorL");
+        liftMotorR = hardwareMap.dcMotor.get("liftMotorR");
+        //collectorMotorL = hardwareMap.dcMotor.get("collectorMotorL");
+        //collectorMotorR = hardwareMap.dcMotor.get("collectorMotorR");
 
         // not currently in configuration ( need to be configured on the robot)
-        leftFoundationPuller = hardwareMap.servo.get("leftFoundationPuller");
-        rightFoundationPuller = hardwareMap.servo.get("rightFoundationPuller");
+        foundationPullerL = hardwareMap.servo.get("foundationPullerL");
+        foundationPullerR = hardwareMap.servo.get("foundationPullerR");
+        //linkageServo = hardwareMap.servo.get("linkageServo");
+        //grabberServo = hardwareMap.servo.get("grabberServo");
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //liftMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //liftMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //collectorMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //collectorMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //liftMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //liftMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //collectorMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //collectorMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        collectorMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        collectorMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //liftMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //liftMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //collectorMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //collectorMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // reverse front and back right motors just for TeleOp
         motorFL.setDirection(DcMotor.Direction.REVERSE);
         motorBL.setDirection(DcMotor.Direction.REVERSE);
         motorFR.setDirection(DcMotor.Direction.FORWARD);
         motorBR.setDirection(DcMotor.Direction.FORWARD);
-        collectorMotorLeft.setDirection(DcMotor.Direction.REVERSE);
-        collectorMotorRight.setDirection(DcMotor.Direction.FORWARD);
+        //collectorMotorL.setDirection(DcMotor.Direction.REVERSE);
+        //collectorMotorR.setDirection(DcMotor.Direction.FORWARD);
 
 
         // set motor power to 0
@@ -141,10 +157,10 @@ abstract public class MasterOpMode extends LinearOpMode
         motorFR.setPower(0);
         motorBL.setPower(0);
         motorBR.setPower(0);
-        liftMotor1.setPower(0);
-        liftMotor2.setPower(0);
-        collectorMotorLeft.setPower(0);
-        collectorMotorRight.setPower(0);
+        //liftMotorL.setPower(0);
+        //liftMotorR.setPower(0);
+        //collectorMotorL.setPower(0);
+        //collectorMotorR.setPower(0);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -161,8 +177,101 @@ abstract public class MasterOpMode extends LinearOpMode
 
     } //-----------------------END OF INITIALIZATION SOFTWARE------------------------
 
+    /**
+     * Initialize all hardware on the new robot, including motors, servos, and IMU
+     */
+    protected void initializeNewHardware()
+    {
+        turnFilter = new PIDFilter(0.02, 0, 0.02);
+        moveFilter = new PIDFilter(0.04, 0, 0);
+        // weights for weighted average
+        double[] filterCoefficients = {1};
+        accelerationFilter = new FIRFilter(new Polynomial(filterCoefficients),filterLength);
+        accelerationFilter.values = new double[filterLength];
 
-    // normalizing the angle to be between -180 to 180
+
+        // Initialize motors to be the hardware motors
+        motorFL = hardwareMap.dcMotor.get("motorFL");
+        motorFR = hardwareMap.dcMotor.get("motorFR");
+        motorBL = hardwareMap.dcMotor.get("motorBL");
+        motorBR = hardwareMap.dcMotor.get("motorBR");
+        liftMotorL = hardwareMap.dcMotor.get("liftMotorL");
+        liftMotorR = hardwareMap.dcMotor.get("liftMotorR");
+        collectorMotorL = hardwareMap.dcMotor.get("collectorMotorL");
+        collectorMotorR = hardwareMap.dcMotor.get("collectorMotorR");
+
+        // not currently in configuration ( need to be configured on the robot)
+        foundationPullerL = hardwareMap.servo.get("foundationPullerL");
+        foundationPullerR = hardwareMap.servo.get("foundationPullerR");
+        linkageServo = hardwareMap.servo.get("linkageServo");
+        grabberServo = hardwareMap.crservo.get("grabberServo");
+
+        motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        collectorMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        collectorMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        collectorMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        collectorMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        collectorMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // reverse front and back right motors just for TeleOp
+        motorFL.setDirection(DcMotor.Direction.REVERSE);
+        motorBL.setDirection(DcMotor.Direction.REVERSE);
+        motorFR.setDirection(DcMotor.Direction.FORWARD);
+        motorBR.setDirection(DcMotor.Direction.FORWARD);
+        collectorMotorL.setDirection(DcMotor.Direction.REVERSE);
+        collectorMotorR.setDirection(DcMotor.Direction.FORWARD);
+
+
+        // set motor power to 0
+        motorFL.setPower(0);
+        motorFR.setPower(0);
+        motorBL.setPower(0);
+        motorBR.setPower(0);
+        liftMotorL.setPower(0);
+        liftMotorR.setPower(0);
+        collectorMotorL.setPower(0);
+        collectorMotorR.setPower(0);
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "Adaf'" +
+                "ruitIMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        telemetry.log().setCapacity(8);
+
+
+    } //-----------------------END OF INITIALIZATION SOFTWARE------------------------
+
+    /**
+     * returns the coterminal angle between -180 to 180
+     * @param angle
+     * Double angle to normalize
+     */
     public double adjustAngles(double angle)
     {
         while(angle > 180)
@@ -172,7 +281,11 @@ abstract public class MasterOpMode extends LinearOpMode
         return angle;
     }
 
-    // wait a number of milliseconds
+    /**
+     * wait a number of milliseconds
+     * @param t
+     * Time, in milliseconds, to wait
+     */
     public void pause(int t) throws InterruptedException
     {
         //we don't use System.currentTimeMillis() because it can be inconsistent
@@ -195,31 +308,65 @@ abstract public class MasterOpMode extends LinearOpMode
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
+    /**
+     * Returns a string representation of an angle
+     * @param degrees
+     * Double angle to convert
+     */
     String formatDegrees(double degrees)
     {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 
-    // get stick angles
+    /**
+     * Returns the angle of the Left stick of a given gamepad
+     * @param gamepad
+     * Gamepad to use
+     */
     public double getLeftStickAngle(Gamepad gamepad)
     {
         return Math.atan2(-gamepad.left_stick_y, gamepad.left_stick_x);
     }
+
+    /**
+     * Returns the angle of the right stick of a given gamepad
+     * @param gamepad
+     * Gamepad to use
+     */
     public double getRightStickAngle(Gamepad gamepad)
     {
         return Math.atan2(-gamepad.right_stick_y, gamepad.right_stick_x);
     }
 
-    // get stick magnitudes
+    /**
+     * Returns the magnitude of the Left stick of a given gamepad
+     * @param gamepad
+     * Gamepad to use
+     */
     public double getLeftStickMagnitude(Gamepad gamepad)
     {
-        return Math.sqrt(Math.pow(gamepad.left_stick_x, 2) + Math.pow(gamepad.left_stick_y, 2));
-    }
-    public double getRightStickMagnitude(Gamepad gamepad)
-    {
-        return Math.sqrt(Math.pow(gamepad.right_stick_x, 2) + Math.pow(gamepad.right_stick_y, 2));
+        return Math.hypot(gamepad.left_stick_x, gamepad.left_stick_y);
     }
 
+    /**
+     * Returns the magnitude of the right stick of a given gamepad
+     * @param gamepad
+     * Gamepad to use
+     */
+    public double getRightStickMagnitude(Gamepad gamepad)
+    {
+        return Math.hypot(gamepad.right_stick_x, gamepad.right_stick_y);
+    }
+
+    /**
+     * Set drive motor powers for a mecanum drive robot
+     * @param angle
+     * Without turning the robot, the angle that the robot drives at
+     * @param drivePower
+     * The speed at which to drive the robot
+     * @param rotationalPower
+     * The speed at which to turn the robot
+     */
     public void mecanumDrive(double angle, double drivePower, double rotationalPower) {
 
         double x = drivePower * Math.cos(angle/* + 90*/);
@@ -231,7 +378,7 @@ abstract public class MasterOpMode extends LinearOpMode
         double backRight = y + x - rotationalPower;
 
         // get the largest power
-        double powerScalar = returnLargestValue(new double[]{frontLeft, frontRight, backLeft, backRight});
+        double powerScalar = returnLargestValue(frontLeft, frontRight, backLeft, backRight);
 
         // scale the power to keep the wheels proportional and between the range of -1 and 1
         if (powerScalar > 1) {
@@ -247,8 +394,12 @@ abstract public class MasterOpMode extends LinearOpMode
         motorBR.setPower(backRight);
     }
 
-    // takes array of doubles and returns the largest value
-    public double returnLargestValue(double[] numberArray){
+    /**
+     * Returns the largest value from any number of doubles
+     * @param numberArray
+     * the doubles to evaluate
+     */
+    public double returnLargestValue(double ... numberArray) {
         double max = Double.MIN_VALUE;
         for ( double num : numberArray ) {
             if (num > max) {
@@ -260,11 +411,11 @@ abstract public class MasterOpMode extends LinearOpMode
 
     public void runCollector(double power, boolean slowMode) {
         if (!slowMode) {
-            collectorMotorRight.setPower(power);
-            collectorMotorLeft.setPower(power);
+            collectorMotorR.setPower(power);
+            collectorMotorL.setPower(power);
         } else {
-            collectorMotorLeft.setPower(power * Constants.collectorSlowModeMultiplier);
-            collectorMotorRight.setPower(power * Constants.collectorSlowModeMultiplier);
+            collectorMotorL.setPower(power * Constants.collectorSlowModeMultiplier);
+            collectorMotorR.setPower(power * Constants.collectorSlowModeMultiplier);
         }
 
     }

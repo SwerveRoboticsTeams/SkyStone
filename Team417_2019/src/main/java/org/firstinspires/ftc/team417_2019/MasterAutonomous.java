@@ -60,6 +60,7 @@ abstract public class MasterAutonomous extends MasterOpMode
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
     public void InitializeDetection()
     {
         // instantiate webcam

@@ -18,6 +18,8 @@ public class Constants{
     public static final double grabberServoIn = 0.0;
     public static final double grabberServoOut = 1.0;
     public static final double collectorSlowModeMultiplier = 0.5;
+    public static final double encoderTicksPerRot = 537.6;
+    public static final double inchPulleyRadius = 1.375;
 
 
 
