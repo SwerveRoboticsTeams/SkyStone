@@ -31,7 +31,7 @@ public abstract class OdometryNavigation extends MasterOpMode
         double movementYPower = relativeYToPoint / (Math.abs(relativeXToPoint) + Math.abs(relativeYToPoint));
 
         // Limit max power.
-        movement_x = movementXPower * maxSpeed;
-        movement_y = movementXPower * maxSpeed;
+        //movement_x = movementXPower * maxSpeed;
+        //movement_y = movementXPower * maxSpeed;
     }
 }

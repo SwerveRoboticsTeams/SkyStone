@@ -232,8 +232,8 @@ abstract public class MasterAutonomous extends MasterOpMode
 
         // Extract initial location data.
         vuf.getLocation();
-        float xPos = vuf.translation.get(0) / Constants.MM_PER_INCH;   // Convert Vuforia mm to inches
-        float yPos = vuf.translation.get(1) / Constants.MM_PER_INCH;
+        float xPos = (float) (vuf.translation.get(0) / Constants.MM_PER_INCH);   // Convert Vuforia mm to inches
+        float yPos = (float) (vuf.translation.get(1) / Constants.MM_PER_INCH);
         float lastX = xPos;    // Enooder backup nav distances.
         float lastY = yPos;
         // Use IMU for angle, as Vuforia angle has odd conventions and can cause target to be lost easily if one uses it to turn.
@@ -285,8 +285,8 @@ abstract public class MasterAutonomous extends MasterOpMode
             // Update global position and angle coordinates.
             else
             {
-                xPos = vuf.translation.get(0) / Constants.MM_PER_INCH;
-                yPos = vuf.translation.get(1) / Constants.MM_PER_INCH;
+                xPos = (float) (vuf.translation.get(0) / Constants.MM_PER_INCH);
+                yPos = (float) (vuf.translation.get(1) / Constants.MM_PER_INCH);
             }
 
             // Get global orientation using IMU.
