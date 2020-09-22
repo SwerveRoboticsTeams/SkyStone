@@ -9,6 +9,7 @@ public class Robot {
 
     MasterOpMode master;
 
+
     // instantiated masterOpMode to resolve static issues because we are making a new robot object
     public Robot(MasterOpMode masterOpMode){
         master = masterOpMode;

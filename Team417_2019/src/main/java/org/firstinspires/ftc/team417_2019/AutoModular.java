@@ -190,6 +190,7 @@ public class AutoModular extends MasterAutonomous {
     }
 
     /* Unused methods for now */
+    // comment
     private float findRange(double imageWidth){
         float x = (float) (1/imageWidth);
         return (x - 0.0004f) / 0.0002f;
